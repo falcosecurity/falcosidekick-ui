@@ -1,0 +1,32 @@
+ARG BUILDER_IMAGE=golang:1.15.5
+ARG BASE_IMAGE=alpine:3.12
+
+FROM ${BUILDER_IMAGE} AS build-stage
+
+ENV CGO_ENABLED=0
+
+WORKDIR /src
+ADD . .
+
+RUN go mod download
+RUN make falcosidekick
+
+# Final Docker image
+FROM ${BASE_IMAGE} AS final-stage
+LABEL MAINTAINER "Thomas Labarussias <issif+falcosidekick@gadz.org>"
+
+RUN apk add --update --no-cache ca-certificates
+
+# Create user falcosidekick
+RUN addgroup -S falcosidekickui && adduser -u 1234 -S falcosidekickui -G falcosidekickui
+# must be numeric to work with Pod Security Policies:
+# https://kubernetes.io/docs/concepts/policy/pod-security-policy/#users-and-groups
+USER 1234
+
+WORKDIR ${HOME}/app
+COPY --from=build-stage /src/LICENSE .
+COPY --from=build-stage /src/falcosidekick-ui .
+
+EXPOSE 2802
+
+ENTRYPOINT ["./falcosidekick-ui"]

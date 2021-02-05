@@ -1,12 +1,36 @@
+# Falcosidekick-ui
 
-> Acts as a template for new repositories
+![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
 
-## Workflow
+## Description
 
-1. Above the file list, click **Use this template** button.
-2. Type a name for your repository, and an optional description.
-3. Click **Create repository from template**.
-4. Edit the README.md file.
-5. Edit the OWNERS file adding/removing people for the specific project.
-6. Open an issue into [test-infra](https://github.com/falcosecurity/test-infra) to notify maintainers to enable Prow on the specific project
-7. DO NOT edit the LICENSE file which we'll be already in place
+A simple WebUI for displaying latest events from [Falco](https://falco.org). It works as output for [Falcosidekick](https://github.com/falcosecurity/falcosidekick).
+
+## Endpoints
+
+The UI is reachable at `http://localhost:2802/ui` .
+
+## Development
+
+### Build
+
+```bash
+make falcosidekick-ui
+```
+
+### Lint
+
+```bash
+make lint
+```
+
+Full lint:
+
+```bash
+make lint-full
+```
+
+## Author
+
+Thomas Labarussias (https://github.com/Issif)
+
