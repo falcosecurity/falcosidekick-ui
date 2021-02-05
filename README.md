@@ -2,6 +2,8 @@
 
 ![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
 
+*Disclaimer: This project is a WIP*
+
 ## Description
 
 A simple WebUI for displaying latest events from [Falco](https://falco.org). It works as output for [Falcosidekick](https://github.com/falcosecurity/falcosidekick).
