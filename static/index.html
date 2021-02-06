@@ -19,6 +19,10 @@
 </head>
 
 <style>
+    .section {
+        padding-top: 1rem;
+    }
+
     .tag:not(body).is-white.is-emergency {
         background-color: #e20b0b;
     }
@@ -53,6 +57,12 @@
 
     .tag:not(body).is-white.is-debug {
         background-color: #ccfff2;
+    }
+
+    .table td,
+    .table th {
+        padding-right: 0;
+        padding-left: 0;
     }
 </style>
 
@@ -125,7 +135,7 @@
                 </div>
             </div>
             <div>
-                <table class="table">
+                <table class="table is-striped">
                     <thead>
                         <tr>
                             <th>Time</th>
@@ -139,7 +149,7 @@
                             <td style="font-size: 80%;">
                                 {{ index.time }}
                             </td>
-                            <td>
+                            <td style="padding-top: 0rem;">
                                 <span class="tag is-white is-emergency" v-if="index.priority === 'Emergency'"
                                     v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
                                 <span class="tag is-white is-alert" v-if="index.priority === 'Alert'"
@@ -157,7 +167,7 @@
                                 <span class="tag is-white is-debug" v-if="index.priority === 'Debug'"
                                     v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
                             </td>
-                            <td>
+                            <td style="padding-top: 0rem;">
                                 <span class="tag is-info is-light" v-html="highlightMatches(index.rule)">{{ index.rule
                                     }}</span>
                             </td>
