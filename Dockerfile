@@ -9,7 +9,7 @@ WORKDIR /src
 ADD . .
 
 RUN go mod download
-RUN make falcosidekick
+RUN make falcosidekick-ui
 
 # Final Docker image
 FROM ${BASE_IMAGE} AS final-stage
