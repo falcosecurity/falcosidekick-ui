@@ -32,7 +32,8 @@ Full lint:
 make lint-full
 ```
 
-## Author
+## Authors
 
 Thomas Labarussias (https://github.com/Issif)
+Frank Jogeleit (https://github.com/fjogeleit)
 
