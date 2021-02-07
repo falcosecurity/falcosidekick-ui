@@ -118,9 +118,15 @@
                         <span :class="['tag', 'is-white', colorClass(priority), 'is-capitalized']">{{ priority }}</span>
                     </div>
                 </div>
-                <div style="float: right;">
-                    <input class="input is-small" type="text" placeholder="filter" v-model.trim="filter" />
-                </div>
+                
+                <div class="field" style="margin-left: auto;">
+                    <p class="control has-icons-right">
+                      <input class="input is-small" type="text" placeholder="filter" v-model="filter" ref="filterInput">
+                      <span class="icon is-small is-right" style="cursor: pointer; pointer-events: all;" @click.stop="resetFilter">
+                        <strong class="has-text-grey">X</strong>
+                      </span>
+                    </p>
+                  </div>
             </div>
             <div>
                 <table class="table is-striped is-fullwidth">
@@ -220,6 +226,11 @@
                 },
                 colorClass(priority) {
                     return `is-${priority.toLowerCase()}`
+                },
+                resetFilter() {
+                    this.filter = ''
+
+                    this.$refs.filterInput.focus()
                 }
             },
             computed: {
