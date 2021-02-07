@@ -123,7 +123,7 @@
                     </div>
                 </div>
                 <div style="float: right;">
-                    <input class="input is-small" type="text" placeholder="filter" v-model="filter" />
+                    <input class="input is-small" type="text" placeholder="filter" v-model.trim="filter" />
                 </div>
             </div>
             <div>
@@ -145,7 +145,7 @@
                                 <span :class="['tag', 'is-white', colorClass(index.priority)]" v-html="highlightMatches(index.priority)" />
                             </td>
                             <td>
-                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
+                                <span class="tag is-info is-light is-inline-block" v-html="highlightMatches(index.rule)" />
                             </td>
                             <td style="font-size: 80%;">
                                 <p v-html="highlightMatches(index.output)"style="margin-bottom: 15px;" />
@@ -220,7 +220,7 @@
                     if (!matchExists) return text;
 
                     const re = new RegExp(this.filter, 'ig');
-                    return text.replace(re, matchedText => `<strong>${matchedText}</strong>`);
+                    return text.replace(re, matchedText => console.log(matchedText) || `<strong>${matchedText}</strong>`);
                 },
                 colorClass(priority) {
                     return `is-${priority.toLowerCase()}`
