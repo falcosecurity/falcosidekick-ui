@@ -23,9 +23,10 @@ RUN addgroup -S falcosidekickui && adduser -u 1234 -S falcosidekickui -G falcosi
 # https://kubernetes.io/docs/concepts/policy/pod-security-policy/#users-and-groups
 USER 1234
 
-WORKDIR ${HOME}/app
+WORKDIR /app
 COPY --from=build-stage /src/LICENSE .
 COPY --from=build-stage /src/falcosidekick-ui .
+COPY static/ static
 
 EXPOSE 2802
 
