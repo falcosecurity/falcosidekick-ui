@@ -73,6 +73,24 @@
     .table td {
         padding: 0.75rem;
     }
+
+    .logo {
+        margin: 0px 30px 0px 0px;
+        float: left;
+        width: 6%;
+    }
+
+    .ml-auto {
+        margin-left: auto;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .is-size-7 {
+        font-size: 0.8rem!important;
+    }
 </style>
 
 <body>
@@ -80,19 +98,17 @@
         <section class="hero is-link is-small">
             <div class="hero-body">
                 <div class="container">
-                    <img width="6%" style="float: left; margin: 0px 30px 0px 0px;"
-                        src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
-                </div>
-                <div class="container">
+                    <img class="logo" src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
+                        
                     <h1 class="title">
                         Falcosidekick UI
                     </h1>
                     <h2 class="subtitle">
                         Latest Events from Falco
                     </h2>
-                    <div id="outputs" class="container" style="text-align:left;">
-                        <outputs-list></outputs-list>
-                    </div>
+                </div>
+                <div class="container">
+                    <outputs-list></outputs-list>
                 </div>
             </div>
         </section>
@@ -106,23 +122,23 @@
     <template id="outputs-list-tpl">
         <div>
             <span>Enabled outputs: </span>
-            <span v-for="output in outputs" class="tag is-light" style="margin-right: 3px;">{{ output }}</span>
+            <span v-for="output in outputs" class="tag is-light mr-1">{{ output }}</span>
         </div>
     </template>
     <template id="event-list-tpl">
         <div>
             <div class="field is-grouped is-grouped-multiline">
                 <div class="control" v-for="[priority, count] in statsArray" :key="priority">
-                    <div class="tags has-addons" @click="filter = priority" style="cursor: pointer;">
+                    <div class="tags has-addons pointer" @click="filter = priority">
                         <span class="tag is-light">{{ count }}</span>
                         <span :class="['tag', 'is-white', colorClass(priority), 'is-capitalized']">{{ priority }}</span>
                     </div>
                 </div>
                 
-                <div class="field" style="margin-left: auto;">
+                <div class="field ml-auto">
                     <p class="control has-icons-right">
                       <input class="input is-small" type="text" placeholder="filter" v-model="filter" ref="filterInput">
-                      <span class="icon is-small is-right" style="cursor: pointer; pointer-events: all;" @click.stop="resetFilter">
+                      <span class="icon is-small is-right pointer" style="pointer-events: all;" @click.stop="resetFilter">
                         <strong class="has-text-grey">X</strong>
                       </span>
                     </p>
@@ -140,7 +156,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="index in filteredEvents">
-                            <td style="font-size: 80%;">
+                            <td class="is-size-7">
                                 {{ index.time }}
                             </td>
                             <td>                                
@@ -149,8 +165,8 @@
                             <td>
                                 <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
                             </td>
-                            <td style="font-size: 80%;">
-                                <p v-html="highlightMatches(index.output)" style="margin-bottom: 15px;" />
+                            <td class="is-size-7">
+                                <p v-html="highlightMatches(index.output)" class="mb-4" />
                                 
                                 <div class="field is-grouped is-grouped-multiline">
                                     <div class="control" v-for="(value, key) in index.output_fields">
