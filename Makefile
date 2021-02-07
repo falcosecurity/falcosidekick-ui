@@ -32,7 +32,7 @@ GOLANGCI_LINT := $(TOOLS_BIN_DIR)/$(GOLANGCI_LINT_BIN)-$(GOLANGCI_LINT_VER)
 
 .PHONY: falcosidekick-ui
 falcosidekick-ui:
-	$(GO) build -gcflags all=-trimpath=/src -asmflags all=-trimpath=/src -a -installsuffix cgo -o $@ .
+	$(GO) build .
 
 .PHONY: build-image
 build-image:
