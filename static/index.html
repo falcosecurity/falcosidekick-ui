@@ -208,8 +208,8 @@
 
                         if (!resp.data.stats) return;
 
-                        Object.keys(resp.data.stats).forEach(type => {
-                            this.stats[type] = resp.data.stats[type]
+                        Object.keys(this.stats).forEach(type => {
+                            this.stats[type] = resp.data.stats[type] || 0
                         });
                     })
                 },
