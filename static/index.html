@@ -23,6 +23,11 @@
         padding-top: 1rem;
     }
 
+    .tag strong {
+        color: inherit;
+        display: contents;
+    }
+
     .tag:not(body).is-white.is-emergency {
         background-color: #e20b0b;
         color: #ffffff;
@@ -60,22 +65,13 @@
         background-color: #ccfff2;
     }
 
-    .table td,
-    .table th {
-        padding-right: 0;
-        padding-left: 0;
-    }
-
     .table {
         margin-top: 12px;
     }
-    .table tbody td {
-        padding: 12px 0;
-    }
 
-    .table tbody td:first-of-type,
-    .table thead th:first-of-type {
-        padding-left: 8px;
+    .table th,
+    .table td {
+        padding: 0.75rem;
     }
 </style>
 
@@ -116,10 +112,10 @@
     <template id="event-list-tpl">
         <div>
             <div class="field is-grouped is-grouped-multiline">
-                <div class="control" v-for="[type, count] in statsArray" :key="type">
-                    <div class="tags has-addons">
+                <div class="control" v-for="[priority, count] in statsArray" :key="priority">
+                    <div class="tags has-addons" @click="filter = priority" style="cursor: pointer;">
                         <span class="tag is-light">{{ count }}</span>
-                        <span :class="['tag', 'is-white', colorClass(type), 'is-capitalized']">{{ type }}</span>
+                        <span :class="['tag', 'is-white', colorClass(priority), 'is-capitalized']">{{ priority }}</span>
                     </div>
                 </div>
                 <div style="float: right;">
@@ -145,16 +141,16 @@
                                 <span :class="['tag', 'is-white', colorClass(index.priority)]" v-html="highlightMatches(index.priority)" />
                             </td>
                             <td>
-                                <span class="tag is-info is-light is-inline-block" v-html="highlightMatches(index.rule)" />
+                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
                             </td>
                             <td style="font-size: 80%;">
-                                <p v-html="highlightMatches(index.output)"style="margin-bottom: 15px;" />
+                                <p v-html="highlightMatches(index.output)" style="margin-bottom: 15px;" />
                                 
                                 <div class="field is-grouped is-grouped-multiline">
                                     <div class="control" v-for="(value, key) in index.output_fields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
-                                            <span class="tag is-info is-light">{{ value }}</span>
+                                            <span class="tag is-info is-light" v-html="highlightMatches(value.toString())" />
                                         </div>
                                     </div>
                                 </div>
@@ -220,7 +216,7 @@
                     if (!matchExists) return text;
 
                     const re = new RegExp(this.filter, 'ig');
-                    return text.replace(re, matchedText => console.log(matchedText) || `<strong>${matchedText}</strong>`);
+                    return text.replace(re, matchedText => `<strong>${matchedText}</strong>`);
                 },
                 colorClass(priority) {
                     return `is-${priority.toLowerCase()}`
@@ -232,12 +228,22 @@
                         .filter(row => {
                             const output = row.output.toLowerCase();
                             const rule = row.rule.toLowerCase();
-                            const priority = row.priority.toLowerCase();
                             const searchTerm = this.filter.toLowerCase();
+                            const priority = row.priority.toLowerCase();
+
+                            const existInFields = Object
+                                .values(row.output_fields)
+                                .some((value) => {
+                                    return value
+                                        .toString()
+                                        .toLowerCase()
+                                        .includes(searchTerm)
+                                })
 
                             return output.includes(searchTerm)
                                 || rule.includes(searchTerm) 
-                                || priority.includes(searchTerm);
+                                || priority.includes(searchTerm)
+                                || existInFields;
                         })
                         .reverse();
                 },
