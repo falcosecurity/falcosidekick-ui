@@ -25,22 +25,22 @@
 
     .tag:not(body).is-white.is-emergency {
         background-color: #e20b0b;
+        color: #ffffff;
     }
 
     .tag:not(body).is-white.is-alert {
         background-color: #ff5400;
+        color: #ffffff;
     }
 
     .tag:not(body).is-white.is-critical {
         background-color: #ff5400;
-    }
-
-    .tag:not(body).is-white.is-critical {
-        background-color: #ff5400;
+        color: #ffffff;
     }
 
     .tag:not(body).is-white.is-error {
         background-color: #e20b0b;
+        color: #ffffff;
     }
 
     .tag:not(body).is-white.is-warning {
@@ -55,6 +55,7 @@
         background-color: #68c2ff;
     }
 
+    .tag:not(body).is-white.is-none,
     .tag:not(body).is-white.is-debug {
         background-color: #ccfff2;
     }
@@ -64,70 +65,61 @@
         padding-right: 0;
         padding-left: 0;
     }
+
+    .table {
+        margin-top: 12px;
+    }
+    .table tbody td {
+        padding: 12px 0;
+    }
+
+    .table tbody td:first-of-type,
+    .table thead th:first-of-type {
+        padding-left: 8px;
+    }
 </style>
 
 <body>
+    <div id="app">
+        <section class="hero is-link is-small">
+            <div class="hero-body">
+                <div class="container">
+                    <img width="6%" style="float: left; margin: 0px 30px 0px 0px;"
+                        src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
+                </div>
+                <div class="container">
+                    <h1 class="title">
+                        Falcosidekick UI
+                    </h1>
+                    <h2 class="subtitle">
+                        Latest Events from Falco
+                    </h2>
+                    <div id="outputs" class="container" style="text-align:left;">
+                        <outputs-list></outputs-list>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <event-list></event-list>
+            </div>
+        </section>
+    </div>
+
     <template id="outputs-list-tpl">
         <div>
             <span>Enabled outputs: </span>
-            <span v-for="index in outputs" class="tag is-light" style="margin-right: 3px;">{{ index }}</span>
+            <span v-for="output in outputs" class="tag is-light" style="margin-right: 3px;">{{ output }}</span>
         </div>
     </template>
     <template id="event-list-tpl">
         <div>
             <div class="field is-grouped is-grouped-multiline">
-                <div class="control">
+                <div class="control" v-for="[type, count] in statsArray" :key="type">
                     <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.emergency }}</span><span
-                            class="tag is-white is-emergency">Emergency</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.alert }}</span><span
-                            class="tag is-white is-alert">Alert</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.critical }}</span><span
-                            class="tag is-white is-critical">Critical</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.error }}</span><span
-                            class="tag is-white is-error">Error</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.warning }}</span><span
-                            class="tag is-white is-warning">Warning</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.notice }}</span><span
-                            class="tag is-white is-notice">Notice</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.informational }}</span><span
-                            class="tag is-white is-informational">Informational</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.debug }}</span><span
-                            class="tag is-white is-debug">Debug</span>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="tags has-addons">
-                        <span class="tag is-light">{{ stats.none }}</span><span
-                            class="tag is-white is-debug">None</span>
+                        <span class="tag is-light">{{ count }}</span>
+                        <span :class="['tag', 'is-white', colorClass(type), 'is-capitalized']">{{ type }}</span>
                     </div>
                 </div>
                 <div style="float: right;">
@@ -135,7 +127,7 @@
                 </div>
             </div>
             <div>
-                <table class="table is-striped">
+                <table class="table is-striped is-fullwidth">
                     <thead>
                         <tr>
                             <th>Time</th>
@@ -145,44 +137,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="index in filteredEvents.slice().reverse()">
+                        <tr v-for="index in filteredEvents">
                             <td style="font-size: 80%;">
                                 {{ index.time }}
                             </td>
-                            <td style="padding-top: 0rem;">
-                                <span class="tag is-white is-emergency" v-if="index.priority === 'Emergency'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-alert" v-if="index.priority === 'Alert'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-critical" v-if="index.priority === 'Critical'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-error" v-if="index.priority==='Error'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-warning" v-if="index.priority === 'Warning'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-notice" v-if="index.priority === 'Notice'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-informational" v-if="index.priority === 'Informational'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
-                                <span class="tag is-white is-debug" v-if="index.priority === 'Debug'"
-                                    v-html="highlightMatches(index.priority)">{{ index.priority }}</span>
+                            <td>                                
+                                <span :class="['tag', 'is-white', colorClass(index.priority)]" v-html="highlightMatches(index.priority)" />
                             </td>
-                            <td style="padding-top: 0rem;">
-                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)">{{ index.rule
-                                    }}</span>
+                            <td>
+                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
                             </td>
                             <td style="font-size: 80%;">
-                                <div style="margin-bottom: 15px;">
-                                    <p v-html="highlightMatches(index.output)">
-                                        {{ index.output }}
-                                    </p>
-                                </div>
+                                <p v-html="highlightMatches(index.output)"style="margin-bottom: 15px;" />
+                                
                                 <div class="field is-grouped is-grouped-multiline">
                                     <div class="control" v-for="(value, key) in index.output_fields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
-                                            <span class="tag is-info is-light">{{ value
-                                                }}</span>
+                                            <span class="tag is-info is-light">{{ value }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +171,7 @@
             template: "#outputs-list-tpl",
             mounted() {
                 axios.get('/events').then(resp => {
-                    this.outputs = resp.data.outputs
+                    this.outputs = resp.data.outputs || []
                 })
             },
             data() {
@@ -212,49 +184,69 @@
     <script>
         Vue.component("event-list", {
             template: "#event-list-tpl",
+            data() {
+                return {
+                    filter: '',
+                    events: [],
+                    stats: {
+                        emergency: 0,
+                        alert: 0,
+                        critical: 0,
+                        error: 0,
+                        warning: 0,
+                        notice: 0,
+                        informational: 0,
+                        debug: 0,
+                        none: 0,
+                    },
+                }
+            },
             methods: {
                 refresh() {
                     axios.get("/events").then(resp => {
-                        this.events = resp.data.events
-                        this.stats = resp.data.stats
-                        this.outputs = resp.data.outputs
+                        this.events = resp.data.events || []
+
+                        if (!resp.data.stats) return;
+
+                        Object.keys(resp.data.stats).forEach(type => {
+                            this.stats[type] = resp.data.stats[type]
+                        });
                     })
                 },
                 highlightMatches(text) {
+                    if (!this.filter) return text;
+
                     const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
                     if (!matchExists) return text;
 
                     const re = new RegExp(this.filter, 'ig');
                     return text.replace(re, matchedText => `<strong>${matchedText}</strong>`);
+                },
+                colorClass(priority) {
+                    return `is-${priority.toLowerCase()}`
                 }
             },
             computed: {
                 filteredEvents() {
-                    return this.events.filter(row => {
-                        const output = row.output.toLowerCase();
-                        const rule = row.rule.toLowerCase();
-                        const priority = row.priority.toLowerCase();
-                        const searchTerm = this.filter.toLowerCase();
+                    return this.events
+                        .filter(row => {
+                            const output = row.output.toLowerCase();
+                            const rule = row.rule.toLowerCase();
+                            const priority = row.priority.toLowerCase();
+                            const searchTerm = this.filter.toLowerCase();
 
-                        return output.includes(searchTerm) ||
-                            rule.includes(searchTerm) || priority.includes(searchTerm);
-                    });
-                }
-            },
-            data() {
-                return {
-                    filter: '',
-                    events: [],
-                    stats: {},
-                    outputs: [],
+                            return output.includes(searchTerm)
+                                || rule.includes(searchTerm) 
+                                || priority.includes(searchTerm);
+                        })
+                        .reverse();
+                },
+                statsArray() {
+                    return Object.entries(this.stats)
                 }
             },
             mounted() {
-                axios.get("/events").then(resp => {
-                    this.events = resp.data.events
-                    this.stats = resp.data.stats
-                    this.outputs = resp.data.outputs
-                })
+                this.refresh()
 
                 this.ws = new WebSocket("ws://" + window.location.host + "/ws");
 
@@ -270,40 +262,9 @@
                 }
             }
         })
-    </script>
-
-    <section class="hero is-link is-small">
-        <div class="hero-body">
-            <div class="container">
-                <img width="6%" style="float: left; margin: 0px 30px 0px 0px;"
-                    src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
-            </div>
-            <div class="container">
-                <h1 class="title">
-                    Falcosidekick UI
-                </h1>
-                <h2 class="subtitle">
-                    Latest Events from Falco
-                </h2>
-                <div id="outputs" class="container" style="text-align:left;">
-                    <outputs-list></outputs-list>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="section">
-        <div class="container">
-            <div id="events">
-                <event-list></event-list>
-            </div>
-        </div>
-    </section>
-    <script>
-        var events = new Vue({
-            el: '#events'
-        });
+        
         var outputs = new Vue({
-            el: '#outputs'
+            el: '#app'
         });
     </script>
 
