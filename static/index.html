@@ -25,6 +25,7 @@
 
     .tag strong {
         color: inherit;
+        display: contents;
     }
 
     .tag:not(body).is-white.is-emergency {
@@ -140,7 +141,7 @@
                                 <span :class="['tag', 'is-white', colorClass(index.priority)]" v-html="highlightMatches(index.priority)" />
                             </td>
                             <td>
-                                <span class="tag is-info is-light is-inline-block" v-html="highlightMatches(index.rule)" />
+                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
                             </td>
                             <td style="font-size: 80%;">
                                 <p v-html="highlightMatches(index.output)" style="margin-bottom: 15px;" />
