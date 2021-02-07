@@ -152,7 +152,7 @@
                             <td style="font-size: 80%;">
                                 <p v-html="highlightMatches(index.output)" style="margin-bottom: 15px;" />
                                 
-                                <div class="field is-grouped is-grouped-multiline">
+                                <div class="field is-grouped is-grouped-multiline" style="max-width: 100%; overflow-x: scroll;">
                                     <div class="control" v-for="(value, key) in index.output_fields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
