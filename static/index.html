@@ -89,7 +89,7 @@
     }
 
     .is-size-7 {
-        font-size: 0.8rem!important;
+        font-size: 0.8rem !important;
     }
 </style>
 
@@ -98,8 +98,9 @@
         <section class="hero is-link is-small">
             <div class="hero-body">
                 <div class="container">
-                    <img class="logo" src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
-                        
+                    <img class="logo"
+                        src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
+
                     <h1 class="title">
                         Falcosidekick UI
                     </h1>
@@ -134,15 +135,17 @@
                         <span :class="['tag', 'is-white', colorClass(priority), 'is-capitalized']">{{ priority }}</span>
                     </div>
                 </div>
-                
+
                 <div class="field ml-auto">
                     <p class="control has-icons-right">
-                      <input class="input is-small" type="text" placeholder="filter" v-model="filter" ref="filterInput">
-                      <span class="icon is-small is-right pointer" style="pointer-events: all;" @click.stop="resetFilter">
-                        <strong class="has-text-grey">X</strong>
-                      </span>
+                        <input class="input is-small" type="text" placeholder="filter" v-model="filter"
+                            ref="filterInput">
+                        <span class="icon is-small is-right pointer" style="pointer-events: all;"
+                            @click.stop="resetFilter">
+                            <strong class="has-text-grey">X</strong>
+                        </span>
                     </p>
-                  </div>
+                </div>
             </div>
             <div class="table-container">
                 <table class="table is-striped">
@@ -159,20 +162,22 @@
                             <td class="is-size-7">
                                 {{ index.time }}
                             </td>
-                            <td>                                
-                                <span :class="['tag', 'is-white', colorClass(index.priority)]" v-html="highlightMatches(index.priority)" />
+                            <td>
+                                <span :class="['tag', 'is-white', colorClass(index.priority)]"
+                                    v-html="highlightMatches(index.priority)" />
                             </td>
                             <td>
                                 <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
                             </td>
                             <td class="is-size-7">
                                 <p v-html="highlightMatches(index.output)" class="mb-4" />
-                                
+
                                 <div class="field is-grouped is-grouped-multiline">
                                     <div class="control" v-for="(value, key) in index.output_fields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
-                                            <span class="tag is-info is-light" v-html="highlightMatches(value.toString())" />
+                                            <span class="tag is-info is-light"
+                                                v-html="highlightMatches(value.toString())" />
                                         </div>
                                     </div>
                                 </div>
@@ -259,7 +264,7 @@
                             const priority = row.priority.toLowerCase();
 
                             const existInFields = Object
-                                .values(row.output_fields)
+                                .values(row.output_fields || {})
                                 .some((value) => {
                                     return value
                                         .toString()
@@ -268,7 +273,7 @@
                                 })
 
                             return output.includes(searchTerm)
-                                || rule.includes(searchTerm) 
+                                || rule.includes(searchTerm)
                                 || priority.includes(searchTerm)
                                 || existInFields;
                         })
@@ -295,7 +300,7 @@
                 }
             }
         })
-        
+
         var outputs = new Vue({
             el: '#app'
         });
