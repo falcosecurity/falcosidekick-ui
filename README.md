@@ -1,6 +1,6 @@
 # Falcosidekick-ui
 
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
+![falcosidekick-ui](https://github.com/Issif/falcosidekick-ui/raw/master/imgs/webui_01.png)
 
 *Disclaimer: This project is a WIP*
 
@@ -10,7 +10,18 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
 
 ## Endpoints
 
-The UI is reachable at `http://localhost:2802/ui` .
+The UI is reachable at `http://localhost:2802/ui`.
+
+## Usage
+
+```shell
+  -a string
+        Listen Address (default "0.0.0.0")
+  -p int
+        Listen Port (default 2802)
+  -r int
+        Number of events to keep in retention (default 50)
+```
 
 ## Development
 
@@ -32,7 +43,8 @@ Full lint:
 make lint-full
 ```
 
-## Author
+## Authors
 
-Thomas Labarussias (https://github.com/Issif)
+* Thomas Labarussias (https://github.com/Issif)
+* Frank Jogeleit (https://github.com/fjogeleit)
 

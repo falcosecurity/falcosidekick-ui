@@ -2,7 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/falcosecurity/falcosidekick/types"
@@ -26,6 +29,7 @@ type eventStore struct {
 var (
 	broadcast chan eventStore
 	store     eventStore
+	retention int
 )
 
 func init() {
@@ -35,15 +39,27 @@ func init() {
 }
 
 func main() {
+	a := flag.String("a", "0.0.0.0", "Listen Address")
+	p := flag.Int("p", 2802, "Listen Port")
+	r := flag.Int("r", 50, "Number of events to keep in retention")
+	flag.Parse()
+
+	if ip := net.ParseIP(*a); ip == nil {
+		log.Fatalf("[ERROR] : Failed to parse Address")
+	}
+
+	retention = *r
+
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/healthz", healthHandler)
 	http.HandleFunc("/events", eventsHandler)
 	http.Handle("/ui", http.StripPrefix("/ui", http.FileServer(http.Dir("./static"))))
 	http.Handle("/ws", websocket.Handler(socket))
 
-	log.Printf("[INFO]  : Falco Sidekick Web UI is up and listening on port 2802\n")
+	log.Printf("[INFO]  : Falco Sidekick Web UI is up and listening on %s:%d\n", *a, *p)
+	log.Printf("[INFO]  : Retention is %d last events\n", retention)
 
-	if err := http.ListenAndServe(":2802", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", *a, *p), nil); err != nil {
 		log.Fatalf("[ERROR] : %v\n", err.Error())
 	}
 }
@@ -70,7 +86,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	store.Outputs = e.Outputs
-	if len(store.Events) > 49 {
+	if len(store.Events) >= retention {
 		store.Events = append(store.Events[1:len(store.Events)-1], e.Event)
 	} else {
 		store.Events = append(store.Events, e.Event)
