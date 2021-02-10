@@ -10,7 +10,18 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
 
 ## Endpoints
 
-The UI is reachable at `http://localhost:2802/ui` .
+The UI is reachable at `http://localhost:2802/ui`.
+
+## Usage
+
+```shell
+  -a string
+        Listen Address (default "0.0.0.0")
+  -p int
+        Listen Port (default 2802)
+  -r int
+        Number of events to keep in retention (default 50)
+```
 
 ## Development
 
@@ -34,6 +45,6 @@ make lint-full
 
 ## Authors
 
-Thomas Labarussias (https://github.com/Issif)
-Frank Jogeleit (https://github.com/fjogeleit)
+* Thomas Labarussias (https://github.com/Issif)
+* Frank Jogeleit (https://github.com/fjogeleit)
 
