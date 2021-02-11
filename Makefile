@@ -36,7 +36,7 @@ falcosidekick-ui:
 
 .PHONY: build-image
 build-image:
-	$(DOCKER) build . -t issif/falcosidekick-ui:latest
+	$(DOCKER) build . -t falcosecurity/falcosidekick-ui:latest
 
 ## --------------------------------------
 ## Test

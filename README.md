@@ -1,6 +1,6 @@
 # Falcosidekick-ui
 
-![falcosidekick-ui](https://github.com/Issif/falcosidekick-ui/raw/master/imgs/webui_01.png)
+![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
 
 *Disclaimer: This project is a WIP*
 

@@ -1,4 +1,4 @@
-module github.com/Issif/falcosidekick-ui
+module github.com/falcosecurity/falcosidekick-ui
 
 go 1.15
 
