@@ -107,7 +107,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	// #nosec G104 nothing to be done if the following fails
+	// nolint: errcheck
 	w.Write([]byte(`{"status": "ok"}`))
 }
 
@@ -115,7 +115,7 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	s, _ := json.Marshal(store)
 
-	// #nosec G104 nothing to be done if the following fails
+	// nolint: errcheck
 	w.Write(s)
 }
 
