@@ -173,11 +173,10 @@
                                 <p v-html="highlightMatches(index.output)" class="mb-4" />
 
                                 <div class="field is-grouped is-grouped-multiline">
-                                    <div class="control" v-for="(value, key) in index.output_fields">
+                                    <div class="control" v-for="(value, key) in index.outputFields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
-                                            <span class="tag is-info is-light"
-                                                v-html="highlightMatches(value.toString())" />
+                                            <span class="tag is-info is-light" v-html="highlightMatches(value)" />
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +226,16 @@
             methods: {
                 refresh() {
                     axios.get("/events").then(resp => {
-                        this.events = resp.data.events || []
+                        this.events = (resp.data.events || []).map(({ output_fields, ...event }) => {
+                            for (field in (output_fields || {})) {
+                                output_fields[field] = new String(output_fields[field])
+                            }
+
+                            return {
+                                ...event,
+                                outputFields: output_fields
+                            }
+                        })
 
                         if (!resp.data.stats) return;
 
@@ -264,10 +272,9 @@
                             const priority = row.priority.toLowerCase();
 
                             const existInFields = Object
-                                .values(row.output_fields || {})
+                                .values(row.outputFields)
                                 .some((value) => {
                                     return value
-                                        .toString()
                                         .toLowerCase()
                                         .includes(searchTerm)
                                 })
