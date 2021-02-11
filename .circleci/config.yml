@@ -1,0 +1,61 @@
+version: 2.1
+executors:
+  default:
+    docker:
+      - image: circleci/golang:1.15.5
+
+jobs:
+  lint:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - run: make lint
+
+  test:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - run: make test
+
+  build-image:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: make build-image
+
+  build-push-main:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: make build-image
+      - run:
+          command: |
+            echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
+            docker push falcosecurity/falcosidekick-ui:latest
+
+workflows:
+  main:
+    jobs:
+      - test
+      - lint
+      - build-image:
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              ignore: master
+      - build-push-main:
+          context: falco
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              only: master
