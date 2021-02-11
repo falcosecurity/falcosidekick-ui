@@ -227,7 +227,7 @@
                 refresh() {
                     axios.get("/events").then(resp => {
                         this.events = (resp.data.events || []).map(({ output_fields, ...event }) => {
-                            for (field in output_fields) {
+                            for (field in (output_fields || {})) {
                                 output_fields[field] = new String(output_fields[field])
                             }
 
