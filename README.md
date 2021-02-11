@@ -1,18 +1,17 @@
 # Falcosidekick-ui
 
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
+![release](https://flat.badgen.net/github/release/falcosecurity/falcosidekick-ui/latest?color=green) ![last commit](https://flat.badgen.net/github/last-commit/falcosecurity/falcosidekick-ui) ![licence](https://flat.badgen.net/badge/license/Apache/blue) ![docker pulls](https://flat.badgen.net/docker/pulls/falcosecurity/falcosidekick-ui?icon=docker) [![falcosidekick-ui](https://circleci.com/gh/falcosecurity/falcosidekick-ui.svg?style=shield)](https://circleci.com/gh/falcosecurity/falcosidekick-ui)
 
-*Disclaimer: This project is a WIP*
+![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
 
 ## Description
 
 A simple WebUI for displaying latest events from [Falco](https://falco.org). It works as output for [Falcosidekick](https://github.com/falcosecurity/falcosidekick).
 
-## Endpoints
-
-The UI is reachable at `http://localhost:2802/ui`.
 
 ## Usage
+
+### Options
 
 ```shell
   -a string
@@ -22,6 +21,28 @@ The UI is reachable at `http://localhost:2802/ui`.
   -r int
         Number of events to keep in retention (default 50)
 ```
+
+### Run with docker
+
+```shell
+docker run -d falcosecurity/falcosidekick-ui -p 2802:2802
+```
+
+### Run
+
+```
+git clone https://github.com/falcosecurity/falcosidekick-ui.git
+cd ./falcosidekick-ui
+
+go run main.go
+#or
+make falcosidekick-ui && ./falcosidekick-ui
+
+```
+
+### Endpoint
+
+The UI is reachable by default at `http://localhost:2802/ui`.
 
 ## Development
 
