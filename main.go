@@ -107,16 +107,16 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	// fixme(leogr): error discarded to suppress the lint check
-	_, _ = w.Write([]byte(`{"status": "ok"}`))
+	// #nosec G104 nothing to be done if the following fails
+	w.Write([]byte(`{"status": "ok"}`))
 }
 
 func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	s, _ := json.Marshal(store)
 
-	// fixme(leogr): error discarded to suppress the lint check
-	_, _ = w.Write(s)
+	// #nosec G104 nothing to be done if the following fails
+	w.Write(s)
 }
 
 func socket(ws *websocket.Conn) {
