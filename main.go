@@ -106,13 +106,17 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 // healthHandler is a simple handler to test if daemon is UP.
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	w.Write([]byte(`{"status": "ok"}`))
+
+	// fixme(leogr): error discarded to suppress the lint check
+	_, _ = w.Write([]byte(`{"status": "ok"}`))
 }
 
 func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	s, _ := json.Marshal(store)
-	w.Write(s)
+
+	// fixme(leogr): error discarded to suppress the lint check
+	_, _ = w.Write(s)
 }
 
 func socket(ws *websocket.Conn) {
