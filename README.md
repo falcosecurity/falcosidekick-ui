@@ -25,7 +25,7 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
 ### Run with docker
 
 ```shell
-docker run -d falcosecurity/falcosidekick-ui -p 2802:2802
+docker run -d -p 2802:2802 falcosecurity/falcosidekick-ui 
 ```
 
 ### Run
