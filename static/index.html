@@ -78,6 +78,8 @@
         margin: 0px 30px 0px 0px;
         float: left;
         width: 6%;
+        max-height: 81px;
+        max-width: 81px;
     }
 
     .ml-auto {
@@ -91,13 +93,24 @@
     .is-size-7 {
         font-size: 0.8rem !important;
     }
+
+    .message {
+        display: inline-block; 
+        border: 1px solid #efefef;
+    }
+
+    .message.is-info > .message-header {
+        background-color: #f5f5f5; 
+        color: rgba(0,0,0,.7); 
+        font-weight: normal;
+    }
 </style>
 
 <body>
     <div id="app">
         <section class="hero is-link is-small">
             <div class="hero-body">
-                <div class="container">
+                <div class="container is-fluid">
                     <img class="logo"
                         src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png">
 
@@ -108,7 +121,7 @@
                         Latest Events from Falco
                     </h2>
                 </div>
-                <div class="container">
+                <div class="container is-fluid">
                     <outputs-list></outputs-list>
                 </div>
             </div>
@@ -173,12 +186,19 @@
                                 <p v-html="highlightMatches(index.output)" class="mb-4" />
 
                                 <div class="field is-grouped is-grouped-multiline">
-                                    <div class="control" v-for="(value, key) in index.outputFields">
+                                    <div class="control" v-for="(value, key) in index.smallFields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
                                             <span class="tag is-info is-light" v-html="highlightMatches(value)" />
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="message is-small is-info mr-4" v-for="(value, key) in index.bigFields">
+                                    <div class="message-header py-1 px-2">
+                                        <p>{{ key }}</p>
+                                    </div>
+                                    <div class="message-body py-1 px-2" v-html="highlightMatches(value)" />
                                 </div>
                             </td>
                         </tr>
@@ -227,13 +247,24 @@
                 refresh() {
                     axios.get("/events").then(resp => {
                         this.events = (resp.data.events || []).map(({ output_fields, ...event }) => {
+                            const smallFields = {}
+                            const bigFields = {}
+
                             for (field in (output_fields || {})) {
                                 output_fields[field] = new String(output_fields[field])
+
+                                if (output_fields[field].length > 100) {
+                                    bigFields[field] = output_fields[field]
+                                } else {
+                                    smallFields[field] = output_fields[field]
+                                }
                             }
 
                             return {
                                 ...event,
-                                outputFields: output_fields
+                                outputFields: output_fields || {},
+                                smallFields,
+                                bigFields
                             }
                         })
 
