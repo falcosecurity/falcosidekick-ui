@@ -149,7 +149,13 @@
                     </div>
                 </div>
 
-                <div class="field ml-auto">
+                <div class="select ml-auto mr-2 is-small">
+                    <select v-model="time">
+                        <option :value="null">time range</option>
+                        <option v-for="filter in timeFilters" :value="filter.value" :key="filter.label">{{ filter.label }}</option>
+                    </select>
+                </div>
+                <div class="field">
                     <p class="control has-icons-right">
                         <input class="input is-small" type="text" placeholder="filter" v-model="filter"
                             ref="filterInput">
@@ -194,7 +200,7 @@
                                     </div>
                                 </div>
 
-                                <div class="message is-small is-info mr-4" v-for="(value, key) in index.bigFields">
+                                <div class="message is-small is-info mr-4" v-for="(value, key) in index.largeFields">
                                     <div class="message-header py-1 px-2">
                                         <p>{{ key }}</p>
                                     </div>
@@ -229,6 +235,41 @@
             data() {
                 return {
                     filter: '',
+                    time: null,
+                    timeFilters: [
+                        { 
+                            label: 'last 15 minutes',
+                            value: this.timeToSecondsInMilliseconds(new Date().setMinutes(new Date().getMinutes() - 15))
+                        },
+                        { 
+                            label: 'last 30 minutes',
+                            value: this.timeToSecondsInMilliseconds(new Date().setMinutes(new Date().getMinutes() - 30))
+                        },
+                        { 
+                            label: 'last hour',
+                            value: this.timeToSecondsInMilliseconds(new Date().setHours(new Date().getHours() - 1))
+                        },
+                        { 
+                            label: 'last 6 hours',
+                            value: this.timeToSecondsInMilliseconds(new Date().setHours(new Date().getHours() - 6))
+                        },
+                        { 
+                            label: 'last 12 hours',
+                            value: this.timeToSecondsInMilliseconds(new Date().setHours(new Date().getHours() - 12))
+                        },
+                        { 
+                            label: 'last 24 hours',
+                            value: this.timeToSecondsInMilliseconds(new Date().setHours(new Date().getHours() - 24))
+                        },
+                        { 
+                            label: 'last 2 days',
+                            value: this.timeToSecondsInMilliseconds(new Date().setDate(new Date().getDate() - 2))
+                        },
+                        { 
+                            label: 'last 7 days',
+                            value: this.timeToSecondsInMilliseconds(new Date().setDate(new Date().getDate() - 7))
+                        },
+                    ],
                     events: [],
                     stats: {
                         emergency: 0,
@@ -248,13 +289,13 @@
                     axios.get("/events").then(resp => {
                         this.events = (resp.data.events || []).map(({ output_fields, ...event }) => {
                             const smallFields = {}
-                            const bigFields = {}
+                            const largeFields = {}
 
                             for (field in (output_fields || {})) {
                                 output_fields[field] = new String(output_fields[field])
 
                                 if (output_fields[field].length > 100) {
-                                    bigFields[field] = output_fields[field]
+                                    largeFields[field] = output_fields[field]
                                 } else {
                                     smallFields[field] = output_fields[field]
                                 }
@@ -264,7 +305,8 @@
                                 ...event,
                                 outputFields: output_fields || {},
                                 smallFields,
-                                bigFields
+                                largeFields,
+                                filterTime: this.timeToSecondsInMilliseconds(event.time)
                             }
                         })
 
@@ -291,6 +333,9 @@
                     this.filter = ''
 
                     this.$refs.filterInput.focus()
+                },
+                timeToSecondsInMilliseconds(time) {
+                    return Math.floor((new Date(time)).getTime() / 1000000) * 1000000
                 }
             },
             computed: {
@@ -310,10 +355,18 @@
                                         .includes(searchTerm)
                                 })
 
-                            return output.includes(searchTerm)
+                            termFilter = output.includes(searchTerm)
                                 || rule.includes(searchTerm)
                                 || priority.includes(searchTerm)
                                 || existInFields;
+
+                            timeFilter = true
+
+                            if (this.time) {
+                                timeFilter = row.filterTime >= this.time
+                            }
+
+                            return termFilter && timeFilter
                         })
                         .reverse();
                 },
