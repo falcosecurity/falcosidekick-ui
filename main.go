@@ -41,7 +41,7 @@ func init() {
 func main() {
 	a := flag.String("a", "0.0.0.0", "Listen Address")
 	p := flag.Int("p", 2802, "Listen Port")
-	r := flag.Int("r", 50, "Number of events to keep in retention")
+	r := flag.Int("r", 200, "Number of events to keep in retention")
 	flag.Parse()
 
 	if ip := net.ParseIP(*a); ip == nil {
