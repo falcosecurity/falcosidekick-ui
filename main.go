@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 
 	"github.com/falcosecurity/falcosidekick/types"
 	"golang.org/x/net/websocket"
@@ -30,12 +31,14 @@ var (
 	broadcast chan eventStore
 	store     eventStore
 	retention int
+	mutex     *sync.RWMutex
 )
 
 func init() {
 	broadcast = make(chan eventStore, 20)
 	store.statsByUUID = make(map[string]map[string]int64)
 	store.Stats = make(map[string]int64)
+	mutex = &sync.RWMutex{}
 }
 
 func main() {
@@ -85,6 +88,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mutex.Lock()
 	store.Outputs = e.Outputs
 	if len(store.Events) >= retention {
 		store.Events = append(store.Events[1:len(store.Events)-1], e.Event)
@@ -92,13 +96,19 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		store.Events = append(store.Events, e.Event)
 	}
 	store.statsByUUID[e.UUID] = e.Stats
+	mutex.Unlock()
+
 	temp := make(map[string]int64)
+	mutex.RLock()
 	for _, i := range store.statsByUUID {
 		for j, k := range i {
 			temp[j] += k
 		}
 	}
+	mutex.RUnlock()
+	mutex.Lock()
 	store.Stats = temp
+	mutex.Unlock()
 
 	broadcast <- store
 }
