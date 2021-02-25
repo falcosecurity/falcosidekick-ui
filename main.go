@@ -104,7 +104,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	for _, i := range store.statsByUUID {
 		for j, k := range i {
 			temp[j] += k
-			temp["Total"] += k
+			temp["total"] += k
 		}
 	}
 	mutex.RUnlock()
