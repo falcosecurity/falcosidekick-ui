@@ -25,6 +25,7 @@ type eventStore struct {
 	Events      []types.FalcoPayload `json:"events,omitempty"`
 	Stats       map[string]int64     `json:"stats,omitempty"`
 	Outputs     []string             `json:"outputs,omitempty"`
+	Retention   int                  `json:"retention,omitempty"`
 }
 
 var (
@@ -51,7 +52,7 @@ func main() {
 		log.Fatalf("[ERROR] : Failed to parse Address")
 	}
 
-	retention = *r
+	store.Retention = *r
 
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/healthz", healthHandler)
@@ -60,7 +61,7 @@ func main() {
 	http.Handle("/ws", websocket.Handler(socket))
 
 	log.Printf("[INFO]  : Falco Sidekick Web UI is up and listening on %s:%d\n", *a, *p)
-	log.Printf("[INFO]  : Retention is %d last events\n", retention)
+	log.Printf("[INFO]  : Retention is %d last events\n", store.Retention)
 
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", *a, *p), nil); err != nil {
 		log.Fatalf("[ERROR] : %v\n", err.Error())
@@ -90,7 +91,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	mutex.Lock()
 	store.Outputs = e.Outputs
-	if len(store.Events) >= retention {
+	if len(store.Events) >= store.Retention {
 		store.Events = append(store.Events[1:len(store.Events)-1], e.Event)
 	} else {
 		store.Events = append(store.Events, e.Event)
@@ -103,6 +104,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	for _, i := range store.statsByUUID {
 		for j, k := range i {
 			temp[j] += k
+			temp["Total"] += k
 		}
 	}
 	mutex.RUnlock()
