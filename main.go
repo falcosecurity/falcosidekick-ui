@@ -31,7 +31,6 @@ type eventStore struct {
 var (
 	broadcast chan eventStore
 	store     eventStore
-	retention int
 	mutex     *sync.RWMutex
 )
 
