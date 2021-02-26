@@ -19,7 +19,7 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
   -p int
         Listen Port (default 2802)
   -r int
-        Number of events to keep in retention (default 50)
+        Number of events to keep in retention (default 200)
 ```
 
 ### Run with docker
