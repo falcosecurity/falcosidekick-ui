@@ -190,11 +190,12 @@
                                 {{ index.time }}
                             </td>
                             <td>
-                                <span :class="['tag', 'is-white', colorClass(index.priority)]"
-                                    v-html="highlightMatches(index.priority)" />
+                                <span :class="['tag', 'is-white', colorClass(index.priority), 'pointer']"
+                                    v-html="highlightMatches(index.priority)" @click="filter = index.priority" />
                             </td>
                             <td>
-                                <span class="tag is-info is-light" v-html="highlightMatches(index.rule)" />
+                                <span class="tag is-info is-light pointer" v-html="highlightMatches(index.rule)"
+                                    @click="filter = index.rule" />
                             </td>
                             <td class="is-size-7">
                                 <p v-html="highlightMatches(index.output)" class="mb-4" />
@@ -203,7 +204,8 @@
                                     <div class="control" v-for="(value, key) in index.smallFields">
                                         <div class="tags has-addons">
                                             <span class="tag is-light">{{ key }}</span>
-                                            <span class="tag is-info is-light" v-html="highlightMatches(value)" />
+                                            <span class="tag is-info is-light pointer" v-html="highlightMatches(value)"
+                                                @click="filter = value" />
                                         </div>
                                     </div>
                                 </div>
