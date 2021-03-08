@@ -214,7 +214,8 @@
                                     <div class="message-header py-1 px-2">
                                         <p>{{ key }}</p>
                                     </div>
-                                    <div class="message-body py-1 px-2" v-html="highlightMatches(value)" />
+                                    <div class="message-body py-1 px-2 pointer" v-html="highlightMatches(value)"
+                                        @click="filter = value" />
                                 </div>
                             </td>
                         </tr>
