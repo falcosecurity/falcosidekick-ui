@@ -24,11 +24,12 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
     extra_files:
-      - cmd
-      - pkg
+      - static
+      - main.go
       - go.mod
       - go.sum
       - Makefile
+      - LICENSE
 
 release:
   github:

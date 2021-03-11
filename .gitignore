@@ -19,4 +19,5 @@ falcosidekick-ui
 /hack/tools/bin/*
 
 tmp/
-.DS_Store 
+.DS_Store
+dist/
