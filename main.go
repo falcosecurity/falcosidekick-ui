@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -34,6 +36,9 @@ var (
 	mutex     *sync.RWMutex
 )
 
+//go:embed dist
+var frontend embed.FS
+
 func init() {
 	broadcast = make(chan eventStore, 20)
 	store.statsByUUID = make(map[string]map[string]int64)
@@ -53,11 +58,16 @@ func main() {
 
 	store.Retention = *r
 
-	http.HandleFunc("/", mainHandler)
+	fsys, err := fs.Sub(frontend, "dist")
+	if err != nil {
+		log.Fatalf("[ERROR] : Failed to read dist folder")
+	}
+
+	http.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(http.FS(fsys))))
 	http.HandleFunc("/healthz", healthHandler)
 	http.HandleFunc("/events", eventsHandler)
-	http.Handle("/ui", http.StripPrefix("/ui", http.FileServer(http.Dir("./static"))))
 	http.Handle("/ws", websocket.Handler(socket))
+	http.HandleFunc("/", mainHandler)
 
 	log.Printf("[INFO]  : Falco Sidekick Web UI is up and listening on %s:%d\n", *a, *p)
 	log.Printf("[INFO]  : Retention is %d last events\n", store.Retention)
@@ -115,14 +125,15 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // healthHandler is a simple handler to test if daemon is UP.
-func healthHandler(w http.ResponseWriter, r *http.Request) {
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
 	// nolint: errcheck
 	w.Write([]byte(`{"status": "ok"}`))
 }
 
-func eventsHandler(w http.ResponseWriter, r *http.Request) {
+func eventsHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Type", "application/json")
 	s, _ := json.Marshal(store)
 
