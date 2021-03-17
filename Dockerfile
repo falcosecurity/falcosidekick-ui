@@ -1,5 +1,20 @@
 ARG BUILDER_IMAGE=golang:1.16.1
+ARG FRONTEND_IMAGE=node:14-alpine
 ARG BASE_IMAGE=alpine:3.13
+
+FROM ${FRONTEND_IMAGE} as frontend-stage
+
+WORKDIR /src
+
+RUN apk add --no-cache --virtual .gyp make g++ \
+    && npm set progress=false \
+    && npm config set depth 0
+
+COPY frontend frontend
+
+RUN cd frontend \
+    && npm install \
+    && npm run build
 
 FROM ${BUILDER_IMAGE} AS build-stage
 
@@ -7,6 +22,7 @@ ENV CGO_ENABLED=0
 
 WORKDIR /src
 COPY . .
+COPY --from=frontend-stage /src/dist dist
 
 RUN go mod download
 RUN make falcosidekick-ui
@@ -26,7 +42,6 @@ USER 1234
 WORKDIR /app
 COPY --from=build-stage /src/LICENSE .
 COPY --from=build-stage /src/falcosidekick-ui .
-COPY static/ static
 
 EXPOSE 2802
 
