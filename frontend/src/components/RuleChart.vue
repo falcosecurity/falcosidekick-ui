@@ -6,12 +6,15 @@
     <v-card-text>
       <apexchart type="bar" height="350" :options="chart.chartOptions" :series="chart.series"></apexchart>
     </v-card-text>
+
+    <event-overlay v-model="selectedEvents" />
   </v-card>
 </template>
 
 <script lang="ts">
 import { FalcoEvent } from '@/api/model'
 import Vue, { PropType } from 'vue'
+import EventOverlay from './EventOverlay.vue'
 
 type Props = {
   time: number|null;
@@ -20,6 +23,11 @@ type Props = {
 
 type Computed = {
   chart: any;
+}
+
+type Data = {
+  selectedEvents: FalcoEvent[];
+  eventsPerRule: { [rule: string]: FalcoEvent[] };
   rules: { [rule: string]: number };
 }
 
@@ -39,33 +47,51 @@ const convertLabel = (label: string) => label
   }, [])
   .map<string>((labelPrts) => labelPrts.join(' '))
 
-export default Vue.extend<{}, {}, Computed, Props>({
+export default Vue.extend<Data, {}, Computed, Props>({
+  components: { EventOverlay },
   name: 'RuleChart',
   props: {
     events: { type: Array as PropType<FalcoEvent[]>, required: true },
     time: { type: Number }
   },
+  data: () => ({
+    selectedEvents: [],
+    eventsPerRule: {},
+    rules: {}
+  }),
+  watch: {
+    events: {
+      immediate: true,
+      handler (events: FalcoEvent[]) {
+        const rules: { [rule: string]: number } = {}
+        const eventsPerRule: { [rule: string]: FalcoEvent[] } = {}
+
+        events.forEach((event) => {
+          if (Object.prototype.hasOwnProperty.call(rules, event.rule) === false) {
+            rules[event.rule] = 0
+            eventsPerRule[event.rule] = []
+          }
+
+          rules[event.rule] += 1
+          eventsPerRule[event.rule].push(event)
+
+          return rules
+        })
+
+        this.rules = Object.keys(rules).sort().reduce<{ [rule: string]: number }>((acc, rule) => {
+          acc[rule] = rules[rule]
+
+          return acc
+        }, {})
+
+        this.eventsPerRule = eventsPerRule
+      }
+    }
+  },
   computed: {
-    rules () {
-      const unsorted = this.events.reduce<{ [rule: string]: number }>((acc, event) => {
-        if (Object.prototype.hasOwnProperty.call(acc, event.rule) === false) {
-          acc[event.rule] = 0
-        }
-
-        acc[event.rule] += 1
-
-        return acc
-      }, {})
-
-      const sorted = Object.keys(unsorted).sort().reduce<{ [rule: string]: number }>((acc, rule) => {
-        acc[rule] = unsorted[rule]
-
-        return acc
-      }, {})
-
-      return sorted
-    },
     chart () {
+      const labels = Object.keys(this.rules)
+
       return {
         series: [{
           name: 'Counter',
@@ -78,12 +104,28 @@ export default Vue.extend<{}, {}, Computed, Props>({
             toolbar: {
               show: false
             },
+            selection: {
+              enabled: false
+            },
             zoom: {
               enabled: false
+            },
+            events: {
+              dataPointSelection: (_: any, __: any, config: { dataPointIndex: number }) => {
+                this.selectedEvents = [...this.eventsPerRule[labels[config.dataPointIndex]]]
+              }
             }
           },
           dataLabels: {
             enabled: false
+          },
+          states: {
+            active: {
+              allowMultipleDataPointsSelection: false,
+              filter: {
+                type: 'none'
+              }
+            }
           },
           xaxis: {
             labels: {

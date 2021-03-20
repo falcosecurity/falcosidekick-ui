@@ -8,6 +8,8 @@
         <apexchart type="bar" :height="height" :options="chart" :series="series"></apexchart>
       </wait>
     </v-card-text>
+
+    <event-overlay v-model="selectedEvents" />
   </v-card>
 </template>
 
@@ -18,6 +20,8 @@ import { FalcoEvent, Priority } from '@/api/model'
 import { calculateStart, timeline } from '@/helper/time'
 import Vue, { PropType } from 'vue'
 import Wait from './Wait.vue'
+import { ApexOptions } from 'apexcharts'
+import EventOverlay from './EventOverlay.vue'
 
 type Props = {
   time: number|null;
@@ -26,8 +30,6 @@ type Props = {
 
 type Computed = {
   chart: any;
-  series: Serie[];
-  categories: HistoryCategories;
 }
 
 type Data = {
@@ -36,10 +38,14 @@ type Data = {
   steps: number;
   height: number;
   range: number;
+  series: Serie[];
+  categories: HistoryCategories;
+  selectedEvents: FalcoEvent[];
+  eventsPerBucket: { [priority: string]: { [atep: number]: FalcoEvent[] } };
 }
 
 export default Vue.extend<Data, {}, Computed, Props>({
-  components: { Wait },
+  components: { Wait, EventOverlay },
   name: 'PriorityTimeChart',
   props: {
     events: { type: Array as PropType<FalcoEvent[]>, required: true },
@@ -53,56 +59,68 @@ export default Vue.extend<Data, {}, Computed, Props>({
       steps,
       start,
       stepSize,
-      height: 400
+      height: 400,
+      series: [],
+      selectedEvents: [],
+      eventsPerBucket: {},
+      categories: []
     }
   },
   watch: {
-    events () {
-      this.start = calculateStart(this.range, this.stepSize)
+    events: {
+      immediate: true,
+      handler (events: FalcoEvent[]) {
+        const start = calculateStart(this.range, this.stepSize)
+
+        const categories = Array.from(Array(this.steps).keys()).reduce<HistoryCategories>((acc, step) => {
+          const time = start + ((step + 1) * this.stepSize)
+          let label = (new Date(time)).toISOString().replace('T', ' ').slice(0, -5)
+
+          if (this.range >= 60 * 60000) {
+            label = `${label.slice(0, -2)}00`
+          }
+
+          acc.push({ time, label })
+
+          return acc
+        }, [])
+
+        const eventsPerBucket: { [priority: string]: FalcoEvent[][] } = {}
+        const series: { [priority: string ]: Serie } = {}
+
+        Object.keys(initStats()).forEach((priority) => {
+          series[priority] = { name: priority, data: [...Array(this.steps).keys()].map(() => 0) }
+          eventsPerBucket[priority] = [...Array(this.steps).keys()].map(() => [])
+        })
+
+        events.forEach((event) => {
+          if (event.filterTime < this.start) {
+            return
+          }
+
+          for (const index in categories) {
+            if (categories[(+index) + 1] && event.filterTime < categories[(+index) + 1].time) {
+              series[event.priority].data[index] += 1
+              eventsPerBucket[event.priority][index].push(event)
+              return
+            }
+          }
+
+          series[event.priority].data[this.steps - 1] += 1
+          eventsPerBucket[event.priority][this.steps - 1].push(event)
+        })
+
+        this.series = Object.values(series).reverse()
+        this.eventsPerBucket = eventsPerBucket
+        this.categories = categories
+        this.start = start
+      }
     }
   },
   computed: {
-    categories () {
-      return Array.from(Array(this.steps).keys()).reduce<HistoryCategories>((acc, step) => {
-        const time = this.start + ((step + 1) * this.stepSize)
-        let label = (new Date(time)).toISOString().replace('T', ' ').slice(0, -5)
+    chart (): ApexOptions {
+      const labels = this.series.map(serie => serie.name)
 
-        if (this.range >= 60 * 60000) {
-          label = `${label.slice(0, -2)}00`
-        }
-
-        acc.push({ time, label })
-
-        return acc
-      }, [])
-    },
-    series () {
-      const init = Object.keys(initStats()).reduce<{ [prioriry: string ]: Serie }>((acc, priority) => {
-        acc[priority] = { name: priority, data: [...Array(this.steps).keys()].map(() => 0) }
-
-        return acc
-      }, {})
-
-      const result: { [rule: string ]: Serie } = this.events.reduce<{ [priority: string ]: Serie }>((acc, event) => {
-        if (event.filterTime < this.start) {
-          return acc
-        }
-
-        for (const index in this.categories) {
-          if (this.categories[(+index) + 1] && event.filterTime < this.categories[(+index) + 1].time) {
-            acc[event.priority].data[index] += 1
-            return acc
-          }
-        }
-
-        acc[event.priority].data[this.steps - 1] += 1
-
-        return acc
-      }, init)
-
-      return Object.values(result).reverse()
-    },
-    chart () {
       return {
         chart: {
           type: 'bar',
@@ -110,12 +128,27 @@ export default Vue.extend<Data, {}, Computed, Props>({
           stacked: true,
           toolbar: {
             show: false
+          },
+          events: {
+            dataPointSelection: (_: any, __: any, config: { dataPointIndex: number; seriesIndex: number }) => {
+              const priority = labels[config.seriesIndex]
+
+              this.selectedEvents = [...this.eventsPerBucket[priority][config.dataPointIndex]]
+            }
           }
         },
         colors: this.series.map(serie => colorCodes[serie.name as Priority]),
         plotOptions: {
           bar: {
             horizontal: false
+          }
+        },
+        states: {
+          active: {
+            allowMultipleDataPointsSelection: false,
+            filter: {
+              type: 'none'
+            }
           }
         },
         xaxis: {
