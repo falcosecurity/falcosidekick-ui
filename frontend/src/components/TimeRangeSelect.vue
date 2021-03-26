@@ -1,16 +1,16 @@
 <template>
-  <v-select
-    outlined
-    hide-details
-    dense
-    label="Timerange"
-    item-value="value"
-    item-text="label"
-    :items="options"
-    clearable
-    v-bind="$attrs"
-    v-on="$listeners"
-  />
+    <v-select
+      outlined
+      hide-details
+      dense
+      label="Timerange"
+      item-value="value"
+      item-text="label"
+      :items="options"
+      clearable
+      v-bind="$attrs"
+      v-on="$listeners"
+    />
 </template>
 
 <script lang="ts">
@@ -23,7 +23,7 @@ interface BuilderConfig {
   days: number[];
 }
 
-type BuilderConfigKeys = 'minutes' | 'hours' | 'days'
+type BuilderConfigKeys = 'seconds' | 'minutes' | 'hours' | 'days'
 
 interface Option {
   label: string;
