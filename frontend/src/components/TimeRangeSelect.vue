@@ -17,12 +17,13 @@
 import Vue from 'vue'
 
 interface BuilderConfig {
-  minutes?: number[];
-  hours?: number[];
-  days?: number[];
+  seconds: number[];
+  minutes: number[];
+  hours: number[];
+  days: number[];
 }
 
-type BuilderConfigKeys = 'minutes' | 'hours' | 'days';
+type BuilderConfigKeys = 'minutes' | 'hours' | 'days'
 
 interface Option {
   label: string;
@@ -38,40 +39,7 @@ export default Vue.extend({
         hours: [1, 6, 12, 24],
         days: [2, 7]
       },
-      options: [
-        {
-          label: 'last 15 minutes',
-          value: 15 * 60000
-        },
-        {
-          label: 'last 30 minutes',
-          value: 30 * 60000
-        },
-        {
-          label: 'last hour',
-          value: 60 * 60000
-        },
-        {
-          label: 'last 6 hours',
-          value: 6 * 60 * 60000
-        },
-        {
-          label: 'last 12 hours',
-          value: 12 * 60 * 60000
-        },
-        {
-          label: 'last 24 hours',
-          value: 24 * 60 * 60000
-        },
-        {
-          label: 'last 2 days',
-          value: 2 * 24 * 60 * 60000
-        },
-        {
-          label: 'last 7 days',
-          value: 7 * 24 * 60 * 60000
-        }
-      ]
+      options: [] as Option[]
     }
   },
   created () {
@@ -89,9 +57,7 @@ export default Vue.extend({
 
       return (Object.keys(config) as BuilderConfigKeys[]).reduce(
         (accumulator: Option[], current) => {
-          if (!config[current]) return accumulator
-
-          const timeFilters: Option[] = config[current]!.map((time: number) => {
+          const timeFilters: Option[] = config[current].map((time: number) => {
             let label = `last ${time === 1 ? '' : `${time} `}${current}`
             if (time === 1) label = label.substr(0, label.length - 1)
 
