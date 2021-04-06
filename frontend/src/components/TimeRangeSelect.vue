@@ -35,10 +35,11 @@ export default Vue.extend({
   data () {
     return {
       builderConfig: {
+        seconds: [],
         minutes: [15, 30],
         hours: [1, 6, 12, 24],
         days: [2, 7]
-      },
+      } as BuilderConfig,
       options: [] as Option[]
     }
   },
@@ -48,6 +49,7 @@ export default Vue.extend({
   methods: {
     buildTimeFilters (): Option[] {
       const additional = {
+        seconds: 1 / 60,
         minutes: 1,
         hours: 60,
         days: 24 * 60
@@ -69,9 +71,7 @@ export default Vue.extend({
             }
           })
 
-          accumulator = [...accumulator, ...timeFilters]
-
-          return accumulator
+          return [...accumulator, ...timeFilters]
         },
         []
       )
