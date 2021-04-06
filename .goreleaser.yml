@@ -2,9 +2,9 @@ project_name: falcosidekick-ui
 builds:
   - id: "falcosidekick-ui"
     goos:
-    - linux
+      - linux
     goarch:
-    - amd64
+      - amd64
     main: main.go
     env:
       - CGO_ENABLED=0
@@ -34,3 +34,5 @@ dockers:
 release:
   github:
   prerelease: auto
+
+dist: dist-goreleaser
