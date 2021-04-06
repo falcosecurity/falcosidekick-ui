@@ -1,6 +1,7 @@
 # v1.0.0
 
 * New design
+* Dynamic time range
 
 # v0.2.0
 
