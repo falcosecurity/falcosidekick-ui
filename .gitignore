@@ -20,3 +20,5 @@ falcosidekick-ui
 
 tmp/
 .DS_Store
+
+dist-goreleaser
