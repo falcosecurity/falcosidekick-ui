@@ -1,3 +1,7 @@
+# v1.0.0
+
+* New design
+
 # v0.2.0
 
 * Render large output fields as message boxes to prevent horizontal scrolling
