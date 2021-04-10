@@ -16,21 +16,27 @@
 <script lang="ts">
 import Vue from 'vue'
 
-interface BuilderConfig {
-  seconds: number[];
-  minutes: number[];
-  hours: number[];
-  days: number[];
-}
+type TimeUnit = 'seconds' | 'minutes' | 'hours' | 'days'
 
-type BuilderConfigKeys = 'seconds' | 'minutes' | 'hours' | 'days'
+type BuilderConfig = {
+  [unit in TimeUnit]: number[];
+}
 
 interface Option {
   label: string;
   value: number;
 }
 
-export default Vue.extend({
+type Data = {
+  builderConfig: BuilderConfig;
+  options: Option[];
+}
+
+type Methods = {
+  buildTimeFilters (): Option[];
+}
+
+export default Vue.extend<Data, Methods, {}, {}>({
   inheritAttrs: false,
   data () {
     return {
@@ -39,15 +45,15 @@ export default Vue.extend({
         minutes: [15, 30],
         hours: [1, 6, 12, 24],
         days: [2, 7]
-      } as BuilderConfig,
-      options: [] as Option[]
+      },
+      options: []
     }
   },
   created () {
     this.options = this.buildTimeFilters()
   },
   methods: {
-    buildTimeFilters (): Option[] {
+    buildTimeFilters () {
       const additional = {
         seconds: 1 / 60,
         minutes: 1,
@@ -57,7 +63,7 @@ export default Vue.extend({
 
       const config = this.builderConfig as BuilderConfig
 
-      return (Object.keys(config) as BuilderConfigKeys[]).reduce(
+      return (Object.keys(config) as TimeUnit[]).reduce<Option[]>(
         (accumulator: Option[], current) => {
           const timeFilters: Option[] = config[current].map((time: number) => {
             let label = `last ${time === 1 ? '' : `${time} `}${current}`
