@@ -10,9 +10,17 @@ Vue.use(VueApexCharts)
 
 Vue.component('apexchart', VueApexCharts)
 
-const ws = process.env.NODE_ENV === 'production' ? `ws://${window.location.host}/ws` : process.env.VUE_APP_WS
+const resolveWS = (): string => {
+  if (process.env.NODE_ENV !== 'production') {
+    return process.env.VUE_APP_WS
+  }
 
-Vue.use(VueNativeSock, ws, {
+  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
+
+  return `${protocol}://${window.location.host}/ws`
+}
+
+Vue.use(VueNativeSock, resolveWS(), {
   format: 'json',
   reconnection: true,
   store,
