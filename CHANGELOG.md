@@ -1,3 +1,7 @@
+# v1.0.1
+
+* Fix `Mixed content` error when the UI is reached by https
+
 # v1.0.0
 
 * New design
