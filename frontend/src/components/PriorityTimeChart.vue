@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { HistoryCategories, Serie } from '@/types'
+import { DisplayMode, HistoryCategories, Serie } from '@/types'
 import { colorCodes, initStats } from '@/api/mapper'
 import { FalcoEvent, Priority } from '@/api/model'
 import { calculateStart, timeline } from '@/helper/time'
@@ -22,6 +22,7 @@ import Vue, { PropType } from 'vue'
 import Wait from './Wait.vue'
 import { ApexOptions } from 'apexcharts'
 import EventOverlay from './EventOverlay.vue'
+import { mapState } from 'vuex'
 
 type Props = {
   time: number|null;
@@ -30,6 +31,8 @@ type Props = {
 
 type Computed = {
   chart: any;
+  displayMode: DisplayMode;
+  theme: any;
 }
 
 type Data = {
@@ -118,10 +121,19 @@ export default Vue.extend<Data, {}, Computed, Props>({
     }
   },
   computed: {
+    ...mapState(['displayMode']),
+    theme () {
+      if (this.displayMode === DisplayMode.LIGHT) return {}
+
+      return {
+        theme: { mode: 'dark', palette: 'palette1' }
+      }
+    },
     chart (): ApexOptions {
       const labels = this.series.map(serie => serie.name)
 
       return {
+        ...this.theme,
         chart: {
           type: 'bar',
           height: this.height,

@@ -30,7 +30,19 @@ type eventStore struct {
 	Retention   int                  `json:"retention,omitempty"`
 }
 
+type displayMode = string
+
+const (
+	light displayMode = "light"
+	dark  displayMode = "dark"
+)
+
+type configuration struct {
+	DisplayMode displayMode `json:"displayMode"`
+}
+
 var (
+	config    configuration
 	broadcast chan eventStore
 	store     eventStore
 	mutex     *sync.RWMutex
@@ -50,6 +62,7 @@ func main() {
 	a := flag.String("a", "0.0.0.0", "Listen Address")
 	p := flag.Int("p", 2802, "Listen Port")
 	r := flag.Int("r", 200, "Number of events to keep in retention")
+	d := flag.Bool("d", false, "Enable dark mode as default")
 	flag.Parse()
 
 	if ip := net.ParseIP(*a); ip == nil {
@@ -63,9 +76,17 @@ func main() {
 		log.Fatalf("[ERROR] : Failed to read dist folder")
 	}
 
+	dm := light
+	if *d {
+		dm = dark
+	}
+
+	config = configuration{DisplayMode: dm}
+
 	http.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(http.FS(fsys))))
 	http.HandleFunc("/healthz", healthHandler)
 	http.HandleFunc("/events", eventsHandler)
+	http.HandleFunc("/config", configHandler)
 	http.Handle("/ws", websocket.Handler(socket))
 	http.HandleFunc("/", mainHandler)
 
@@ -122,6 +143,15 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	mutex.Unlock()
 
 	broadcast <- store
+}
+
+// configHandler sends backend configuration to the UI.
+func configHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Content-Type", "application/json")
+
+	// nolint: errcheck
+	json.NewEncoder(w).Encode(config)
 }
 
 // healthHandler is a simple handler to test if daemon is UP.

@@ -14,12 +14,7 @@
             <v-chip label :color="color(item.priority)" class="mb-3 white--text" @click="$emit('update:search', item.priority)">
               <span v-html="highlightMatches(item.priority)" />
             </v-chip><br>
-            <v-chip label
-                    @click="$emit('update:search', item.rule)"
-                    class="black--text"
-                    color="light-blue lighten-5"
-                    v-html="highlightMatches(item.rule)"
-            /><br>
+            <rule-chip @click="$emit('update:search', item.rule)" :value="highlightMatches(item.rule)" /><br>
         </td>
         <td class="py-3" style="font-size: 0.8rem">
             <div v-html="highlightMatches(item.output)" />
@@ -53,9 +48,10 @@ import Vue, { PropType } from 'vue'
 import { DataTableHeader } from 'vuetify'
 import OutputFieldCard from './OutputFieldCard.vue'
 import OutputFieldChip from './OutputFieldChip.vue'
+import RuleChip from './RuleChip.vue'
 
 export default Vue.extend({
-  components: { OutputFieldChip, OutputFieldCard },
+  components: { OutputFieldChip, OutputFieldCard, RuleChip },
   name: 'EventTable',
   props: {
     events: { type: Array as PropType<FalcoEvent[]>, default: () => [] },

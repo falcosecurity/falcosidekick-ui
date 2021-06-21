@@ -1,3 +1,5 @@
+import { DisplayMode } from '@/types'
+
 export enum Priority {
     NONE = 'none',
     DEBUG = 'debug',
@@ -43,4 +45,8 @@ export type EventResponse = {
     outputs?: string[];
     retention: number;
     stats?: Stats;
+}
+
+export type Config = {
+    displayMode: DisplayMode;
 }
