@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { EventResponse } from './model'
+import { Config, EventResponse } from './model'
 import { mapEvent } from './mapper'
 
 const production = process.env.NODE_ENV === 'production'
@@ -16,5 +16,10 @@ export default {
       stats: data.stats,
       outputs: data.outputs
     })
+  },
+  async config (): Promise<Config> {
+    const { data } = await instance.get('config')
+
+    return data
   }
 }

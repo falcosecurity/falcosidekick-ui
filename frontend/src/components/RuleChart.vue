@@ -13,7 +13,9 @@
 
 <script lang="ts">
 import { FalcoEvent } from '@/api/model'
+import { DisplayMode } from '@/types'
 import Vue, { PropType } from 'vue'
+import { mapState } from 'vuex'
 import EventOverlay from './EventOverlay.vue'
 
 type Props = {
@@ -23,6 +25,8 @@ type Props = {
 
 type Computed = {
   chart: any;
+  displayMode: DisplayMode;
+  theme: any;
 }
 
 type Data = {
@@ -89,6 +93,14 @@ export default Vue.extend<Data, {}, Computed, Props>({
     }
   },
   computed: {
+    ...mapState(['displayMode']),
+    theme () {
+      if (this.displayMode === DisplayMode.LIGHT) return {}
+
+      return {
+        theme: { mode: 'dark' }
+      }
+    },
     chart () {
       const labels = Object.keys(this.rules)
 
@@ -98,6 +110,7 @@ export default Vue.extend<Data, {}, Computed, Props>({
           data: Object.values(this.rules)
         }],
         chartOptions: {
+          ...this.theme,
           chart: {
             height: 350,
             type: 'bar',

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="px-3 py-2">
+  <v-container fluid class="px-3 pt-2">
     <v-row class="pb-0">
       <v-col cols="12">
         <v-card elevation="2">
@@ -135,3 +135,9 @@ export default Vue.extend<Data, {}, Computed, {}>({
   }
 })
 </script>
+
+<style>
+.apexcharts-svg {
+  background-color: transparent!important;
+}
+</style>

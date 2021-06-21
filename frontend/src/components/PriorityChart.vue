@@ -16,8 +16,10 @@
 <script lang="ts">
 import { colorCodes, initStats } from '@/api/mapper'
 import { FalcoEvent, Priority, Stats } from '@/api/model'
+import { DisplayMode } from '@/types'
 import { ApexOptions } from 'apexcharts'
 import Vue, { PropType } from 'vue'
+import { mapState } from 'vuex'
 import EventOverlay from './EventOverlay.vue'
 import Wait from './Wait.vue'
 
@@ -28,6 +30,8 @@ type Props = {
 
 type Computed = {
   pie: any;
+  displayMode: DisplayMode;
+  theme: any;
 }
 
 type Data = {
@@ -71,12 +75,22 @@ export default Vue.extend<Data, {}, Computed, Props>({
     }
   },
   computed: {
+    ...mapState(['displayMode']),
+    theme () {
+      if (this.displayMode === DisplayMode.LIGHT) return { stroke: { colors: ['#FFFFFF'] } }
+
+      return {
+        stroke: { colors: ['#1E1E1E'] },
+        theme: { mode: 'dark' }
+      }
+    },
     pie (): { series: number[]; chartOptions: ApexOptions} {
       const labels = Object.keys(this.stats)
 
       return {
         series: Object.values(this.stats),
         chartOptions: {
+          ...this.theme,
           chart: {
             height: 350,
             type: 'donut',
