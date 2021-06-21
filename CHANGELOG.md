@@ -1,3 +1,7 @@
+# v1.1.0
+
+* Implement `DarkMode` for Falcosidekick UI
+
 # v1.0.1
 
 * Fix `Mixed content` error when the UI is reached by https
