@@ -20,6 +20,8 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
         Listen Port (default 2802)
   -r int
         Number of events to keep in retention (default 200)
+  -d bool
+        Enable dark mode as default
 ```
 
 ### Run with docker
@@ -43,6 +45,13 @@ make falcosidekick-ui && ./falcosidekick-ui
 ### Endpoint
 
 The UI is reachable by default at `http://localhost:2802/ui`.
+
+### Dark Mode
+
+By default Falcosidekick UI uses the default light theme, you can change this behavior by using the `-d` Flag of the `falcosidekick-ui` CLI. The default is also based on the settings of your browser, if it uses dark mod, Falcosidekick does too. Regardless of the default settings, the theme can be changed at any time in the UI itself.
+
+![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_03.png)
+![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_04.png)
 
 ## Development
 
