@@ -48,7 +48,7 @@ The UI is reachable by default at `http://localhost:2802/ui`.
 
 ### Dark Mode
 
-By default Falcosidekick UI uses the default light theme, you can change this behavior by using the `-d` Flag of the `falcosidekick-ui` CLI. The default is also based on the settings of your browser, if it uses dark mod, Falcosidekick does too. Regardless of the default settings, the theme can be changed at any time in the UI itself.
+By default Falcosidekick UI uses the default light theme, you can change this behavior by using the `-d` flag. The default is also based on the settings of your browser, if it uses dark mod, Falcosidekick UI does too. Regardless of the default settings, the theme can be changed at any time in the UI itself.
 
 ![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_03.png)
 ![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_04.png)
@@ -77,4 +77,3 @@ make lint-full
 
 * Thomas Labarussias (https://github.com/Issif)
 * Frank Jogeleit (https://github.com/fjogeleit)
-
