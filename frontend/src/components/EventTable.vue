@@ -10,7 +10,7 @@
     <template #item="{ item }">
         <tr>
         <td><span v-html="item.time.toISOString().split('T').join(' ').slice(0, -5)" /></td>
-        <td>
+        <td class="py-2">
             <v-chip label :color="color(item.priority)" class="mb-3 white--text" @click="$emit('update:search', item.priority)">
               <span v-html="highlightMatches(item.priority)" />
             </v-chip><br>
