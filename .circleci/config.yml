@@ -3,6 +3,9 @@ executors:
   default:
     docker:
       - image: circleci/golang:1.16.1
+  docker-build:
+    docker:
+      - image: docker:stable
 
 jobs:
   lint:
@@ -39,6 +42,26 @@ jobs:
             echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
             docker push falcosecurity/falcosidekick-ui:latest
 
+  build-push-ecr:
+    executor:
+      name: docker-build
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: make build-image
+      - run:
+          command: |
+            docker tag falcosecurity/falcosidekick-ui:latest \
+              public.ecr.aws/falcosecurity/falcosidekick-ui:latest
+      - run:
+          command: |
+            apk update
+            apk add --update groff less py-pip
+            pip install awscli
+            aws ecr-public get-login-password --region us-east-1 | \
+              docker login --username AWS --password-stdin public.ecr.aws/falcosecurity
+            docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest
+
   release:
     executor:
       name: default
@@ -65,6 +88,14 @@ workflows:
               ignore: master
       - build-push-main:
           context: falco
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              only: master
+      - build-push-ecr:
+          context: test-infra
           requires:
             - test
             - lint
