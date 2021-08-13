@@ -3,6 +3,9 @@ executors:
   default:
     docker:
       - image: circleci/golang:1.16.1
+  docker-build:
+    docker:
+      - image: docker:stable
 
 jobs:
   lint:
@@ -41,18 +44,20 @@ jobs:
 
   build-push-ecr:
     executor:
-      name: default
+      name: docker-build
     steps:
       - checkout
       - setup_remote_docker
-      - run: make build-image
+      - run:
+          command: |
+            apk add --update make bash
+            make build-image
       - run:
           command: |
             docker tag falcosecurity/falcosidekick-ui:latest \
               public.ecr.aws/falcosecurity/falcosidekick-ui:latest
       - run:
           command: |
-            apk update
             apk add --update groff less py-pip
             pip install awscli
             aws ecr-public get-login-password --region us-east-1 | \
