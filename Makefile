@@ -70,7 +70,7 @@ falcosidekick-ui-backend-only:
 	$(GO) build -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
 
 .PHONY: build-image
-build-image: frontend
+build-image:
 	$(DOCKER) build -t falcosecurity/falcosidekick-ui:latest . --no-cache
 
 ## --------------------------------------
