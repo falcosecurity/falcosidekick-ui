@@ -28,7 +28,7 @@ Events are stored in a `Redis` server with [`Redisearch`](https://github.com/Red
 ### Run with docker
 
 ```shell
-docker run -d -p 2802:2802 falcosecurity/falcosidekick-ui 
+docker run -d -p 2802:2802 falcosecurity/falcosidekick-ui
 ```
 
 ### Run
@@ -114,7 +114,7 @@ make lint-full
 
 ### Update Docs
 
-Requirement: 
+Requirement:
 * [`swag`](https://github.com/swaggo/swag)
 
 ```shell
