@@ -16,7 +16,7 @@ falcosidekick-ui
 .vscode
 .idea
 *.swp
-/hack/tools/bin/*
+/tools/bin/*
 
 tmp/
 .DS_Store

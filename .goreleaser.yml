@@ -32,6 +32,8 @@ dockers:
 
 release:
   github:
+    owner: falcosecurity
+    name: falcosidekick-ui
   prerelease: auto
 
 dist: dist-goreleaser

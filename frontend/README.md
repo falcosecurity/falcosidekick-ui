@@ -1,31 +1,38 @@
 # Falcosidekick UI
 
-* Required NodeJS >= v14
+Requirements:
+* `nodejs` >= v14
+* `yarn` >= 1.22
 
 ## Project setup
+
 ```
-npm install
+yarn install
 ```
 
 ## Development Prerequiements
 
-* Copy `.env.example` to `.env`
-* Run the Falcosidekick UI API
+* Run Redis docker: `docker run -d -p 6379:6379 redislabs/redisearch:2.2.4`
+* Run the Falcosidekick-ui backend: `go run . -x` or `./falcosidekick-ui -x`
 
 ### Compiles and hot-reloads for development
+
 ```
-npm run serve
+yarn serve
 ```
 
 ### Compiles and minifies for production
+
 ```
-npm run build
+yarn build
 ```
 
 ### Lints and fixes files
+
 ```
-npm run lint
+yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+###
+
+Access: [`http://localhost:8080`](http://localhost:8080)

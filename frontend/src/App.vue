@@ -1,134 +1,84 @@
 <template>
-  <v-app id="inspire">
-    <v-navigation-drawer app width="240" style="padding-bottom: 60px;">
-      <v-sheet :class="`bg-${displayMode}-color`" class="pa-4">
-        <v-img src="https://raw.githubusercontent.com/falcosecurity/falcosidekick/master/imgs/falcosidekick_color.png" contain width="128" />
-        <v-divider class="my-3"></v-divider>
-        <h1 class="text-h5">Falcosidekick UI</h1>
-        <h2 class="text-subtitle-1">Latest Events from Falco</h2>
-
-        <v-chip class="chip my-2 mr-2 pr-0 py-0" label style="border: 1px solid #000">
-          Retention <div class="white black--text rounded ml-2 px-2 py-2 text-body-2">{{ retention }}</div>
-        </v-chip>
-
-        <v-divider class="my-3" />
-
-        <h2 class="text-subtitle-1">Outputs</h2>
-
-        <v-chip class="chip my-2 mr-2" label v-for="output in outputs" :key="output">
-          {{ output }}
-        </v-chip>
-      </v-sheet>
-
-      <v-divider />
-
-      <v-list class="py-0">
-        <v-list-item to="/" color="light-blue">
-          <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-divider />
-        <v-list-item to="/events" color="light-blue">
-          <v-list-item-content>
-            <v-list-item-title>Events</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-
-      <v-divider />
-
-      <div style="position: absolute; bottom: 10px;" class="px-2 text-center">
-        <v-btn color="black" @click="dark" dark depressed>dark</v-btn>
-        <v-btn color="grey lighten-3 black--text" @click="light" class="ml-2" depressed>light</v-btn>
-      </div>
-    </v-navigation-drawer>
-
-    <v-main :class="`bg-main-${displayMode}`">
-      <router-view />
+  <v-app app>
+    <v-app-bar app class="blue darken-2" dark>
+      <v-img
+        src="https://github.com/falcosecurity/falcosidekick/raw/master/imgs/falcosidekick_color.png"
+        max-height="40"
+        max-width="40"
+        style="margin-bottom: 5px; margin-right: 15px;">
+      </v-img>
+      <v-toolbar-title class="text-no-wrap">
+        Falcosidekick UI
+      </v-toolbar-title>
+      <template v-slot:extension>
+        <v-tabs>
+          <v-tab v-for="(page) in pages" :key="page.title"
+          class="blue darken-2" :to="{ path: page.href, query: $route.query }">
+            {{page.title}}
+          </v-tab>
+        </v-tabs>
+      </template>
+      <v-spacer/>
+      <Counters></Counters>
+    </v-app-bar>
+    <v-main>
+      <router-view></router-view>
     </v-main>
+    <v-footer app absolute
+    class="blue darken-2" dark>
+      <span>
+        2022 - <a href="https://github.com/falcosecurity/falcosidekick-ui">Falco Authors</a>
+        </span>
+    </v-footer>
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import { mapState } from 'vuex'
-import { FETCH_EVENTS, INIT_DISPLAY_MODE, SET_DISPLAY_MODE } from './store'
-import { DisplayMode } from './types'
+<script>
+import Counters from './components/counters.vue';
 
-type Computed = {
-  retention: number;
-  outputs: string[];
-  displayMode: DisplayMode;
-}
-
-export default Vue.extend<{}, { dark(): void; light(): void }, Computed, {}>({
+export default {
   name: 'App',
-  computed: mapState(['retention', 'outputs', 'displayMode']),
-  methods: {
-    light () {
-      this.$store.commit(SET_DISPLAY_MODE, DisplayMode.LIGHT)
-    },
-    dark () {
-      this.$store.commit(SET_DISPLAY_MODE, DisplayMode.DARK)
-    }
+  components: {
+    Counters,
   },
-  watch: {
-    displayMode: {
-      immediate: true,
-      handler (displayMode: DisplayMode) {
-        this.$vuetify.theme.dark = displayMode === DisplayMode.DARK
-      }
-    }
+  data() {
+    return {
+      pages: [
+        {
+          href: 'dashboard',
+          router: true,
+          title: 'Dashboard',
+        }, {
+          href: 'events',
+          router: true,
+          title: 'Events',
+        },
+        {
+          href: 'info',
+          router: true,
+          title: 'Info',
+        },
+        // {
+        //   href: 'test',
+        //   router: true,
+        //   title: 'Test',
+        // },
+      ],
+    };
   },
-  created () {
-    this.$store.dispatch(FETCH_EVENTS)
-
-    if (!sessionStorage.getItem('displayMode') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      this.$store.commit(INIT_DISPLAY_MODE, DisplayMode.DARK)
-    }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (!e.matches) {
-        this.$store.commit(SET_DISPLAY_MODE, DisplayMode.LIGHT)
-        return
-      }
-
-      this.$store.commit(SET_DISPLAY_MODE, DisplayMode.DARK)
-    })
-  }
-})
+};
 </script>
 
-<style>
-:root {
-  --v-white: #fff;
-  --v-black: #000;
-}
-</style>
-
 <style scoped>
-.bg-main-light {
-  background-color: rgb(240, 240, 240)!important;
+a:link {
+  text-decoration: none;
+  color: white;
 }
-
-.bg-light-color {
-  background-color: var(--v-info-lighten2)!important;
-  color: var(--v-black)!important;
+a:visited {
+  text-decoration: none;
+  color: white;
 }
-.bg-dark-color {
-  background-color: var(--v-info-darken1)!important;
-  color: var(--v-white)!important;
-}
-
-.bg-light-color .chip {
-  border-color: var(--v-primary-base)!important;
-  background-color: var(--v-primary-base)!important;
-  color: var(--v-white)!important;
-}
-.bg-dark-color .chip {
-  border-color: var(--v-primary-darken3)!important;
-  background-color: var(--v-primary-darken3)!important;
-  color: var(--v-white)!important;
+a:hover {
+  text-decoration: underline;
 }
 </style>
