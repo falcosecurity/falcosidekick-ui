@@ -1,0 +1,343 @@
+basePath: /api/v1
+consumes:
+- application/json
+definitions:
+  configuration.Configuration:
+    properties:
+      dev-mode:
+        type: boolean
+      listen-address:
+        description: DisplayMode   string `json:"display-mode"`
+        type: string
+      listen-port:
+        type: integer
+      redis-server:
+        type: string
+    type: object
+  configuration.VersionInfo:
+    properties:
+      buildDate:
+        type: string
+      compiler:
+        type: string
+      gitCommit:
+        type: string
+      gitTreeState:
+        type: string
+      gitVersion:
+        type: string
+      goVersion:
+        type: string
+      platform:
+        type: string
+    type: object
+  models.Event:
+    properties:
+      output:
+        type: string
+      output_fields:
+        additionalProperties: true
+        type: object
+      priority:
+        type: string
+      rule:
+        type: string
+      source:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      time:
+        type: string
+    required:
+    - output
+    - priority
+    - rule
+    - time
+    type: object
+  models.Payload:
+    properties:
+      event:
+        $ref: '#/definitions/models.Event'
+      outputs:
+        items:
+          type: string
+        type: array
+    required:
+    - event
+    - outputs
+    type: object
+  models.ResultsCount:
+    properties:
+      statistics:
+        $ref: '#/definitions/models.Statistics'
+    type: object
+  models.ResultsCountBy:
+    properties:
+      results:
+        additionalProperties:
+          type: integer
+        type: object
+      statistics:
+        $ref: '#/definitions/models.Statistics'
+    type: object
+  models.ResultsSearch:
+    properties:
+      results:
+        additionalProperties:
+          $ref: '#/definitions/models.Event'
+        type: object
+      statistics:
+        $ref: '#/definitions/models.Statistics'
+    type: object
+  models.Statistics:
+    properties:
+      all:
+        type: integer
+      distincts:
+        type: integer
+      returned:
+        type: integer
+    type: object
+host: localhost:2802
+info:
+  contact:
+    email: cncf-falco-dev@lists.cncf.io
+    name: Falco Authors
+    url: https://github.com/falcosecurity
+  description: Falcosidekick UI
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Falcosidekick UI
+  version: "1.0"
+paths:
+  /:
+    post:
+      consumes:
+      - application/json
+      description: Add Event
+      parameters:
+      - description: Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.Payload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Add Event
+  /configuration:
+    get:
+      description: Configuration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Configuration
+          schema:
+            $ref: '#/definitions/configuration.Configuration'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Configuration
+  /events/count:
+    get:
+      description: Count Events
+      parameters:
+      - description: pretty
+        in: query
+        name: pretty
+        type: boolean
+      - description: priority
+        in: query
+        name: priority
+        type: string
+      - description: source
+        in: query
+        name: source
+        type: string
+      - description: filter
+        in: query
+        name: filter
+        type: string
+      - description: rule
+        in: query
+        name: rule
+        type: string
+      - description: tags
+        in: query
+        name: tags
+        type: string
+      - description: since
+        in: query
+        name: since
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Count Events Result
+          schema:
+            $ref: '#/definitions/models.ResultsCount'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Count Events
+  /events/count/:groupby:
+    get:
+      description: Count Events By
+      parameters:
+      - description: group By
+        in: path
+        name: groupby
+        required: true
+        type: string
+      - description: pretty
+        in: query
+        name: pretty
+        type: boolean
+      - description: priority
+        in: query
+        name: priority
+        type: string
+      - description: source
+        in: query
+        name: source
+        type: string
+      - description: filter
+        in: query
+        name: filter
+        type: string
+      - description: rule
+        in: query
+        name: rule
+        type: string
+      - description: tags
+        in: query
+        name: tags
+        type: string
+      - description: since
+        in: query
+        name: since
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Count Events By Result
+          schema:
+            $ref: '#/definitions/models.ResultsCountBy'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Count Events By
+  /events/search:
+    get:
+      description: Search Events
+      parameters:
+      - description: pretty
+        in: query
+        name: pretty
+        type: boolean
+      - description: priority
+        in: query
+        name: priority
+        type: string
+      - description: source
+        in: query
+        name: source
+        type: string
+      - description: filter
+        in: query
+        name: filter
+        type: string
+      - description: rule
+        in: query
+        name: rule
+        type: string
+      - description: tags
+        in: query
+        name: tags
+        type: string
+      - description: since
+        in: query
+        name: since
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Search Events Result
+          schema:
+            $ref: '#/definitions/models.ResultsSearch'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Search Events
+  /healthz:
+    get:
+      description: Healthcheck
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"ok\"}'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Healthcheck
+  /outputs:
+    get:
+      description: Healthcheck
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Outputs
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: List Outputs
+  /version:
+    get:
+      description: Version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Version
+          schema:
+            $ref: '#/definitions/configuration.VersionInfo'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Version
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

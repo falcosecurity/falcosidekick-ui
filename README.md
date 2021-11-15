@@ -2,12 +2,13 @@
 
 ![release](https://flat.badgen.net/github/release/falcosecurity/falcosidekick-ui/latest?color=green) ![last commit](https://flat.badgen.net/github/last-commit/falcosecurity/falcosidekick-ui) ![licence](https://flat.badgen.net/badge/license/Apache/blue) ![docker pulls](https://flat.badgen.net/docker/pulls/falcosecurity/falcosidekick-ui?icon=docker) [![falcosidekick-ui](https://circleci.com/gh/falcosecurity/falcosidekick-ui.svg?style=shield)](https://circleci.com/gh/falcosecurity/falcosidekick-ui)
 
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_01.png)
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_02.png)
-
 ## Description
 
 A simple WebUI for displaying latest events from [Falco](https://falco.org). It works as output for [Falcosidekick](https://github.com/falcosecurity/falcosidekick).
+
+## Requirements
+
+Events are stored in a `Redis` server with [`Redisearch`](https://github.com/RediSearch/RediSearch) module (> v2).
 
 ## Usage
 
@@ -16,12 +17,12 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
 ```shell
   -a string
         Listen Address (default "0.0.0.0")
+  -d    Enable dark mode as default
   -p int
         Listen Port (default 2802)
-  -r int
-        Number of events to keep in retention (default 200)
-  -d bool
-        Enable dark mode as default
+  -r string
+        Redis server address (default "localhost:6379")
+  -x    Allow CORS for development
 ```
 
 ### Run with docker
@@ -34,44 +35,99 @@ docker run -d -p 2802:2802 falcosecurity/falcosidekick-ui
 
 ```
 git clone https://github.com/falcosecurity/falcosidekick-ui.git
-cd ./falcosidekick-ui
+cd falcosidekick-ui
 
-go run main.go
+go run .
 #or
 make falcosidekick-ui && ./falcosidekick-ui
-
 ```
 
-### Endpoint
+### Endpoints
 
-The UI is reachable by default at `http://localhost:2802/ui`.
+#### UI
 
-### Dark Mode
+The UI is reachable by default at `http://localhost:2802/`.
 
-By default Falcosidekick UI uses the default light theme, you can change this behavior by using the `-d` flag. The default is also based on the settings of your browser, if it uses dark mod, Falcosidekick UI does too. Regardless of the default settings, the theme can be changed at any time in the UI itself.
+#### API
 
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_03.png)
-![falcosidekick-ui](https://github.com/falcosecurity/falcosidekick-ui/raw/master/imgs/webui_04.png)
+> The base URL for the API is `http://localhost/api/v1/`.
+
+| Route                   | Method | Arguments                                       | Usage                                |
+| :---------------------- | :----: | :---------------------------------------------- | :----------------------------------- |
+| `/docs`                 | `GET`  | none                                            | Get Swagger Docs                     |
+| `/`                     | `GET`  | none                                            | Display WebUI                        |
+| `/`                     | `POST` | none                                            | Add event                            |
+| `/healthz`              | `GET`  | none                                            | Healthcheck                          |
+| `/configuration`        | `GET`  | none                                            | Get Configuration                    |
+| `/outputs`              | `GET`  | none                                            | Get list of Outputs of Falcosidekick |
+| `/event/count`          | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count all events                     |
+| `/event/count/priority` | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by priority             |
+| `/event/count/rule`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by rule                 |
+| `/event/count/source`   | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by source               |
+| `/event/count/tags`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by tags                 |
+| `/event/search`         | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Search events                        |
+| `/ws`                   | `GET`  | none                                            | Create Websocket                     |
+
+All responses are in JSON format.
+
+Argument list:
+* `pretty`: return well formated JSON
+* `priority`: filter by priority
+* `rule`: filter by rule
+* `filter`: filter by term
+* `source`: filter by source
+* `tags`: filter by tags
+* `since`: filter by since (in 'second', 'min', 'day', 'week', 'month', 'year')
+* `limit`: limit number of results (default: 100)
+* `page`: page of results
 
 ## Development
 
+### Start local redis server
+
+```shell
+docker run -d -p 6379:6379 redislabs/redisearch:2.2.4
+```
+
 ### Build
 
-```bash
+Requirements:
+* `go` >= 1.18
+* `nodejs` >= v14
+* `yarn` >= 1.22
+
+```shell
 make falcosidekick-ui
 ```
 
 ### Lint
 
-```bash
+```shell
 make lint
 ```
 
-Full lint:
+### Full lint
 
-```bash
+```shell
 make lint-full
 ```
+
+### Update Docs
+
+Requirement: 
+* [`swag`](https://github.com/swaggo/swag)
+
+```shell
+make docs
+```
+
+## Screenshots
+
+![falcosidekick-ui](imgs/webui_01.png)
+![falcosidekick-ui](imgs/webui_02.png)
+![falcosidekick-ui](imgs/webui_03.png)
+![falcosidekick-ui](imgs/webui_04.png)
+![falcosidekick-ui](imgs/webui_05.png)
 
 ## Authors
 
