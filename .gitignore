@@ -17,6 +17,7 @@ falcosidekick-ui
 .idea
 *.swp
 /tools/bin/*
+dist/*
 
 tmp/
 .DS_Store

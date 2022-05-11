@@ -8,8 +8,8 @@ RUN apk add --no-cache --virtual .gyp make g++ \
     && npm set progress=false \
     && npm config set depth 0
 COPY frontend frontend
-RUN cd frontend \
-    && yarn install \
+WORKDIR /src/frontend
+RUN yarn install \
     && yarn build
 
 FROM ${BUILDER_IMAGE} AS build-stage
@@ -17,7 +17,7 @@ ENV CGO_ENABLED=0
 WORKDIR /src
 COPY . .
 RUN go mod download
-RUN make falcosidekick-ui
+RUN make falcosidekick-ui-backend-only
 
 # Final Docker image
 FROM ${BASE_IMAGE} AS final-stage
