@@ -63,11 +63,11 @@ frontend:
 
 .PHONY: falcosidekick-ui
 falcosidekick-ui: frontend
-	$(GO) build -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
+	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
 
 .PHONY: falcosidekick-ui-backend-only
 falcosidekick-ui-backend-only:
-	$(GO) build -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
+	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
 
 .PHONY: build-image
 build-image:
