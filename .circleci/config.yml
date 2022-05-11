@@ -2,7 +2,7 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.18.1-node
   docker-build:
     docker:
       - image: docker:stable
@@ -13,6 +13,19 @@ install_buildx: &install_buildx
     mkdir -p ~/.docker/cli-plugins
     curl -sSL -o ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/v0.8.2/buildx-v0.8.2.linux-amd64
     chmod a+x ~/.docker/cli-plugins/docker-buildx
+
+install_goreleaser: &install_goreleaser
+  name: Install goreleaser
+  command: |
+    GORELEASER_URL="https://github.com/goreleaser/goreleaser/releases/download/v1.8.3/goreleaser_Linux_x86_64.tar.gz"
+    curl --output goreleaser_Linux_x86_64.tar.gz \
+      --silent --show-error --location --fail --retry 3 \
+      "$GORELEASER_URL"
+    sudo mkdir -p /tmp/goreleaser
+    sudo tar -C /tmp/goreleaser -xzf goreleaser_Linux_x86_64.tar.gz
+    sudo mv /tmp/goreleaser/goreleaser /usr/local/bin/
+    rm -f goreleaser_Linux_x86_64.tar.gz
+    goreleaser --version
 
 jobs:
   lint:
@@ -41,7 +54,8 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
-      - run: make build-image
+      - run: *install_goreleaser
+      - run: make goreleaser-snapshot
 
   build-push-main:
     docker:
@@ -54,7 +68,8 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
-      - run: make build-image
+      - run: *install_goreleaser
+      - run: make goreleaser-snapshot
       - run:
           command: |
             echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
@@ -71,10 +86,11 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *install_goreleaser
       - run:
           command: |
             apk add --update make bash
-            make build-image
+            make goreleaser-snapshot
       - run:
           command: |
             docker tag falcosecurity/falcosidekick-ui:latest \
@@ -95,11 +111,15 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *install_goreleaser
       - run:
           name: Prepare env
           command: |
             echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
-      - run: curl -sL https://git.io/goreleaser | bash
+      - run:
+          name: Release
+          no_output_timeout: 1h
+          command: make goreleaser
 
 workflows:
   main:
