@@ -124,7 +124,7 @@ export default {
         sources: [],
         tags: [],
         rule: '',
-        since: '1h',
+        since: '24h',
         search: '',
       },
     };

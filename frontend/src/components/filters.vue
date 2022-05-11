@@ -208,7 +208,7 @@ export default {
         tags: [],
         sources: [],
         search: '',
-        since: '1h',
+        since: '24h',
       },
       debounce: null,
     };
