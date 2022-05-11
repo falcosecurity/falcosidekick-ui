@@ -27,6 +27,15 @@ install_goreleaser: &install_goreleaser
     rm -f goreleaser_Linux_x86_64.tar.gz
     goreleaser --version
 
+install_awscli: &install_awscli
+  name: Install pre-requisites
+  command: |
+    DIR=$(mktemp -d) && pushd $DIR
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install -i $HOME/.local/aws-cli -b $HOME/.local/bin
+    popd && rm -r $DIR
+
 jobs:
   lint:
     executor:
@@ -87,9 +96,9 @@ jobs:
           version: 19.03.12
       - run: *install_buildx
       - run: *install_goreleaser
+      - run: *install_awscli
       - run:
           command: |
-            apk add --update make bash
             make goreleaser-snapshot
       - run:
           command: |
@@ -97,8 +106,6 @@ jobs:
               public.ecr.aws/falcosecurity/falcosidekick-ui:latest
       - run:
           command: |
-            apk add --update groff less py-pip
-            pip install awscli
             aws ecr-public get-login-password --region us-east-1 | \
               docker login --username AWS --password-stdin public.ecr.aws/falcosecurity
             docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest
