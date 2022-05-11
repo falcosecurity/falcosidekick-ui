@@ -4,13 +4,8 @@ ARG BASE_IMAGE=alpine:3.15
 
 FROM ${FRONTEND_IMAGE} as frontend-stage
 WORKDIR /src
-RUN apk add --no-cache --virtual .gyp make g++ \
-    && npm set progress=false \
-    && npm config set depth 0
-COPY frontend frontend
-WORKDIR /src/frontend
-RUN yarn install \
-    && yarn build
+COPY . .
+RUN cd frontend && yarn install && yarn build
 
 FROM ${BUILDER_IMAGE} AS build-stage
 ENV CGO_ENABLED=0
