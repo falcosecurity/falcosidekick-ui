@@ -24,13 +24,13 @@ dockers:
     dockerfile: Dockerfile
     image_templates:
       - "falcosecurity/falcosidekick-ui:latest"
-      - "falcosecurity/falcosidekick-ui:{{ .Version }}"
+      - "falcosecurity/falcosidekick-ui:v{{ .Version }}"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.version=v{{.Version}}"
     extra_files:
       - frontend/dist
       - LICENSE
