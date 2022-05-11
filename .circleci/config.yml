@@ -43,8 +43,8 @@ jobs:
       - run: make test
 
   build-image:
-    docker:
-      - image: cimg/base:current
+    executor:
+      name: default
     environment:
       DOCKER_BUILDKIT: 1
       DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -58,8 +58,8 @@ jobs:
       - run: make goreleaser-snapshot
 
   build-push-main:
-    docker:
-      - image: cimg/base:current
+    executor:
+      name: default
     environment:
       DOCKER_BUILDKIT: 1
       DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -76,8 +76,8 @@ jobs:
             docker push falcosecurity/falcosidekick-ui:latest
 
   build-push-ecr:
-    docker:
-      - image: cimg/base:current
+    executor:
+      name: default
     environment:
       DOCKER_BUILDKIT: 1
       DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -106,6 +106,9 @@ jobs:
   release:
     executor:
       name: default
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
       - setup_remote_docker:
