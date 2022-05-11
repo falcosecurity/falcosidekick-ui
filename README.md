@@ -52,21 +52,21 @@ The UI is reachable by default at `http://localhost:2802/`.
 
 > The base URL for the API is `http://localhost/api/v1/`.
 
-| Route                   | Method | Arguments                                       | Usage                                |
-| :---------------------- | :----: | :---------------------------------------------- | :----------------------------------- |
-| `/docs`                 | `GET`  | none                                            | Get Swagger Docs                     |
-| `/`                     | `GET`  | none                                            | Display WebUI                        |
-| `/`                     | `POST` | none                                            | Add event                            |
-| `/healthz`              | `GET`  | none                                            | Healthcheck                          |
-| `/configuration`        | `GET`  | none                                            | Get Configuration                    |
-| `/outputs`              | `GET`  | none                                            | Get list of Outputs of Falcosidekick |
-| `/event/count`          | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count all events                     |
-| `/event/count/priority` | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by priority             |
-| `/event/count/rule`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by rule                 |
-| `/event/count/source`   | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by source               |
-| `/event/count/tags`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Count events by tags                 |
-| `/event/search`         | `GET`  | `pretty`, `priority`, `rule`, `filter`, `since` | Search events                        |
-| `/ws`                   | `GET`  | none                                            | Create Websocket                     |
+| Route                       | Method | Query Parameters                                                         | Usage                                |
+| :-------------------------- | :----: | :----------------------------------------------------------------------- | :----------------------------------- |
+| `/docs`                     | `GET`  | none                                                                     | Get Swagger Docs                     |
+| `/`                         | `GET`  | none                                                                     | Display WebUI                        |
+| `/`                         | `POST` | none                                                                     | Add event                            |
+| `/healthz`                  | `GET`  | none                                                                     | Healthcheck                          |
+| `/configuration`            | `GET`  | none                                                                     | Get Configuration                    |
+| `/outputs`                  | `GET`  | none                                                                     | Get list of Outputs of Falcosidekick |
+| `/event/count`              | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count all events                     |
+| `/event/count/priority`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by priority             |
+| `/event/count/rule`         | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by rule                 |
+| `/event/count/source`       | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by source               |
+| `/event/count/tags`         | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by tags                 |
+| `/event/search`             | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Search events                        |
+| `/ws` (not yet implemented) | `GET`  | none                                                                     | Create Websocket                     |
 
 All responses are in JSON format.
 
