@@ -1,4 +1,10 @@
 project_name: falcosidekick-ui
+
+before:
+  hooks:
+  - go mod tidy
+  - make frontend
+
 builds:
   - id: "falcosidekick-ui"
     goos:
@@ -6,6 +12,8 @@ builds:
     goarch:
       - amd64
     main: main.go
+    flags:
+      - -trimpath
     env:
       - CGO_ENABLED=0
     binary: falcosidekick-ui
@@ -24,10 +32,7 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
     extra_files:
-      - main.go
-      - go.mod
-      - go.sum
-      - Makefile
+      - frontend/dist
       - LICENSE
 
 release:
