@@ -7,6 +7,13 @@ executors:
     docker:
       - image: docker:stable
 
+install_buildx: &install_buildx
+  name: Install Docker buildx
+  command: |
+    mkdir -p ~/.docker/cli-plugins
+    curl -sSL -o ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/v0.8.2/buildx-v0.8.2.linux-amd64
+    chmod a+x ~/.docker/cli-plugins/docker-buildx
+
 jobs:
   lint:
     executor:
@@ -23,19 +30,30 @@ jobs:
       - run: make test
 
   build-image:
-    executor:
-      name: default
+    docker:
+      - image: cimg/base:current
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    resource_class: large
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+      - run: *install_buildx
       - run: make build-image
 
   build-push-main:
-    executor:
-      name: default
+    docker:
+      - image: cimg/base:current
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+      - run: *install_buildx
       - run: make build-image
       - run:
           command: |
@@ -43,11 +61,16 @@ jobs:
             docker push falcosecurity/falcosidekick-ui:latest
 
   build-push-ecr:
-    executor:
-      name: docker-build
+    docker:
+      - image: cimg/base:current
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+      - run: *install_buildx
       - run:
           command: |
             apk add --update make bash
@@ -69,7 +92,9 @@ jobs:
       name: default
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+      - run: *install_buildx
       - run:
           name: Prepare env
           command: |
