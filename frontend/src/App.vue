@@ -45,16 +45,16 @@ export default {
     return {
       pages: [
         {
-          href: 'dashboard',
+          href: '/dashboard',
           router: true,
           title: 'Dashboard',
         }, {
-          href: 'events',
+          href: '/events',
           router: true,
           title: 'Events',
         },
         {
-          href: 'info',
+          href: '/info',
           router: true,
           title: 'Info',
         },
