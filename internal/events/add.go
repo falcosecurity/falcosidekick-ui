@@ -18,7 +18,7 @@ func Add(e *models.Event) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	utils.WriteLog("info", fmt.Sprintf("POST event 'event:%v'", e.Time.UnixNano()/1e3), false)
+	utils.WriteLog("info", fmt.Sprintf("NEW event 'event:%v'", e.Time.UnixNano()/1e3), false)
 
 	go broadcast.GetBroadcast().BroadcastMessage()
 

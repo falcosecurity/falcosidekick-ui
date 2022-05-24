@@ -13,7 +13,7 @@ const capitalize = function capitalize(value) {
 
 const formatDate = function formatDate(value) {
   if (!value) return '';
-  return moment(String(value)).format('YYYY/MM/DD hh:mm:ss:SSS');
+  return moment(String(value)).format('YYYY/MM/DD HH:mm:ss:SSS');
 };
 
 const opts = {};

@@ -113,24 +113,21 @@ export default {
             return;
           }
           if (l === undefined) {
-            l = results[0].time;
+            l = dayjs().toISOString();
           }
           let unit = '';
           let delta = '';
           let oldest = 60;
           switch (this.filters.since) {
-            case '1min':
-              this.chartData.options.scales.x.time.unit = 'millisecond';
-              unit = 'second'; delta = 1; oldest = 60; break;
             case '5min':
               this.chartData.options.scales.x.time.unit = 'second';
-              unit = 'second'; delta = 10; oldest = 300; break;
+              unit = 'second'; delta = 5; oldest = 300; break;
             case '15min':
               this.chartData.options.scales.x.time.unit = 'second';
               unit = 'second'; delta = 25; oldest = 1500; break;
             case '30min':
               this.chartData.options.scales.x.time.unit = 'minute';
-              unit = 'second'; delta = 45; oldest = 3000; break;
+              unit = 'second'; delta = 48; oldest = 3000; break;
             case '1h':
               this.chartData.options.scales.x.time.unit = 'minute';
               unit = 'minute'; delta = 1; oldest = 60; break;
@@ -188,15 +185,13 @@ export default {
             }
             if (this.stats[f] === undefined) {
               this.stats[f] = {
-                last: l,
                 count: 0,
-                data: [{ x: dayjs().toISOString(), y: 0 }],
+                data: [{ x: dayjs().add(delta, unit).toISOString(), y: 0 }],
               };
             }
             this.stats[f].count += 1;
             if (dayjs(value.time)
               .isBefore(dayjs(l).subtract(delta, unit))) {
-              l = value.time;
               Object.keys(this.stats).forEach((key) => {
                 this.stats[key].data.push({
                   x: l,
@@ -204,6 +199,7 @@ export default {
                 });
                 this.stats[key].count = 0;
               });
+              l = value.time;
               this.stats[f].count = 0;
             }
           });
@@ -217,7 +213,7 @@ export default {
           let i = 0;
           Object.keys(this.stats).forEach((key) => {
             this.stats[key].data.push({
-              x: dayjs().subtract(oldest, unit).toISOString(),
+              x: dayjs().subtract(oldest - delta, unit).toISOString(),
               y: 0,
             });
             let bgc = '';
