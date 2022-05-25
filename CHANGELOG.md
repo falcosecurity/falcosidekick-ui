@@ -1,3 +1,9 @@
+# v2.0.1
+
+* Fix empty timelines
+* Fix loss of query strings when the page is changed
+* Change prefix in logs when an event is added
+
 # v2.0.0
 
 * Full rewrite (frontend + backend)
