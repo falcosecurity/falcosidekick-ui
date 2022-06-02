@@ -1,12 +1,9 @@
 import axios from 'axios';
 
-// const axiosParams = function axiosParams() {
-//   const params = new URLSearchParams();
-//   return params;
-// };
+const production = process.env.NODE_ENV === 'production';
 
 const api = axios.create({
-  baseURL: 'http://localhost:2802/api/v1',
+  baseURL: `${production ? `//${window.location.host}` : process.env.VUE_APP_API}/api/v1`,
   headers: {
     'Content-type': 'application/json',
     'Access-Control-Allow-Origin': '*',
