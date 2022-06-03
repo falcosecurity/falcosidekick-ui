@@ -1,3 +1,7 @@
+# v2.0.2
+
+* Fix force redirect to localhost
+
 # v2.0.1
 
 * Fix empty timelines

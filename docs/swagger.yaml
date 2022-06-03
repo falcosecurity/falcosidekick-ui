@@ -100,7 +100,7 @@ definitions:
       returned:
         type: integer
     type: object
-host: localhost:2802
+host: <your-domain>:2802
 info:
   contact:
     email: cncf-falco-dev@lists.cncf.io

@@ -23,7 +23,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:2802",
+    "host": "\u003cyour-domain\u003e:2802",
     "basePath": "/api/v1",
     "paths": {
         "/": {
