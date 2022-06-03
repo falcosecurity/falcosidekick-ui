@@ -84,7 +84,7 @@ func init() {
 
 // @schemes  http
 
-// @host      localhost:2802
+// @host      <your-domain>:2802
 // @BasePath  /api/v1
 func main() {
 	e := echo.New()
