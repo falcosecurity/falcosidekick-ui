@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 	"github.com/falcosecurity/falcosidekick-ui/internal/api"
@@ -34,12 +35,20 @@ type CustomValidator struct {
 }
 
 func init() {
-	addr := flag.String("a", "0.0.0.0", "Listen Address")
-	port := flag.Int("p", 2802, "Listen Port")
+	addr := utils.GetFlagOrEnvParam("a", "FALCOSIDEKICK_UI_ADDR", "0.0.0.0", "Listen Address")
+	portString := utils.GetFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", "2802", "Listen Port")
+	port, err := strconv.Atoi(*portString)
+	if err != nil {
+		utils.WriteLog("error", "Failed to parse Listen Port", true)
+	}
+	redisserver := utils.GetFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
+	dev := flag.Bool("x", false, "Allow CORS for development")
+	if !*dev {
+		_, *dev = os.LookupEnv("FALCOSIDEKICK_UI_DEV")
+	}
+
 	// darkmod := flag.Bool("d", false, "Enable dark mode as default")
 	version := flag.Bool("v", false, "Print version")
-	dev := flag.Bool("x", false, "Allow CORS for development")
-	redisserver := flag.String("r", "localhost:6379", "Redis server address")
 	flag.Parse()
 
 	if *version {
@@ -54,7 +63,7 @@ func init() {
 		utils.WriteLog("error", "Failed to parse Listen Address", true)
 	}
 	config.ListenAddress = *addr
-	config.ListenPort = *port
+	config.ListenPort = port
 	// config.DisplayMode = light
 	// if *darkmod {
 	// 	config.DisplayMode = dark

@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -76,4 +78,17 @@ func RemoveDuplicate(input []string) []string {
 	}
 	sort.Strings(singleKeys)
 	return singleKeys
+}
+
+func GetFlagOrEnvParam(flagString string, envVar string, defaultValue string, usage string) *string {
+	res := flag.String(flagString, "NON-SET", usage)
+	if *res == "NON-SET" {
+		str, present := os.LookupEnv(envVar)
+		if present {
+			*res = str
+		} else {
+			*res = defaultValue
+		}
+	}
+	return res
 }
