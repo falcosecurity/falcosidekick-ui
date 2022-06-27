@@ -2,8 +2,8 @@ package redis
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/Issif/redisearch-go/redisearch"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
@@ -36,15 +36,18 @@ func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Resul
 		return models.Results{}, err
 	}
 
-	fmt.Printf("%#v\n", results)
-
 	ag := make(models.Aggregation)
 	var all int64
 	for _, i := range results {
 		key := i[args.GroupBy]
 		count, _ := strconv.ParseInt(i["__generated_aliascount"].(string), 10, 64)
-		ag[key.(string)] += count
-		all += count
+		if len(key.(string)) == 0 {
+			continue
+		}
+		for _, j := range strings.Split(key.(string), ",") {
+			ag[j] += count
+			all += count
+		}
 	}
 
 	return models.Results{

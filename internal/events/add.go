@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/falcosecurity/falcosidekick-ui/internal/broadcast"
 	"github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
@@ -19,8 +18,5 @@ func Add(e *models.Event) error {
 	}
 
 	utils.WriteLog("info", fmt.Sprintf("NEW event 'event:%v'", e.Time.UnixNano()/1e3))
-
-	go broadcast.GetBroadcast().BroadcastMessage()
-
 	return nil
 }

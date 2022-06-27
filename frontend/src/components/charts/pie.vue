@@ -52,12 +52,22 @@ export default {
       },
     },
   },
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
+  },
   watch: {
     filters: {
       handler() {
         this.updateChart();
       },
       deep: true,
+    },
+    ticer: {
+      handler() {
+        this.updateChart();
+      },
     },
   },
   data() {

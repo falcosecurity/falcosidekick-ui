@@ -30,7 +30,7 @@ func returnResult(c echo.Context, r models.Results, err error) error {
 // @param        payload  body      models.Payload                  true  "Payload"
 // @Success      200      {string}  string                          ""
 // @Failure      500      {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       / [post]
+// @Router       /api/v1/ [post]
 func AddEvent(c echo.Context) error {
 	payload := new(models.Payload)
 	if err := c.Bind(payload); err != nil {
@@ -62,7 +62,7 @@ func AddEvent(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  models.ResultsCount    "Count Events Result"
 // @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /events/count [get]
+// @Router       /api/v1/events/count [get]
 func CountEvent(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("info", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
@@ -85,7 +85,7 @@ func CountEvent(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  models.ResultsCountBy  "Count Events By Result"
 // @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /events/count/:groupby [get]
+// @Router       /api/v1/events/count/:groupby [get]
 func CountByEvent(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("info", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
@@ -107,7 +107,7 @@ func CountByEvent(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  models.ResultsSearch   "Search Events Result"
 // @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /events/search [get]
+// @Router       /api/v1/events/search [get]
 func Search(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("info", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags, a.Page, a.Limit))
@@ -121,7 +121,7 @@ func Search(c echo.Context) error {
 // @Description  Healthcheck
 // @Produce      json
 // @Success      200  {string}  json  "{\"ok\"}"
-// @Router       /healthz [get]
+// @Router       /api/v1/healthz [get]
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
 func Healthz(c echo.Context) error {
 	msg := make(map[string]string)
@@ -135,7 +135,7 @@ func Healthz(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  models.Outputs                  "Outputs"
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /outputs [get]
+// @Router       /api/v1/outputs [get]
 func GetOutputs(c echo.Context) error {
 	utils.WriteLog("info", "GET outputs")
 	return c.JSON(http.StatusOK, models.GetOutputs())
@@ -147,7 +147,7 @@ func GetOutputs(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  configuration.Configuration     "Configuration"
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /configuration [get]
+// @Router       /api/v1/configuration [get]
 func GetConfiguration(c echo.Context) error {
 	utils.WriteLog("info", "GET config")
 	return c.JSON(http.StatusOK, configuration.GetConfiguration())
@@ -159,7 +159,7 @@ func GetConfiguration(c echo.Context) error {
 // @Produce      json
 // @Success      200  {object}  configuration.VersionInfo       "Version"
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /version [get]
+// @Router       /api/v1/version [get]
 func GetVersionInfo(c echo.Context) error {
 	utils.WriteLog("info", "GET version")
 	return c.JSON(http.StatusOK, configuration.GetVersionInfo())

@@ -52,6 +52,11 @@ export default {
       },
     },
   },
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
+  },
   watch: {
     filters: {
       handler() {
@@ -59,6 +64,11 @@ export default {
       },
       deep: true,
       immediate: true,
+    },
+    ticer: {
+      handler() {
+        this.updateChart();
+      },
     },
   },
   data() {

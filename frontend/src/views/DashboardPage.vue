@@ -6,7 +6,8 @@
       sm="12">
         <Filters
         @send-filters="setFilters(...arguments)"
-        :addItem="newItem">
+        :addItem="newItem"
+        >
         </Filters>
       </v-col>
     </v-row>

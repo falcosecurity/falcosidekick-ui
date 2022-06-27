@@ -17,6 +17,13 @@
             {{page.title}}
           </v-tab>
         </v-tabs>
+        refresh
+        <v-select
+          style="margin-top: 15px; margin-left: 15px; max-width: 80px;"
+          v-model="refresh"
+          :items="refreshIntervals"
+          dense
+        ></v-select>
       </template>
       <v-spacer/>
       <Counters></Counters>
@@ -34,6 +41,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import Counters from './components/counters.vue';
 
 export default {
@@ -64,9 +72,58 @@ export default {
         //   title: 'Test',
         // },
       ],
+      timer: '',
+      refresh: '10s',
     };
   },
+  computed: {
+    refreshInterval() {
+      return this.$store.state.refreshInterval;
+    },
+    refreshIntervals() {
+      return this.$store.state.refreshIntervals;
+    },
+  },
+  watch: {
+    refresh: {
+      handler() {
+        this.setRefreshInterval(this.refresh);
+        this.setTimer();
+        if (this.$route.query.refresh !== this.refresh || this.$route.query.refresh === '') {
+          this.$router.push({ query: { ...this.$route.query, refresh: this.refresh } });
+        }
+      },
+    },
+  },
+  methods: {
+    ...mapActions([
+      'increment',
+      'setRefreshInterval',
+    ]),
+    cancelAutoUpdate() {
+      clearInterval(this.timer);
+    },
+    setTimer() {
+      clearInterval(this.timer);
+      this.timer = setInterval(() => {
+        if (this.refreshInterval !== 0) {
+          this.increment();
+        }
+      }, this.$store.state.refreshInterval);
+    },
+  },
+  created() {
+    if (typeof this.$route.query.refresh !== 'undefined') {
+      this.refresh = this.$route.query.refresh;
+      this.setRefreshInterval(this.refresh);
+    }
+    this.setTimer();
+  },
+  beforeDestroy() {
+    this.cancelAutoUpdate();
+  },
 };
+
 </script>
 
 <style scoped>
