@@ -26,7 +26,7 @@
     "host": "\u003cyour-domain\u003e:2802",
     "basePath": "/api/v1",
     "paths": {
-        "/": {
+        "/api/v1/": {
             "post": {
                 "description": "Add Event",
                 "consumes": [
@@ -63,7 +63,7 @@
                 }
             }
         },
-        "/configuration": {
+        "/api/v1/configuration": {
             "get": {
                 "description": "Configuration",
                 "produces": [
@@ -86,7 +86,7 @@
                 }
             }
         },
-        "/events/count": {
+        "/api/v1/events/count": {
             "get": {
                 "description": "Count Events",
                 "produces": [
@@ -153,7 +153,7 @@
                 }
             }
         },
-        "/events/count/:groupby": {
+        "/api/v1/events/count/:groupby": {
             "get": {
                 "description": "Count Events By",
                 "produces": [
@@ -227,7 +227,7 @@
                 }
             }
         },
-        "/events/search": {
+        "/api/v1/events/search": {
             "get": {
                 "description": "Search Events",
                 "produces": [
@@ -294,7 +294,7 @@
                 }
             }
         },
-        "/healthz": {
+        "/api/v1/healthz": {
             "get": {
                 "description": "Healthcheck",
                 "produces": [
@@ -317,7 +317,7 @@
                 }
             }
         },
-        "/outputs": {
+        "/api/v1/outputs": {
             "get": {
                 "description": "Healthcheck",
                 "produces": [
@@ -343,7 +343,7 @@
                 }
             }
         },
-        "/version": {
+        "/api/v1/version": {
             "get": {
                 "description": "Version",
                 "produces": [
@@ -383,6 +383,9 @@
                 },
                 "redis-server": {
                     "type": "string"
+                },
+                "ttl": {
+                    "type": "integer"
                 }
             }
         },

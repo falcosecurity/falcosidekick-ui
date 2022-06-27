@@ -52,6 +52,7 @@ export default {
   },
   data() {
     return {
+      count: 0,
       countByPriority: {
         statistics: {
           all: 0,
@@ -59,28 +60,34 @@ export default {
       },
     };
   },
-  mounted() {
-    // this.filters.since = '24h';
-    this.countPriorities();
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
   },
   watch: {
     filters: {
       handler() {
-        this.countPriorities();
+        this.updateChart();
       },
       deep: true,
+    },
+    ticer: {
+      handler() {
+        this.updateChart();
+      },
     },
   },
   methods: {
     priorityToColor(prio) {
       return utils.priorityToColor(prio);
     },
-    countPriorities() {
-      this.countByPriority = {
-        statistics: {
-          all: 0,
-        },
-      };
+    updateChart() {
+      // this.countByPriority = {
+      //   statistics: {
+      //     all: 0,
+      //   },
+      // };
       requests.countByEvents(
         'priority',
         this.filters.sources,
@@ -97,6 +104,9 @@ export default {
     addItemToList(item) {
       this.$emit('add-item-to-filters', item);
     },
+  },
+  mounted() {
+    this.updateChart();
   },
 };
 </script>

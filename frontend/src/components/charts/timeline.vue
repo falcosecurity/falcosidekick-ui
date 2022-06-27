@@ -39,12 +39,22 @@ export default {
       },
     },
   },
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
+  },
   watch: {
     filters: {
       handler() {
         this.updateChart();
       },
       deep: true,
+    },
+    ticer: {
+      handler() {
+        this.updateChart();
+      },
     },
   },
   data() {
@@ -112,12 +122,9 @@ export default {
             this.chart.update();
             return;
           }
-          if (l === undefined) {
-            l = dayjs().toISOString();
-          }
           let unit = '';
           let delta = '';
-          let oldest = 60;
+          let oldest = '';
           switch (this.filters.since) {
             case '5min':
               this.chartData.options.scales.x.time.unit = 'second';
@@ -170,6 +177,9 @@ export default {
             default:
               break;
           }
+          if (l === undefined) {
+            l = dayjs().add(delta, unit).toISOString();
+          }
           Object.values(results).forEach((value) => {
             let f = '';
             switch (this.groupby) {
@@ -186,7 +196,7 @@ export default {
             if (this.stats[f] === undefined) {
               this.stats[f] = {
                 count: 0,
-                data: [{ x: dayjs().add(delta, unit).toISOString(), y: 0 }],
+                data: [{ x: l, y: 0 }],
               };
             }
             this.stats[f].count += 1;
@@ -236,8 +246,16 @@ export default {
             };
             i += 1;
           });
+          this.chartData.data.datasets.sort((data1, data2) => this.compareDatasets(data1, data2));
           this.chart.update();
         });
+    },
+    compareDatasets(data1, data2) {
+      const obj1 = data1.label.toUpperCase();
+      const obj2 = data2.label.toUpperCase();
+      if (obj1 < obj2) { return -1; }
+      if (obj1 > obj2) { return 1; }
+      return 0;
     },
     async updateChart() {
       this.chartData.data.datasets = [];

@@ -13,6 +13,8 @@ definitions:
         type: integer
       redis-server:
         type: string
+      ttl:
+        type: integer
     type: object
   configuration.VersionInfo:
     properties:
@@ -113,7 +115,7 @@ info:
   title: Falcosidekick UI
   version: "1.0"
 paths:
-  /:
+  /api/v1/:
     post:
       consumes:
       - application/json
@@ -137,7 +139,7 @@ paths:
           schema:
             type: string
       summary: Add Event
-  /configuration:
+  /api/v1/configuration:
     get:
       description: Configuration
       produces:
@@ -152,7 +154,7 @@ paths:
           schema:
             type: string
       summary: Configuration
-  /events/count:
+  /api/v1/events/count:
     get:
       description: Count Events
       parameters:
@@ -196,7 +198,7 @@ paths:
           schema:
             type: string
       summary: Count Events
-  /events/count/:groupby:
+  /api/v1/events/count/:groupby:
     get:
       description: Count Events By
       parameters:
@@ -245,7 +247,7 @@ paths:
           schema:
             type: string
       summary: Count Events By
-  /events/search:
+  /api/v1/events/search:
     get:
       description: Search Events
       parameters:
@@ -289,7 +291,7 @@ paths:
           schema:
             type: string
       summary: Search Events
-  /healthz:
+  /api/v1/healthz:
     get:
       description: Healthcheck
       produces:
@@ -304,7 +306,7 @@ paths:
           schema:
             type: string
       summary: Healthcheck
-  /outputs:
+  /api/v1/outputs:
     get:
       description: Healthcheck
       produces:
@@ -321,7 +323,7 @@ paths:
           schema:
             type: string
       summary: List Outputs
-  /version:
+  /api/v1/version:
     get:
       description: Version
       produces:

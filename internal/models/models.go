@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
@@ -97,4 +98,12 @@ func emptyNull(s string) string {
 		return ""
 	}
 	return s
+}
+
+func (e Event) String() string {
+	j, err := json.Marshal(e)
+	if err != nil {
+		return ""
+	}
+	return string(j)
 }

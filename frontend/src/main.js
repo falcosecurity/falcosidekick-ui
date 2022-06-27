@@ -5,6 +5,9 @@ import 'vuetify/dist/vuetify.min.css';
 import '@mdi/font/css/materialdesignicons.css';
 import router from './router';
 import App from './App.vue';
+import store from './store';
+
+// createApp(App).use(store).mount('#app');
 
 const capitalize = function capitalize(value) {
   if (!value) return '';
@@ -27,6 +30,7 @@ Vue.use(Vuetify);
 new Vue({
   vuetify,
   router,
+  store,
   components: { App },
   render: h => h(App),
 }).$mount('#app');

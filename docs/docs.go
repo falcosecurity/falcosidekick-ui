@@ -30,7 +30,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
+        "/api/v1/": {
             "post": {
                 "description": "Add Event",
                 "consumes": [
@@ -67,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configuration": {
+        "/api/v1/configuration": {
             "get": {
                 "description": "Configuration",
                 "produces": [
@@ -90,7 +90,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/count": {
+        "/api/v1/events/count": {
             "get": {
                 "description": "Count Events",
                 "produces": [
@@ -157,7 +157,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/count/:groupby": {
+        "/api/v1/events/count/:groupby": {
             "get": {
                 "description": "Count Events By",
                 "produces": [
@@ -231,7 +231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/search": {
+        "/api/v1/events/search": {
             "get": {
                 "description": "Search Events",
                 "produces": [
@@ -298,7 +298,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/healthz": {
+        "/api/v1/healthz": {
             "get": {
                 "description": "Healthcheck",
                 "produces": [
@@ -321,7 +321,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/outputs": {
+        "/api/v1/outputs": {
             "get": {
                 "description": "Healthcheck",
                 "produces": [
@@ -347,7 +347,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/version": {
+        "/api/v1/version": {
             "get": {
                 "description": "Version",
                 "produces": [
@@ -387,6 +387,9 @@ const docTemplate = `{
                 },
                 "redis-server": {
                     "type": "string"
+                },
+                "ttl": {
+                    "type": "integer"
                 }
             }
         },

@@ -9,7 +9,6 @@ import (
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 	"github.com/falcosecurity/falcosidekick-ui/internal/api"
-	"github.com/falcosecurity/falcosidekick-ui/internal/broadcast"
 	"github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
@@ -87,7 +86,6 @@ func init() {
 	redis.CreateClient()
 	redis.CreateIndex(redis.GetClient())
 	models.CreateOutputs()
-	broadcast.CreateBroadcast()
 }
 
 // @title        Falcosidekick UI
@@ -127,13 +125,13 @@ func main() {
 		}
 		return nil
 	})
-	e.POST("/", api.AddEvent).Name = "add-event"
-	e.GET("/ws", broadcast.WebSocketBroadcast).Name = "websocket"
+	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
 	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
 	// }))
 
 	apiRoute := e.Group("/api/v1")
+	apiRoute.POST("/", api.AddEvent).Name = "add-event"
 	apiRoute.GET("/configuration", api.GetConfiguration).Name = "get-configuration"
 	apiRoute.GET("/version", api.GetVersionInfo).Name = "get-version"
 	apiRoute.GET("/healthz", api.Healthz).Name = "healthz"

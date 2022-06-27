@@ -54,7 +54,8 @@ The UI is reachable by default at `http://localhost:2802/`.
 
 #### API
 
-> The base URL for the API is `http://localhost/api/v1/`.
+> The prefix for access to the API is `/api/v1/`.
+> The base URL for the API is `http://localhost:2802/api/v1/`.
 
 | Route                       | Method | Query Parameters                                                         | Usage                                |
 | :-------------------------- | :----: | :----------------------------------------------------------------------- | :----------------------------------- |

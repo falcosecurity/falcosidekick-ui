@@ -175,6 +175,7 @@
         <v-spacer></v-spacer>
         <Counters
           :filters="filters"
+          :ticer="ticer"
           @add-item-to-filters="addItemToFilters('priorities', ...arguments)"
         ></Counters>
       </v-col>
@@ -213,6 +214,11 @@ export default {
       debounce: null,
     };
   },
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
+  },
   watch: {
     addItem: {
       handler() {
@@ -229,19 +235,29 @@ export default {
           this.listItems('tags');
           this.$router.push({ query: { ...this.$route.query, since: this.filters.since } });
         }
-        this.$router.push({
-          query: {
-            priority: this.filters.priorities,
-            rule: this.filters.rule,
-            source: this.filters.sources,
-            tags: this.filters.tags,
-            filter: this.filters.search,
-            since: this.filters.since,
-          },
-        });
+        if (this.filters.priorities !== []) {
+          this.$router.push({ query: { ...this.$route.query, priority: this.filters.priorities } });
+        }
+        if (this.filters.sources !== []) {
+          this.$router.push({ query: { ...this.$route.query, source: this.filters.sources } });
+        }
+        if (this.filters.rule !== '') {
+          this.$router.push({ query: { ...this.$route.query, rule: this.filters.rule } });
+        }
+        if (this.filters.tags !== '') {
+          this.$router.push({ query: { ...this.$route.query, tags: this.filters.tags } });
+        }
         this.$emit('send-filters', this.filters);
       },
       deep: true,
+    },
+    ticer: {
+      handler() {
+        this.listItems('priority');
+        this.listItems('rule');
+        this.listItems('source');
+        this.listItems('tags');
+      },
     },
   },
   methods: {

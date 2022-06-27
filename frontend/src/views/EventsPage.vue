@@ -138,6 +138,11 @@ export default {
       debounce: null,
     };
   },
+  computed: {
+    ticer() {
+      return this.$store.state.ticer;
+    },
+  },
   watch: {
     options: {
       handler() {
@@ -158,6 +163,13 @@ export default {
           this.resetPage();
           this.searchEvents();
         }, 600);
+      },
+    },
+    ticer: {
+      handler() {
+        if (this.page === 1) {
+          this.searchEvents();
+        }
       },
     },
   },
