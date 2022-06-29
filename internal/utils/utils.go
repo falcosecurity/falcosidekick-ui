@@ -28,15 +28,15 @@ func CheckErr(e error) {
 	}
 }
 
-func WriteLog(level, message string, fatal bool) {
+func WriteLog(level, message string) {
 	var prefix string
 	switch level {
-	case "error":
+	case "error", "fatal":
 		prefix = "[ERROR]:"
 	case "info":
 		prefix = "[INFO] :"
 	}
-	if fatal {
+	if level == "fatal" {
 		log.Fatalf(fmt.Sprintf("%v %v\n", prefix, message))
 	}
 	log.Printf("%v %v", prefix, message)
@@ -80,15 +80,21 @@ func RemoveDuplicate(input []string) []string {
 	return singleKeys
 }
 
-func GetFlagOrEnvParam(flagString string, envVar string, defaultValue string, usage string) *string {
-	res := flag.String(flagString, "NON-SET", usage)
-	if *res == "NON-SET" {
-		str, present := os.LookupEnv(envVar)
-		if present {
-			*res = str
-		} else {
-			*res = defaultValue
+func GetStringFlagOrEnvParam(flagString string, envVar string, defaultValue string, usage string) *string {
+	envvar, present := os.LookupEnv(envVar)
+	if present {
+		defaultValue = envvar
+	}
+	return flag.String(flagString, defaultValue, usage)
+}
+
+func GetIntFlagOrEnvParam(flagString string, envVar string, defaultValue int, usage string) *int {
+	envvar, present := os.LookupEnv(envVar)
+	if present {
+		val, err := strconv.Atoi(envvar)
+		if err == nil {
+			defaultValue = val
 		}
 	}
-	return res
+	return flag.Int(flagString, defaultValue, usage)
 }

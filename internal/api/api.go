@@ -13,7 +13,7 @@ import (
 
 func returnResult(c echo.Context, r models.Results, err error) error {
 	if err != nil {
-		utils.WriteLog("error", err.Error(), false)
+		utils.WriteLog("error", err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if c.QueryParam("pretty") == "true" {
@@ -34,7 +34,7 @@ func returnResult(c echo.Context, r models.Results, err error) error {
 func AddEvent(c echo.Context) error {
 	payload := new(models.Payload)
 	if err := c.Bind(payload); err != nil {
-		utils.WriteLog("error", err.Error(), false)
+		utils.WriteLog("error", err.Error())
 		err2 := echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		if err2 != nil {
 			return err
@@ -65,7 +65,7 @@ func AddEvent(c echo.Context) error {
 // @Router       /events/count [get]
 func CountEvent(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("info", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags), false)
+	utils.WriteLog("info", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
 
 	r, err := events.Count(a)
 	return returnResult(c, r, err)
@@ -88,7 +88,7 @@ func CountEvent(c echo.Context) error {
 // @Router       /events/count/:groupby [get]
 func CountByEvent(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("info", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags), false)
+	utils.WriteLog("info", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
 
 	r, err := events.CountBy(a)
 	return returnResult(c, r, err)
@@ -110,7 +110,7 @@ func CountByEvent(c echo.Context) error {
 // @Router       /events/search [get]
 func Search(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("info", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags, a.Page, a.Limit), false)
+	utils.WriteLog("info", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags, a.Page, a.Limit))
 
 	r, err := events.Search(a)
 	return returnResult(c, r, err)
@@ -137,7 +137,7 @@ func Healthz(c echo.Context) error {
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
 // @Router       /outputs [get]
 func GetOutputs(c echo.Context) error {
-	utils.WriteLog("info", "GET outputs", false)
+	utils.WriteLog("info", "GET outputs")
 	return c.JSON(http.StatusOK, models.GetOutputs())
 }
 
@@ -149,7 +149,7 @@ func GetOutputs(c echo.Context) error {
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
 // @Router       /configuration [get]
 func GetConfiguration(c echo.Context) error {
-	utils.WriteLog("info", "GET config", false)
+	utils.WriteLog("info", "GET config")
 	return c.JSON(http.StatusOK, configuration.GetConfiguration())
 }
 
@@ -161,6 +161,6 @@ func GetConfiguration(c echo.Context) error {
 // @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
 // @Router       /version [get]
 func GetVersionInfo(c echo.Context) error {
-	utils.WriteLog("info", "GET version", false)
+	utils.WriteLog("info", "GET version")
 	return c.JSON(http.StatusOK, configuration.GetVersionInfo())
 }

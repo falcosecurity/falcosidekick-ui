@@ -13,7 +13,7 @@ func Count(a *models.Arguments) (models.Results, error) {
 	c := redis.GetClient()
 	r, err := redis.CountKey(c, a)
 	if err != nil {
-		utils.WriteLog("error", err.Error(), false)
+		utils.WriteLog("error", err.Error())
 		return models.Results{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return r, nil
@@ -23,7 +23,7 @@ func CountBy(a *models.Arguments) (models.Results, error) {
 	c := redis.GetClient()
 	r, err := redis.CountKeyBy(c, a)
 	if err != nil {
-		utils.WriteLog("error", err.Error(), false)
+		utils.WriteLog("error", err.Error())
 		return models.Results{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return r, nil

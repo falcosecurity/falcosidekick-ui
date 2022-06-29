@@ -1,4 +1,6 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/Issif/redisearch-go v1.1.2-0.20220629142418-f66689e2ff5c h1:k6V2ixK2I6NykJMiCj+O8+2xsfBttF2QxQjlPpzPTNg=
+github.com/Issif/redisearch-go v1.1.2-0.20220629142418-f66689e2ff5c/go.mod h1:UQGs8ZvEw5/QCKkFEMMiarV7yALg32yVqwB0tq0x7y8=
 github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/PuerkitoBio/purell v1.1.1 h1:WEQqlqaGbrPkxLJWfBwQmfEAE1Z7ONdDLqrN38tNFfI=

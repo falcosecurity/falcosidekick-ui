@@ -3,7 +3,7 @@ package redis
 import (
 	"encoding/json"
 
-	"github.com/RediSearch/redisearch-go/redisearch"
+	"github.com/Issif/redisearch-go/redisearch"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 )
 
