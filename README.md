@@ -16,14 +16,17 @@ Events are stored in a `Redis` server with [`Redisearch`](https://github.com/Red
 #### Precedence: flag value -> environment variable value -> default value
 
 ```shell
-  -a string
-        Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
-  -d    Enable dark mode as default
-  -p int
-        Listen Port (default 2802, environment "FALCOSIDEKICK_UI_PORT")
-  -r string
-        Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
-  -x    Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
+Usage of Falcosidekick-UI:  
+-a string
+      Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
+-d    Enable dark mode as default
+-p int
+      Listen Port (default 2802, environment "FALCOSIDEKICK_UI_PORT")
+-r string
+      Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
+-t int
+      TTL for keys (default 0, environment "FALCOSIDEKICK_UI_TTL")
+-x    Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 ```
 
 ### Run with docker

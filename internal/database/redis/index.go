@@ -1,14 +1,14 @@
 package redis
 
 import (
-	"github.com/RediSearch/redisearch-go/redisearch"
+	"github.com/Issif/redisearch-go/redisearch"
 	utils "github.com/falcosecurity/falcosidekick-ui/internal/utils"
 )
 
 func isIndexExit(client *redisearch.Client) bool {
 	_, err := client.Info()
 	if err != nil {
-		utils.WriteLog("info", "Index does not exist", false)
+		utils.WriteLog("info", "Index does not exist")
 		return false
 	}
 	return true
@@ -33,7 +33,7 @@ func CreateIndex(client *redisearch.Client) {
 	// client.Drop()
 
 	// Create the index with the given schema
-	utils.WriteLog("info", "Create Index", false)
+	utils.WriteLog("info", "Create Index")
 	err := client.CreateIndex(schema)
 	utils.CheckErr(err)
 }

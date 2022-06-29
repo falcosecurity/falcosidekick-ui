@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 
-	"github.com/RediSearch/redisearch-go/redisearch"
+	"github.com/Issif/redisearch-go/redisearch"
 )
 
 var client *redisearch.Client

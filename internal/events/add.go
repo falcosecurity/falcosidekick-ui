@@ -14,11 +14,11 @@ import (
 func Add(e *models.Event) error {
 	client := redis.GetClient()
 	if err := redis.SetKey(client, e); err != nil {
-		utils.WriteLog("error", err.Error(), false)
+		utils.WriteLog("error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	utils.WriteLog("info", fmt.Sprintf("NEW event 'event:%v'", e.Time.UnixNano()/1e3), false)
+	utils.WriteLog("info", fmt.Sprintf("NEW event 'event:%v'", e.Time.UnixNano()/1e3))
 
 	go broadcast.GetBroadcast().BroadcastMessage()
 

@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 	"github.com/falcosecurity/falcosidekick-ui/internal/api"
@@ -35,20 +34,33 @@ type CustomValidator struct {
 }
 
 func init() {
-	addr := utils.GetFlagOrEnvParam("a", "FALCOSIDEKICK_UI_ADDR", "0.0.0.0", "Listen Address")
-	portString := utils.GetFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", "2802", "Listen Port")
-	port, err := strconv.Atoi(*portString)
-	if err != nil {
-		utils.WriteLog("error", "Failed to parse Listen Port", true)
-	}
-	redisserver := utils.GetFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
+	addr := utils.GetStringFlagOrEnvParam("a", "FALCOSIDEKICK_UI_ADDR", "0.0.0.0", "Listen Address")
+	redisserver := utils.GetStringFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
+	port := utils.GetIntFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", 2802, "Listen Port")
+	ttl := utils.GetIntFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", 0, "TTL for keys")
+	version := flag.Bool("v", false, "Print version")
 	dev := flag.Bool("x", false, "Allow CORS for development")
 	if !*dev {
 		_, *dev = os.LookupEnv("FALCOSIDEKICK_UI_DEV")
 	}
 
+	flag.Usage = func() {
+		help := `Usage of Falcosidekick-UI:  
+-a string
+      Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
+-d    Enable dark mode as default
+-p int
+      Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
+-r string
+      Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
+-t int
+      TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
+-x    Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
+`
+		fmt.Println(help)
+	}
+
 	// darkmod := flag.Bool("d", false, "Enable dark mode as default")
-	version := flag.Bool("v", false, "Print version")
 	flag.Parse()
 
 	if *version {
@@ -60,16 +72,17 @@ func init() {
 	configuration.CreateConfiguration()
 	config := configuration.GetConfiguration()
 	if ip := net.ParseIP(*addr); ip == nil {
-		utils.WriteLog("error", "Failed to parse Listen Address", true)
+		utils.WriteLog("fatal", "Failed to parse Listen Address")
 	}
 	config.ListenAddress = *addr
-	config.ListenPort = port
+	config.ListenPort = *port
 	// config.DisplayMode = light
 	// if *darkmod {
 	// 	config.DisplayMode = dark
 	// }
 	config.RedisServer = *redisserver
 	config.DevMode = *dev
+	config.TTL = *ttl
 
 	redis.CreateClient()
 	redis.CreateIndex(redis.GetClient())
@@ -103,7 +116,7 @@ func main() {
 	e.Validator = v
 
 	if c.DevMode {
-		utils.WriteLog("info", "DEV mode enabled", false)
+		utils.WriteLog("info", "DEV mode enabled")
 		e.Use(middleware.CORS())
 	}
 
@@ -115,6 +128,7 @@ func main() {
 		return nil
 	})
 	e.POST("/", api.AddEvent).Name = "add-event"
+	e.GET("/ws", broadcast.WebSocketBroadcast).Name = "websocket"
 
 	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
 	// }))
@@ -125,7 +139,6 @@ func main() {
 	apiRoute.GET("/healthz", api.Healthz).Name = "healthz"
 	apiRoute.GET("/outputs", api.GetOutputs).Name = "list-outputs"
 	apiRoute.GET("/config", api.GetConfiguration).Name = "display-cnfig"
-	apiRoute.GET("/ws", broadcast.WebSocketBroadcast).Name = "websocket"
 
 	eventsRoute := apiRoute.Group("/events")
 	eventsRoute.POST("/add", api.AddEvent).Name = "add-event"

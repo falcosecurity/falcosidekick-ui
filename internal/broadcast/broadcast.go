@@ -26,7 +26,7 @@ func (b *Broadcast) BroadcastMessage() {
 }
 
 func WebSocketBroadcast(c echo.Context) error {
-	utils.WriteLog("info", "New WebSocket Connection", false)
+	utils.WriteLog("info", "New WebSocket Connection")
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		b := GetBroadcast()
