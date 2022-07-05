@@ -2,10 +2,5 @@ approvers:
   - Issif
   - cpanato
   - fjogeleit
-reviewers:
-  - Issif
-  - cpanato
-  - leogr
-  - fjogeleit
 emeritus_approvers:
   - leogr
