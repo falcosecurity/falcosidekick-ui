@@ -126,6 +126,8 @@ jobs:
           name: Prepare env
           command: |
             echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
+            aws ecr-public get-login-password --region us-east-1 | \
+              docker login --username AWS --password-stdin public.ecr.aws/falcosecurity
       - run:
           name: Release
           no_output_timeout: 1h
