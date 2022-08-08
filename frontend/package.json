@@ -24,7 +24,7 @@
     "dayjs": "^1.11.1",
     "lint-staged": "^7.3.0",
     "material-design-icons-iconfont": "^6.5.0",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "numeral": "^2.0.6",
     "register-service-worker": "^1.5.2",
     "sass": "^1.49.11",
