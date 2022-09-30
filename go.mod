@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/Issif/redisearch-go v1.1.2-0.20220629142418-f66689e2ff5c
 	github.com/go-playground/validator/v10 v10.9.0
-	github.com/labstack/echo/v4 v4.6.1
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/swaggo/echo-swagger v1.3.0
 	github.com/swaggo/swag v1.8.1
 )
