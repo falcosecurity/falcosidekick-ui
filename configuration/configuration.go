@@ -6,6 +6,7 @@ type Configuration struct {
 	ListenPort    int    `json:"listen-port"`
 	RedisServer   string `json:"redis-server"`
 	DevMode       bool   `json:"dev-mode"`
+	LogLevel      string `json:"log-level"`
 	TTL           int    `json:"ttl"`
 }
 
