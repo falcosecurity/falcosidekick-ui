@@ -8,7 +8,7 @@ import (
 func isIndexExit(client *redisearch.Client) bool {
 	_, err := client.Info()
 	if err != nil {
-		utils.WriteLog("info", "Index does not exist")
+		utils.WriteLog("warning", "Index does not exist")
 		return false
 	}
 	return true
@@ -33,7 +33,7 @@ func CreateIndex(client *redisearch.Client) {
 	// client.Drop()
 
 	// Create the index with the given schema
-	utils.WriteLog("info", "Create Index")
+	utils.WriteLog("warning", "Create Index")
 	err := client.CreateIndex(schema)
 	utils.CheckErr(err)
 }

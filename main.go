@@ -38,10 +38,8 @@ func init() {
 	port := utils.GetIntFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", 2802, "Listen Port")
 	ttl := utils.GetIntFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", 0, "TTL for keys")
 	version := flag.Bool("v", false, "Print version")
-	dev := flag.Bool("x", false, "Allow CORS for development")
-	if !*dev {
-		_, *dev = os.LookupEnv("FALCOSIDEKICK_UI_DEV")
-	}
+	dev := utils.GetBoolFlagOrEnvParam("x", "FALCOSIDEKICK_UI_DEV", false, "Allow CORS for development")
+	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "")
 
 	flag.Usage = func() {
 		help := `Usage of Falcosidekick-UI:  
@@ -55,6 +53,7 @@ func init() {
 -t int
       TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -x    Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
+-l    Log level: "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 `
 		fmt.Println(help)
 	}
@@ -82,6 +81,7 @@ func init() {
 	config.RedisServer = *redisserver
 	config.DevMode = *dev
 	config.TTL = *ttl
+	config.LogLevel = *loglevel
 
 	redis.CreateClient()
 	redis.CreateIndex(redis.GetClient())
@@ -112,14 +112,17 @@ func main() {
 	c := configuration.GetConfiguration()
 
 	e.Validator = v
+	e.HideBanner = true
+	e.HidePort = true
 
 	if c.DevMode {
-		utils.WriteLog("info", "DEV mode enabled")
+		utils.WriteLog("warning", "DEV mode enabled")
 		e.Use(middleware.CORS())
 	}
+	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", c.ListenAddress, c.ListenPort))
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
-	e.GET("/docs", func(c echo.Context) error { //2
+	e.GET("/docs", func(c echo.Context) error {
 		if err := c.Redirect(http.StatusPermanentRedirect, "docs/"); err != nil {
 			return err
 		}

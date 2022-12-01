@@ -2,12 +2,13 @@ package utils
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"sort"
 	"strconv"
+
+	"github.com/falcosecurity/falcosidekick-ui/configuration"
 )
 
 const (
@@ -29,17 +30,27 @@ func CheckErr(e error) {
 }
 
 func WriteLog(level, message string) {
+	c := configuration.GetConfiguration()
 	var prefix string
 	switch level {
-	case "error", "fatal":
+	case "fatal":
 		prefix = "[ERROR]:"
+		log.Fatalf("%v %v\n", prefix, message)
 	case "info":
+		if c.LogLevel != "info" {
+			return
+		}
 		prefix = "[INFO] :"
+	case "warning":
+		if c.LogLevel != "info" && c.LogLevel != "warning" {
+			return
+		}
+		prefix = "[WARN] :"
+	case "error":
+		prefix = "[ERROR]:"
 	}
-	if level == "fatal" {
-		log.Fatalf(fmt.Sprintf("%v %v\n", prefix, message))
-	}
-	log.Printf("%v %v", prefix, message)
+
+	log.Printf("%v %v\n", prefix, message)
 }
 
 func ConvertToSeconds(s string) int {
@@ -86,6 +97,16 @@ func GetStringFlagOrEnvParam(flagString string, envVar string, defaultValue stri
 		defaultValue = envvar
 	}
 	return flag.String(flagString, defaultValue, usage)
+}
+
+func GetBoolFlagOrEnvParam(flagString string, envVar string, defaultValue bool, usage string) *bool {
+	envvar, present := os.LookupEnv(envVar)
+	if present {
+		if envvar == "true" {
+			defaultValue = true
+		}
+	}
+	return flag.Bool(flagString, defaultValue, usage)
 }
 
 func GetIntFlagOrEnvParam(flagString string, envVar string, defaultValue int, usage string) *int {
