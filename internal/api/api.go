@@ -70,7 +70,7 @@ func AddEvent(c echo.Context) error {
 // @Router       /api/v1/events/count [get]
 func CountEvent(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("debug", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
+	utils.WriteLog("debug", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', hostname= '%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags))
 
 	r, err := events.Count(a)
 	return returnResult(c, r, err)
@@ -93,7 +93,7 @@ func CountEvent(c echo.Context) error {
 // @Router       /api/v1/events/count/:groupby [get]
 func CountByEvent(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("debug", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags))
+	utils.WriteLog("debug", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', hostname='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags))
 
 	r, err := events.CountBy(a)
 	return returnResult(c, r, err)
@@ -115,7 +115,7 @@ func CountByEvent(c echo.Context) error {
 // @Router       /api/v1/events/search [get]
 func Search(c echo.Context) error {
 	a := models.GetArguments(c)
-	utils.WriteLog("debug", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Filter, a.Tags, a.Page, a.Limit))
+	utils.WriteLog("debug", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', hostname='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags, a.Page, a.Limit))
 
 	r, err := events.Search(a)
 	return returnResult(c, r, err)

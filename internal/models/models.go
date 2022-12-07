@@ -62,6 +62,7 @@ type Arguments struct {
 	Rule     string
 	Since    string
 	Source   string
+	Hostname string
 	Tags     string
 	Pretty   string
 	Page     int
@@ -85,6 +86,7 @@ func GetArguments(c echo.Context) *Arguments {
 		Rule:     emptyNull(c.QueryParam("rule")),
 		Since:    emptyNull(c.QueryParam("since")),
 		Source:   emptyNull(c.QueryParam("source")),
+		Hostname: emptyNull(c.QueryParam("hostname")),
 		Tags:     emptyNull(c.QueryParam("tags")),
 		Pretty:   c.QueryParam("pretty"),
 		GroupBy:  c.Param("groupby"),

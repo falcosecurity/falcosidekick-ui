@@ -30,8 +30,9 @@ export default {
       default() {
         return {
           priorities: [],
-          rule: '',
+          rule: [],
           tags: [],
+          hostnames: [],
           sources: [],
           search: '',
           since: '',
@@ -107,6 +108,7 @@ export default {
       let l = last;
       requests.searchEvents(
         this.filters.sources,
+        this.filters.hostnames,
         this.filters.priorities,
         this.filters.rule,
         this.filters.search,
@@ -266,6 +268,9 @@ export default {
   created() {
     if (typeof this.$route.query.source !== 'undefined') {
       this.filters.sources = this.$route.query.source;
+    }
+    if (typeof this.$route.query.hostname !== 'undefined') {
+      this.filters.hostnames = this.$route.query.hostname;
     }
     if (typeof this.$route.query.priority !== 'undefined') {
       this.filters.priorities = this.$route.query.priority;

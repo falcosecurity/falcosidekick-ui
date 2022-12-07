@@ -10,7 +10,7 @@ import (
 )
 
 func newQuery(args *models.Arguments) string {
-	var filter, priority, rule, source, tags, since string
+	var filter, priority, rule, source, hostname, tags, since string
 	if args.Filter != "" {
 		filter = args.Filter + "* "
 	}
@@ -35,6 +35,13 @@ func newQuery(args *models.Arguments) string {
 		}
 		source = fmt.Sprintf("(%v) ", strings.Join(r, " | "))
 	}
+	if args.Hostname != "" {
+		r := strings.Split(args.Hostname, ",")
+		for i, j := range r {
+			r[i] = fmt.Sprintf("@hostname:%v", j)
+		}
+		hostname = fmt.Sprintf("(%v) ", strings.Join(r, " | "))
+	}
 	if args.Tags != "" {
 		r := strings.Split(args.Tags, ",")
 		for i, j := range r {
@@ -48,5 +55,5 @@ func newQuery(args *models.Arguments) string {
 	}
 	since = fmt.Sprintf("@timestamp:[%v inf]", s)
 
-	return fmt.Sprintf("%v%v%v%v%v%v", filter, priority, rule, source, tags, since)
+	return fmt.Sprintf("%v%v%v%v%v%v%v", filter, priority, rule, source, hostname, tags, since)
 }
