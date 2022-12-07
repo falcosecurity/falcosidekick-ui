@@ -47,12 +47,13 @@ export const requests = {
       },
     });
   },
-  countEvents(source, priority, rule, filter, tags, since) {
+  countEvents(source, hostname, priority, rule, filter, tags, since) {
     return api.request({
       url: '/events/count',
       method: 'get',
       params: {
         source: `${source}`,
+        hostname: `${hostname}`,
         priority: `${priority}`,
         rule: `${rule}`,
         filter: `${filter}`,
@@ -65,12 +66,13 @@ export const requests = {
       },
     });
   },
-  countByEvents(group, source, priority, rule, filter, tags, since) {
+  countByEvents(group, source, hostname, priority, rule, filter, tags, since) {
     return api.request({
       url: `/events/count/${group}`,
       method: 'get',
       params: {
         source: `${source}`,
+        hostname: `${hostname}`,
         priority: `${priority}`,
         rule: `${rule}`,
         filter: `${filter}`,
@@ -83,12 +85,13 @@ export const requests = {
       },
     });
   },
-  searchEvents(source, priority, rule, filter, tags, since, page, limit) {
+  searchEvents(source, hostname, priority, rule, filter, tags, since, page, limit) {
     return api.request({
       url: '/events/search',
       method: 'get',
       params: {
         source: `${source}`,
+        hostname: `${hostname}`,
         priority: `${priority}`,
         rule: `${rule}`,
         filter: `${filter}`,

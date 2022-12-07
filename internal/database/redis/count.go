@@ -24,7 +24,7 @@ func CountKey(client *redisearch.Client, args *models.Arguments) (models.Results
 }
 
 func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Results, error) {
-	if (args.GroupBy != "priority" && args.GroupBy != "rule" && args.GroupBy != "source" && args.GroupBy != "tags") || args.GroupBy == "" {
+	if (args.GroupBy != "priority" && args.GroupBy != "rule" && args.GroupBy != "source" && args.GroupBy != "tags" && args.GroupBy != "hostname") || args.GroupBy == "" {
 		return models.Results{}, errors.New("wrong Group By field")
 	}
 	reducer := redisearch.NewReducer("COUNT", []string{})

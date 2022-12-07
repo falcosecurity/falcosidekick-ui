@@ -43,9 +43,10 @@ export default {
       default() {
         return {
           priorities: [],
-          rule: '',
+          rule: [],
           tags: [],
           sources: [],
+          hostnames: [],
           search: '',
           since: '',
         };
@@ -97,6 +98,7 @@ export default {
       await requests.countByEvents(
         this.list,
         this.filters.sources,
+        this.filters.hostnames,
         this.filters.priorities,
         this.filters.rule,
         this.filters.search,
@@ -126,6 +128,9 @@ export default {
   created() {
     if (typeof this.$route.query.source !== 'undefined') {
       this.filters.sources = this.$route.query.source;
+    }
+    if (typeof this.$route.query.hostname !== 'undefined') {
+      this.filters.hostnames = this.$route.query.hostname;
     }
     if (typeof this.$route.query.priority !== 'undefined') {
       this.filters.priorities = this.$route.query.priority;

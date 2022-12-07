@@ -44,6 +44,7 @@ export default {
           rule: '',
           tags: [],
           sources: [],
+          hostnames: [],
           search: '',
           since: '',
         };
@@ -91,6 +92,7 @@ export default {
       requests.countByEvents(
         'priority',
         this.filters.sources,
+        this.filters.hostnames,
         this.filters.priorities,
         this.filters.rule,
         this.filters.search,

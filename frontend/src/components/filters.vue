@@ -3,7 +3,6 @@
     <v-row>
       <v-col
       class="d-flex ml-4"
-      cols="12"
       sm="2">
         <v-select
         v-model="filters.sources"
@@ -40,8 +39,7 @@
         </v-select>
       </v-col>
       <v-col
-      class="d-flex ml-4"
-      cols="12"
+      class="d-flex ml-2"
       sm="2">
         <v-select
         v-model="filters.priorities"
@@ -78,9 +76,45 @@
         </v-select>
       </v-col>
       <v-col
-      class="d-flex ml-4"
-      cols="12"
-      sm="3">
+      class="d-flex ml-2"
+      sm="2">
+        <v-select
+        v-model="filters.hostnames"
+        chips
+        multiple
+        :items="hostnames"
+        label="Hostnames"
+        >
+          <template v-slot:prepend-item>
+            <v-list-item @click="unselect('hostnames')">
+              <v-list-item-action>
+                <b>Unselect All</b>
+              </v-list-item-action>
+            </v-list-item>
+            <v-divider></v-divider>
+          </template>
+          <template v-slot:selection="{ item }">
+            <v-chip dark :color="stringToColor(item)" small
+            >{{ item }}</v-chip>
+          </template>
+          <template v-slot:item="{ item, attrs, on }">
+            <v-list-item v-on="on" v-bind="attrs" #default="{ active }">
+              <v-list-item-action>
+                <v-checkbox :input-value="active"></v-checkbox>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  <v-chip dark :color="stringToColor(item)" small
+                  >{{ item }}</v-chip>
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </template>
+        </v-select>
+      </v-col>
+      <v-col
+      class="d-flex ml-2"
+      sm="2">
         <v-select
         v-model="filters.rule"
         chips
@@ -108,8 +142,7 @@
         </v-select>
       </v-col>
       <v-col
-      class="d-flex ml-4"
-      cols="12"
+      class="d-flex ml-2"
       sm="2">
         <v-select
         v-model="filters.tags"
@@ -148,9 +181,8 @@
       <v-spacer>
       </v-spacer>
       <v-col
-      class="d-flex ml-4 pr-10"
-      cols="12"
-      sm="2">
+      class="d-flex ml-2 mr-5"
+      sm="1">
         <v-select
         v-model="filters.since"
         chips
@@ -201,11 +233,13 @@ export default {
       priorities: [],
       rules: [],
       sources: [],
+      hostnames: [],
       tags: [],
       since: ['5min', '15min', '30min', '1h', '2h', '5h', '12h', '24h', '48h', '1w', '2w', '1M', '3M', '6M', '1y', '2y'],
       filters: {
         priorities: [],
-        rule: '',
+        rule: [],
+        hostnames: [],
         tags: [],
         sources: [],
         search: '',
@@ -230,6 +264,7 @@ export default {
       handler() {
         if (this.$route.query.since !== this.filters.since || this.$route.query.since === '') {
           this.listItems('source');
+          this.listItems('hostname');
           this.listItems('priority');
           this.listItems('rule');
           this.listItems('tags');
@@ -241,10 +276,13 @@ export default {
         if (this.filters.sources !== []) {
           this.$router.push({ query: { ...this.$route.query, source: this.filters.sources } });
         }
+        if (this.filters.hostnames !== []) {
+          this.$router.push({ query: { ...this.$route.query, hostname: this.filters.hostnames } });
+        }
         if (this.filters.rule !== '') {
           this.$router.push({ query: { ...this.$route.query, rule: this.filters.rule } });
         }
-        if (this.filters.tags !== '') {
+        if (this.filters.tags !== []) {
           this.$router.push({ query: { ...this.$route.query, tags: this.filters.tags } });
         }
         this.$emit('send-filters', this.filters);
@@ -255,6 +293,7 @@ export default {
       handler() {
         this.listItems('priority');
         this.listItems('rule');
+        this.listItems('hostname');
         this.listItems('source');
         this.listItems('tags');
       },
@@ -262,7 +301,7 @@ export default {
   },
   methods: {
     async listItems(list) {
-      await requests.countByEvents(list, '', '', '', '', '', this.filters.since)
+      await requests.countByEvents(list, '', '', '', '', '', '', this.filters.since)
         .then((response) => {
           let values = {};
           values = response.data.results;
@@ -273,6 +312,13 @@ export default {
                 this.sources.push(value);
               });
               this.sources = [...new Set(this.sources)];
+              break;
+            case 'hostname':
+            case 'hostnames':
+              Object.keys(values).forEach((value) => {
+                this.hostnames.push(value);
+              });
+              this.hostnames = [...new Set(this.hostnames)];
               break;
             case 'priority':
             case 'priorities':
@@ -312,11 +358,15 @@ export default {
             this.filters.priorities = [];
             break;
           case 'rule':
-            this.filters.rule = '';
+            this.filters.rule = [];
             break;
           case 'source':
           case 'sources':
             this.filters.sources = [];
+            break;
+          case 'hostname':
+          case 'hostnames':
+            this.filters.hostnames = [];
             break;
           case 'tags':
             this.filters.tags = [];
@@ -341,6 +391,11 @@ export default {
           this.filters.sources.push(item);
           this.filters.sources = [...new Set(this.filters.sources)];
           break;
+        case 'hostname':
+        case 'hostnames':
+          this.filters.hostnames.push(item);
+          this.filters.hostnames = [...new Set(this.filters.hostnames)];
+          break;
         case 'search':
         case 'filter':
           this.filters.search = item;
@@ -357,6 +412,9 @@ export default {
   created() {
     if (typeof this.$route.query.source !== 'undefined') {
       this.filters.sources = this.$route.query.source;
+    }
+    if (typeof this.$route.query.hostname !== 'undefined') {
+      this.filters.hostnames = this.$route.query.hostname;
     }
     if (typeof this.$route.query.priority !== 'undefined') {
       this.filters.priorities = this.$route.query.priority;
@@ -378,6 +436,7 @@ export default {
     this.listItems('priority');
     this.listItems('rule');
     this.listItems('source');
+    this.listItems('hostname');
     this.listItems('tags');
   },
 };

@@ -41,6 +41,13 @@
               </v-chip>
             </td>
             <td>
+              <v-chip dark v-if="item.hostname"
+              @click="addToFilters('hostnames', item.hostname)"
+              :color="stringToColor(item.hostname)">
+              {{ item.hostname }}
+              </v-chip>
+            </td>
+            <td>
               <v-chip
               @click="addToFilters('priorities', item.priority)"
               :color="priorityToColor(item.priority)"
@@ -109,9 +116,11 @@ export default {
       priorities: [],
       rules: [],
       sources: [],
+      hostnames: [],
       tags: [],
       filters: {
         sources: [],
+        hostnames: [],
         priorities: [],
         rule: '',
         tags: [],
@@ -130,6 +139,7 @@ export default {
       headers: [
         { text: 'Timestamp', value: 'time' },
         { text: 'Source', value: 'source' },
+        { text: 'Hostname', value: 'hostname' },
         { text: 'Priority', value: 'priority' },
         { text: 'Rule', value: 'rule' },
         { text: 'Output', value: 'output' },
@@ -194,6 +204,7 @@ export default {
       }
       requests.searchEvents(
         this.filters.sources,
+        this.filters.hostnames,
         this.filters.priorities,
         this.filters.rule,
         this.filters.search,
