@@ -11,12 +11,14 @@ import (
 type Events []Event
 
 type Event struct {
-	Output       string                 `json:"output" validate:"required,alphanum"`
-	Priority     string                 `json:"priority" validate:"required,alphanum"`
-	Rule         string                 `json:"rule" validate:"required,alphanum"`
-	Time         time.Time              `json:"time" validate:"required,datetime"`
-	Source       string                 `json:"source" validate:"alphanum"`
+	UUID         string                 `json:"uuid" validate:"uuid"`
+	Output       string                 `json:"output" validate:"required,ascii"`
+	Priority     string                 `json:"priority" validate:"required,printascii"`
+	Rule         string                 `json:"rule" validate:"required,printascii"`
+	Time         time.Time              `json:"time" validate:"required"`
+	Source       string                 `json:"source" validate:"printascii"`
 	OutputFields map[string]interface{} `json:"output_fields"`
+	Hostname     string                 `json:"hostname" validate:"printascii"`
 	Tags         []string               `json:"tags"`
 }
 

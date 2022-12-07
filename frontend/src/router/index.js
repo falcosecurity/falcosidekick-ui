@@ -4,6 +4,8 @@ import TestPage from '../views/TestPage.vue';
 import Dashboard from '../views//DashboardPage.vue';
 import EventsPage from '../views/EventsPage.vue';
 import InfoPage from '../views/InfoPage.vue';
+import LoginPage from '../views/LoginPage.vue';
+import store from '../store';
 
 Vue.use(VueRouter);
 
@@ -29,6 +31,11 @@ const routes = [
     component: InfoPage,
   },
   {
+    path: '/login',
+    name: 'login',
+    component: LoginPage,
+  },
+  {
     path: '*',
     redirect: {
       name: 'dashboard',
@@ -40,6 +47,19 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  // const publicPages = ['/login', '/test'];
+  if (to.name !== 'login') {
+  // if (!publicPages.includes(to.path)) {
+    if (store.state.username === '' || store.state.password === '') {
+      router.push('/login');
+    }
+  } else {
+    next();
+  }
+  next();
 });
 
 export default router;

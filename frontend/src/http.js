@@ -1,4 +1,5 @@
 import axios from 'axios';
+import store from './store';
 
 const production = process.env.NODE_ENV === 'production';
 
@@ -18,6 +19,10 @@ export const requests = {
       url: '/outputs',
       method: 'get',
       params: {},
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
+      },
     });
   },
   getConfiguration() {
@@ -25,6 +30,10 @@ export const requests = {
       url: '/configuration',
       method: 'get',
       params: {},
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
+      },
     });
   },
   getVersion() {
@@ -32,6 +41,10 @@ export const requests = {
       url: '/version',
       method: 'get',
       params: {},
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
+      },
     });
   },
   countEvents(source, priority, rule, filter, tags, since) {
@@ -46,6 +59,10 @@ export const requests = {
         tags: `${tags}`,
         since: `${since}`,
       },
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
+      },
     });
   },
   countByEvents(group, source, priority, rule, filter, tags, since) {
@@ -59,6 +76,10 @@ export const requests = {
         filter: `${filter}`,
         tags: `${tags}`,
         since: `${since}`,
+      },
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
       },
     });
   },
@@ -75,6 +96,20 @@ export const requests = {
         since: `${since}`,
         page: `${page}`,
         limit: `${limit}`,
+      },
+      auth: {
+        username: store.state.username,
+        password: store.state.password,
+      },
+    });
+  },
+  authenticate(username, password) {
+    return api.request({
+      url: '/auth',
+      method: 'post',
+      auth: {
+        username: `${username}`,
+        password: `${password}`,
       },
     });
   },

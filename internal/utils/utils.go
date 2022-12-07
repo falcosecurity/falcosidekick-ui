@@ -16,6 +16,14 @@ const (
 	extractUnity  = "[a-z-A-Z]+$"
 )
 
+const (
+	debugLog = iota
+	infoLog
+	warningLog
+	errorLog
+	fatalLog
+)
+
 var regExtractNumber, regExtractUnity *regexp.Regexp
 
 func init() {
@@ -30,26 +38,22 @@ func CheckErr(e error) {
 }
 
 func WriteLog(level, message string) {
-	c := configuration.GetConfiguration()
+	config := configuration.GetConfiguration()
+	if GetPriortiyInt(level) < GetPriortiyInt(config.LogLevel) {
+		return
+	}
 	var prefix string
 	switch level {
 	case "fatal":
 		prefix = "[ERROR]:"
 		log.Fatalf("%v %v\n", prefix, message)
 	case "info":
-		if c.LogLevel != "info" {
-			return
-		}
 		prefix = "[INFO] :"
 	case "warning":
-		if c.LogLevel != "info" && c.LogLevel != "warning" {
-			return
-		}
 		prefix = "[WARN] :"
 	case "error":
 		prefix = "[ERROR]:"
 	}
-
 	log.Printf("%v %v\n", prefix, message)
 }
 
@@ -118,4 +122,23 @@ func GetIntFlagOrEnvParam(flagString string, envVar string, defaultValue int, us
 		}
 	}
 	return flag.Int(flagString, defaultValue, usage)
+}
+
+func GetPriortiyInt(prio string) int {
+	switch prio {
+	case "debug":
+		return debugLog
+	case "info":
+		return infoLog
+	case "warning":
+		return warningLog
+	case "error":
+		return errorLog
+	case "fatal":
+		return fatalLog
+	case "default":
+		return debugLog
+	default:
+		return -1
+	}
 }

@@ -4,6 +4,8 @@ consumes:
 definitions:
   configuration.Configuration:
     properties:
+      credentials:
+        type: string
       dev-mode:
         type: boolean
       listen-address:
@@ -11,6 +13,8 @@ definitions:
         type: string
       listen-port:
         type: integer
+      log-level:
+        type: string
       redis-server:
         type: string
       ttl:
@@ -35,6 +39,8 @@ definitions:
     type: object
   models.Event:
     properties:
+      hostname:
+        type: string
       output:
         type: string
       output_fields:
@@ -51,6 +57,8 @@ definitions:
           type: string
         type: array
       time:
+        type: string
+      uuid:
         type: string
     required:
     - output
@@ -338,6 +346,18 @@ paths:
           schema:
             type: string
       summary: Version
+  /authenticate:
+    post:
+      description: Authenticate
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
 produces:
 - application/json
 schemes:

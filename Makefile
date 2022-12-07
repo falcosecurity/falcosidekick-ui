@@ -45,6 +45,14 @@ PKG = github.com/falcosecurity/falcosidekick-ui/configuration
 LDFLAGS=-X $(PKG).GitVersion=$(GIT_VERSION) -X $(PKG).GitCommit=$(GIT_HASH) -X $(PKG).GitTreeState=$(GIT_TREESTATE) -X $(PKG).BuildDate=$(BUILD_DATE)
 
 ## --------------------------------------
+## Dev
+## --------------------------------------
+
+.PHONY: server
+server:
+	cd ./frontend && yarn serve
+
+## --------------------------------------
 ## Docs
 ## --------------------------------------
 

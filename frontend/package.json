@@ -4,8 +4,8 @@
   "author": "Falco Authors",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "export NODE_OPTIONS=--openssl-legacy-provider; vue-cli-service serve",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; vue-cli-service build",
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint"
   },
@@ -39,6 +39,7 @@
     "vuetify": "^2.6.10",
     "vuetify-loader": "^1.7.3",
     "vuex": "3",
+    "vuex-persistedstate": "^4.1.0",
     "webpack": "^4.28.4",
     "ws": "^8.8.1"
   },

@@ -17,6 +17,6 @@ func Add(e *models.Event) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	utils.WriteLog("info", fmt.Sprintf("NEW event 'event:%v'", e.Time.UnixNano()/1e3))
+	utils.WriteLog("debug", fmt.Sprintf("NEW event 'event:%v'", e.UUID))
 	return nil
 }

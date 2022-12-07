@@ -8,6 +8,7 @@ type Configuration struct {
 	DevMode       bool   `json:"dev-mode"`
 	LogLevel      string `json:"log-level"`
 	TTL           int    `json:"ttl"`
+	Credentials   string `json:"credentials"`
 }
 
 var config *Configuration

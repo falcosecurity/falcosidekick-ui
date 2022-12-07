@@ -1,14 +1,20 @@
 /* eslint-disable no-param-reassign */
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  plugins: [createPersistedState({
+    storage: window.sessionStorage,
+  })],
   state: {
     ticer: 0,
     refreshInterval: 10000,
     refreshIntervals: ['off', '10s', '20s', '30s', '1min', '2min'],
+    username: '',
+    password: '',
   },
   mutations: {
     increment(state) {
@@ -38,6 +44,14 @@ export default new Vuex.Store({
           break;
       }
     },
+    setCredentials(state, payload) {
+      state.username = payload.username;
+      state.password = payload.password;
+    },
+    emptyCredentials(state) {
+      state.username = '';
+      state.password = '';
+    },
   },
   actions: {
     increment(context) {
@@ -45,6 +59,12 @@ export default new Vuex.Store({
     },
     setRefreshInterval(context, payload) {
       context.commit('setRefreshInterval', payload);
+    },
+    setCredentials(context, payload) {
+      context.commit('setCredentials', payload);
+    },
+    emptyCredentials(context) {
+      context.commit('emptyCredentials');
     },
   },
 });
