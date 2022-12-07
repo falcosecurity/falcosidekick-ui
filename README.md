@@ -19,15 +19,21 @@ Events are stored in a `Redis` server with [`Redisearch`](https://github.com/Red
 Usage of Falcosidekick-UI:  
 -a string
       Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
--d    Enable dark mode as default
+-l string   
+          Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
-      Listen Port (default 2802, environment "FALCOSIDEKICK_UI_PORT")
+      Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
 -t int
-      TTL for keys (default 0, environment "FALCOSIDEKICK_UI_TTL")
--x    Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
+      TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
+-u string  
+      User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+-x boolean
+      Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 ```
+
+> If not user is set, the default one created is `admin:admin`
 
 ### Run with docker
 
@@ -48,6 +54,11 @@ make falcosidekick-ui && ./falcosidekick-ui
 
 ### Endpoints
 
+| Route   | Method | Query Parameters | Usage            |
+| :------ | :----: | :--------------- | :--------------- |
+| `/docs` | `GET`  | none             | Get Swagger Docs |
+| `/`     | `GET`  | none             | Display WebUI    |
+
 #### UI
 
 The UI is reachable by default at `http://localhost:2802/`.
@@ -59,11 +70,10 @@ The UI is reachable by default at `http://localhost:2802/`.
 
 | Route                       | Method | Query Parameters                                                         | Usage                                |
 | :-------------------------- | :----: | :----------------------------------------------------------------------- | :----------------------------------- |
-| `/docs`                     | `GET`  | none                                                                     | Get Swagger Docs                     |
-| `/`                         | `GET`  | none                                                                     | Display WebUI                        |
 | `/`                         | `POST` | none                                                                     | Add event                            |
 | `/healthz`                  | `GET`  | none                                                                     | Healthcheck                          |
-| `/configuration`            | `GET`  | none                                                                     | Get Configuration                    |
+| `/authenticate`, `/auth`    | `POST` | none                                                                     | Authenticate                         |
+| `/configuration`, `/config` | `GET`  | none                                                                     | Get Configuration                    |
 | `/outputs`                  | `GET`  | none                                                                     | Get list of Outputs of Falcosidekick |
 | `/event/count`              | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count all events                     |
 | `/event/count/priority`     | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by priority             |
@@ -71,11 +81,10 @@ The UI is reachable by default at `http://localhost:2802/`.
 | `/event/count/source`       | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by source               |
 | `/event/count/tags`         | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Count events by tags                 |
 | `/event/search`             | `GET`  | `pretty`, `priority`, `rule`, `filter`, `tags`, `since`, `limit`, `page` | Search events                        |
-| `/ws` (not yet implemented) | `GET`  | none                                                                     | Create Websocket                     |
 
 All responses are in JSON format.
 
-Argument list:
+Query parameters list:
 * `pretty`: return well formated JSON
 * `priority`: filter by priority
 * `rule`: filter by rule

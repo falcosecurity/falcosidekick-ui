@@ -369,12 +369,34 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/authenticate": {
+            "post": {
+                "description": "Authenticate",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "configuration.Configuration": {
             "type": "object",
             "properties": {
+                "credentials": {
+                    "type": "string"
+                },
                 "dev-mode": {
                     "type": "boolean"
                 },
@@ -384,6 +406,9 @@ const docTemplate = `{
                 },
                 "listen-port": {
                     "type": "integer"
+                },
+                "log-level": {
+                    "type": "string"
                 },
                 "redis-server": {
                     "type": "string"
@@ -428,6 +453,9 @@ const docTemplate = `{
                 "time"
             ],
             "properties": {
+                "hostname": {
+                    "type": "string"
+                },
                 "output": {
                     "type": "string"
                 },
@@ -451,6 +479,9 @@ const docTemplate = `{
                     }
                 },
                 "time": {
+                    "type": "string"
+                },
+                "uuid": {
                     "type": "string"
                 }
             }

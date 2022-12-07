@@ -26,16 +26,24 @@
         ></v-select>
       </template>
       <v-spacer/>
-      <Counters></Counters>
+      <Counters v-if="$store.state.username && $store.state.password"></Counters>
     </v-app-bar>
     <v-main>
       <router-view></router-view>
     </v-main>
     <v-footer app absolute
-    class="blue darken-2" dark>
+      class="blue darken-2 text-no-wrap" dark
+    >
       <span>
         2022 - <a href="https://github.com/falcosecurity/falcosidekick-ui">Falco Authors</a>
-        </span>
+      </span>
+      <v-spacer/>
+      <span v-if="$store.state.username && $store.state.password">
+        logged as <b>{{$store.state.username}}</b>
+        <v-btn text x-small class="ml-3" @click="logout">
+          Logout
+        </v-btn>
+      </span>
     </v-footer>
   </v-app>
 </template>
@@ -100,6 +108,11 @@ export default {
       'increment',
       'setRefreshInterval',
     ]),
+    logout() {
+      this.$store.state.username = '';
+      this.$store.state.password = '';
+      this.$router.push('/login');
+    },
     cancelAutoUpdate() {
       clearInterval(this.timer);
     },

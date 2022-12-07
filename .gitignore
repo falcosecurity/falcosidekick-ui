@@ -23,3 +23,5 @@ tmp/
 .DS_Store
 
 dist-goreleaser
+
+*/yarn-error.log
