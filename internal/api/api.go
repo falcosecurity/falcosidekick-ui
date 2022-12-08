@@ -31,8 +31,8 @@ func returnResult(c echo.Context, r models.Results, err error) error {
 // @Accept       json
 // @Produce      json
 // @param        payload  body      models.Payload                  true  "Payload"
-// @Success                    200  {string}  string                          ""
-// @Failure                    500  {string}  http.StatusInternalServerError  "Internal Server Error"
+// @Success      200      {string}  string                          ""
+// @Failure      500      {string}  http.StatusInternalServerError  "Internal Server Error"
 // @Router       /api/v1/ [post]
 func AddEvent(c echo.Context) error {
 	payload := new(models.Payload)
@@ -173,11 +173,13 @@ func GetVersionInfo(c echo.Context) error {
 	return c.JSON(http.StatusOK, configuration.GetVersionInfo())
 }
 
+// Authenticate
+// @Summary                    Authenticate
 // @Description                Authenticate
+// @Success                    200  {string}  string                          "authenticated"
+// @Failure                    500  {string}  http.StatusInternalServerError  "Internal Server Error"
+// @Router                     /api/v1/authenticate [post]
 // @securityDefinitions.basic  BasicAuth
-// @Success      200      {string}  string                          ""
-// @Failure      500      {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router                     /authenticate [post]
 func Authenticate(c echo.Context) error {
 	authHeader := c.Request().Header["Authorization"]
 	config := configuration.GetConfiguration()

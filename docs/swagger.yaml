@@ -147,6 +147,19 @@ paths:
           schema:
             type: string
       summary: Add Event
+  /api/v1/authenticate:
+    post:
+      description: Authenticate
+      responses:
+        "200":
+          description: authenticated
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Authenticate
   /api/v1/configuration:
     get:
       description: Configuration
@@ -346,18 +359,6 @@ paths:
           schema:
             type: string
       summary: Version
-  /authenticate:
-    post:
-      description: Authenticate
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
 produces:
 - application/json
 schemes:

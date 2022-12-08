@@ -67,6 +67,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/authenticate": {
+            "post": {
+                "description": "Authenticate",
+                "summary": "Authenticate",
+                "responses": {
+                    "200": {
+                        "description": "authenticated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/configuration": {
             "get": {
                 "description": "Configuration",
@@ -359,25 +379,6 @@ const docTemplate = `{
                         "description": "Version",
                         "schema": {
                             "$ref": "#/definitions/configuration.VersionInfo"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/authenticate": {
-            "post": {
-                "description": "Authenticate",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
                         }
                     },
                     "500": {
