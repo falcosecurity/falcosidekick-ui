@@ -123,6 +123,7 @@ export default {
       filters: {
         priorities: [],
         sources: [],
+        hostnames: [],
         tags: [],
         rule: '',
         since: '24h',
