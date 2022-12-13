@@ -1,3 +1,16 @@
+# v2.1.0
+
+* Add Basic Auth
+* Update log format + remove the bootstrap banner
+* Allow to set Log Level
+* Add `Hostname` field as filter
+* Refactor `Info` view
+* Fix the results of `count_by`
+* Add autorefresh
+* Allow to set a `TTL` for keys in Redis
+* Allow to set the settings with env vars
+* Use Host URL as API baseURL
+
 # v2.0.2
 
 * Fix force redirect to localhost
