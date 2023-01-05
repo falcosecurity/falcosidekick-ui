@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "serve": "export NODE_OPTIONS=--openssl-legacy-provider; vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; vue-cli-service build",
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint"
   },
