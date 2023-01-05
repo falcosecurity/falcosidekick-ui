@@ -14,6 +14,17 @@ install_buildx: &install_buildx
     curl -sSL -o ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/v0.8.2/buildx-v0.8.2.linux-amd64
     chmod a+x ~/.docker/cli-plugins/docker-buildx
 
+setup_docker_multiarch: &setup_docker_multiarch
+  name: Create Docker context
+  command: |
+    docker context create falco-environment
+    docker buildx install
+    docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
+    docker buildx create --name docker-multiarch falco-environment \
+      --platform "$BUILDX_PLATFORMS"
+    docker buildx inspect --builder docker-multiarch --bootstrap
+    docker buildx use docker-multiarch
+
 install_goreleaser: &install_goreleaser
   name: Install goreleaser
   command: |
@@ -56,6 +67,7 @@ jobs:
       name: default
     environment:
       DOCKER_BUILDKIT: 1
+      BUILDX_PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     resource_class: large
     steps:
@@ -63,6 +75,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *setup_docker_multiarch
       - run: *install_goreleaser
       - run: make goreleaser-snapshot
 
@@ -71,30 +84,39 @@ jobs:
       name: default
     environment:
       DOCKER_BUILDKIT: 1
+      BUILDX_PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *setup_docker_multiarch
       - run: *install_goreleaser
       - run: make goreleaser-snapshot
       - run:
           command: |
             echo ${DOCKERHUB_SECRET} | docker login -u ${DOCKERHUB_USER} --password-stdin
-            docker push falcosecurity/falcosidekick-ui:latest
+            docker push falcosecurity/falcosidekick-ui:latest-amd64
+            docker push falcosecurity/falcosidekick-ui:latest-arm64
+            docker push falcosecurity/falcosidekick-ui:latest-armv7
+            docker manifest create --amend falcosecurity/falcosidekick-ui:latest falcosecurity/falcosidekick-ui:latest-amd64 \
+              falcosecurity/falcosidekick-ui:latest-arm64 falcosecurity/falcosidekick-ui:latest-armv7
+            docker manifest push --purge falcosecurity/falcosidekick-ui:latest
 
   build-push-ecr:
     executor:
       name: default
     environment:
       DOCKER_BUILDKIT: 1
+      BUILDX_PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *setup_docker_multiarch
       - run: *install_goreleaser
       - run: *install_awscli
       - run:
@@ -102,26 +124,30 @@ jobs:
             make goreleaser-snapshot
       - run:
           command: |
-            docker tag falcosecurity/falcosidekick-ui:latest \
-              public.ecr.aws/falcosecurity/falcosidekick-ui:latest
-      - run:
-          command: |
             aws ecr-public get-login-password --region us-east-1 | \
-              docker login --username AWS --password-stdin public.ecr.aws/falcosecurity
-            docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest
+              docker login --username AWS --password-stdin public.ecr.aws/falcosecurity-ui
+            docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest-amd64
+            docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest-arm64
+            docker push public.ecr.aws/falcosecurity/falcosidekick-ui:latest-armv7
+            docker manifest create --amend public.ecr.aws/falcosecurity/falcosidekick-ui:latest public.ecr.aws/falcosecurity/falcosidekick-ui:latest-amd64 \
+              public.ecr.aws/falcosecurity/falcosidekick-ui:latest-arm64 public.ecr.aws/falcosecurity/falcosidekick-ui:latest-armv7
+            docker manifest push --purge public.ecr.aws/falcosecurity/falcosidekick-ui:latest
 
   release:
     executor:
       name: default
     environment:
       DOCKER_BUILDKIT: 1
+      BUILDX_PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
       - checkout
       - setup_remote_docker:
           version: 19.03.12
       - run: *install_buildx
+      - run: *setup_docker_multiarch
       - run: *install_goreleaser
+      - run: *install_awscli
       - run:
           name: Prepare env
           command: |
@@ -168,5 +194,7 @@ workflows:
             - lint
             - build-image
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
