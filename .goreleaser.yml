@@ -1,5 +1,15 @@
 project_name: falcosidekick-ui
 
+env:
+  - GO111MODULE=on
+  - DOCKER_CLI_EXPERIMENTAL=enabled
+
+snapshot:
+  name_template: 'latest'
+
+checksum:
+  name_template: 'checksums.txt'
+
 before:
   hooks:
   - go mod tidy
@@ -11,11 +21,21 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
+      - arm
+    goarm:
+      - '7'
+    asmflags:
+      - all=-trimpath={{.Env.GOPATH}}
+    gcflags:
+      - all=-trimpath={{.Env.GOPATH}}
     main: main.go
     flags:
       - -trimpath
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - "{{ .Env.LDFLAGS }}"
     binary: falcosidekick-ui
 
 dockers:
@@ -23,17 +43,83 @@ dockers:
     goarch: amd64
     dockerfile: Dockerfile
     image_templates:
-      - "falcosecurity/falcosidekick-ui:latest"
-      - "falcosecurity/falcosidekick-ui:v{{ .Version }}"
+      - "falcosecurity/falcosidekick-ui:stable-amd64"
+      - "falcosecurity/falcosidekick-ui:{{ .Version }}-amd64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-amd64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-amd64"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version=v{{.Version}}"
+      - "--platform=linux/amd64"
     extra_files:
       - frontend/dist
       - LICENSE
+
+  - goos: linux
+    goarch: arm64
+    dockerfile: Dockerfile
+    use: buildx
+    image_templates:
+      - "falcosecurity/falcosidekick-ui:stable-arm64"
+      - "falcosecurity/falcosidekick-ui:{{ .Version }}-arm64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-arm64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-arm64"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm64"
+    extra_files:
+      - frontend/dist
+      - LICENSE
+
+  - goos: linux
+    goarch: arm
+    goarm: '7'
+    dockerfile: Dockerfile
+    use: buildx
+    image_templates:
+      - "falcosecurity/falcosidekick-ui:stable-armv7"
+      - "falcosecurity/falcosidekick-ui:{{ .Version }}-armv7"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-armv7"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-armv7"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm/v7"
+    extra_files:
+      - frontend/dist
+      - LICENSE
+
+docker_manifests:
+  - name_template: 'falcosecurity/falcosidekick-ui:stable'
+    image_templates:
+      - 'falcosecurity/falcosidekick-ui:stable-amd64'
+      - 'falcosecurity/falcosidekick-ui:stable-arm64'
+      - 'falcosecurity/falcosidekick-ui:stable-armv7'
+  - name_template: 'falcosecurity/falcosidekick-ui:{{ .Version }}'
+    image_templates:
+      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-amd64'
+      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-arm64'
+      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-armv7'
+  - name_template: 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable'
+    image_templates:
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-amd64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-arm64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-armv7'
+  - name_template: 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}'
+    image_templates:
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-amd64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-arm64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-armv7'
 
 release:
   github:
