@@ -221,7 +221,9 @@ workflows:
             branches:
               ignore: /.*/
       - release:
-          context: falco
+          context:
+            - falco
+            - test-infra
           requires:
             - build-image
           filters:
