@@ -193,14 +193,40 @@ workflows:
           filters:
             branches:
               only: master
-      - release:
-          context: falco
+
+  release:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              ignore: /.*/
+      - lint:
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              ignore: /.*/
+      - build-image:
           requires:
             - test
             - lint
-            - build-image
           filters:
+            tags:
+              only:
+                - /^v.*/
             branches:
               ignore: /.*/
+      - release:
+          context: falco
+          requires:
+            - build-image
+          filters:
             tags:
-              only: /v?[0-9]+\.[0-9]+\.[0-9]+/
+              only:
+                - /^v.*/
+            branches:
+              ignore: /.*/
