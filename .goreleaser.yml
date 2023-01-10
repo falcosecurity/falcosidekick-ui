@@ -45,9 +45,9 @@ dockers:
     use: buildx
     image_templates:
       - "falcosecurity/falcosidekick-ui:stable-amd64"
-      - "falcosecurity/falcosidekick-ui:{{ .Version }}-amd64"
+      - "falcosecurity/falcosidekick-ui:v{{ .Version }}-amd64"
       - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-amd64"
-      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-amd64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-amd64"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -65,15 +65,15 @@ dockers:
     use: buildx
     image_templates:
       - "falcosecurity/falcosidekick-ui:stable-arm64"
-      - "falcosecurity/falcosidekick-ui:{{ .Version }}-arm64"
+      - "falcosecurity/falcosidekick-ui:v{{ .Version }}-arm64"
       - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-arm64"
-      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-arm64"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-arm64"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.version=v{{.Version}}"
       - "--platform=linux/arm64"
     extra_files:
       - frontend/dist
@@ -86,15 +86,15 @@ dockers:
     use: buildx
     image_templates:
       - "falcosecurity/falcosidekick-ui:stable-armv7"
-      - "falcosecurity/falcosidekick-ui:{{ .Version }}-armv7"
+      - "falcosecurity/falcosidekick-ui:v{{ .Version }}-armv7"
       - "public.ecr.aws/falcosecurity/falcosidekick-ui:stable-armv7"
-      - "public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-armv7"
+      - "public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-armv7"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.version=v{{.Version}}"
       - "--platform=linux/arm/v7"
     extra_files:
       - frontend/dist
@@ -106,21 +106,21 @@ docker_manifests:
       - 'falcosecurity/falcosidekick-ui:stable-amd64'
       - 'falcosecurity/falcosidekick-ui:stable-arm64'
       - 'falcosecurity/falcosidekick-ui:stable-armv7'
-  - name_template: 'falcosecurity/falcosidekick-ui:{{ .Version }}'
+  - name_template: 'falcosecurity/falcosidekick-ui:v{{ .Version }}'
     image_templates:
-      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-amd64'
-      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-arm64'
-      - 'falcosecurity/falcosidekick-ui:{{ .Version }}-armv7'
+      - 'falcosecurity/falcosidekick-ui:v{{ .Version }}-amd64'
+      - 'falcosecurity/falcosidekick-ui:v{{ .Version }}-arm64'
+      - 'falcosecurity/falcosidekick-ui:v{{ .Version }}-armv7'
   - name_template: 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable'
     image_templates:
       - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-amd64'
       - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-arm64'
       - 'public.ecr.aws/falcosecurity/falcosidekick-ui:stable-armv7'
-  - name_template: 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}'
+  - name_template: 'public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}'
     image_templates:
-      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-amd64'
-      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-arm64'
-      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:{{ .Version }}-armv7'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-amd64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-arm64'
+      - 'public.ecr.aws/falcosecurity/falcosidekick-ui:v{{ .Version }}-armv7'
 
 release:
   github:
