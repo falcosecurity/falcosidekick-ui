@@ -139,7 +139,13 @@ func main() {
 	apiRoute := e.Group("/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Skipper: func(c echo.Context) bool {
-			return c.Request().Method == "POST"
+			if c.Request().Method == "POST" {
+				return true
+			}
+			if c.Path() == "/api/v1/healthz" {
+				return true
+			}
+			return false
 		},
 		Validator: func(username, password string, c echo.Context) (bool, error) {
 			config := configuration.GetConfiguration()
