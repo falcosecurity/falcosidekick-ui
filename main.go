@@ -37,10 +37,10 @@ func init() {
 	user := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USER", "admin:admin", "User in format <login>:<password>")
 
 	flag.Usage = func() {
-		help := `Usage of Falcosidekick-UI:  
+		help := `Usage of Falcosidekick-UI:
 -a string
       Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
--l string   
+-l string
 	  Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
@@ -48,7 +48,7 @@ func init() {
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
 -t int
       TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
--u string  
+-u string
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
@@ -119,30 +119,30 @@ func main() {
 	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", c.ListenAddress, c.ListenPort))
 	utils.WriteLog("info", fmt.Sprintf("log level is %v", c.LogLevel))
 
-	e.GET("/docs/*", echoSwagger.WrapHandler)
-	e.GET("/docs", func(c echo.Context) error {
+	e.GET("/foo/docs/*", echoSwagger.WrapHandler)
+	e.GET("/foo/docs", func(c echo.Context) error {
 		if err := c.Redirect(http.StatusPermanentRedirect, "docs/"); err != nil {
 			return err
 		}
 		return nil
 	})
-	e.Static("/*", "frontend/dist").Name = "webui-home"
-	e.Static("/dashboard", "frontend/dist").Name = "webui-dashboard"
-	e.Static("/events", "frontend/dist").Name = "webui-events"
-	e.Static("/info", "frontend/dist").Name = "webui-info"
-	e.Static("/login", "frontend/dist").Name = "webui-login"
-	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
+	e.Static("/foo/*", "frontend/dist").Name = "webui-home"
+	e.Static("/foo/dashboard", "frontend/dist").Name = "webui-dashboard"
+	e.Static("/foo/events", "frontend/dist").Name = "webui-events"
+	e.Static("/foo/info", "frontend/dist").Name = "webui-info"
+	e.Static("/foo/login", "frontend/dist").Name = "webui-login"
+	e.POST("/foo/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
 	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
 	// }))
 
-	apiRoute := e.Group("/api/v1")
+	apiRoute := e.Group("/foo/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Skipper: func(c echo.Context) bool {
 			if c.Request().Method == "POST" {
 				return true
 			}
-			if c.Path() == "/api/v1/healthz" {
+			if c.Path() == "/foo/api/v1/healthz" {
 				return true
 			}
 			return false
