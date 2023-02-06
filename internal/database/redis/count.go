@@ -2,6 +2,7 @@ package redis
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,9 @@ func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Resul
 	ag := make(models.Aggregation)
 	var all int64
 	for _, i := range results {
+		if i["__generated_aliascount"] == nil {
+			return models.Results{}, fmt.Errorf("error result from redis for GroupBy %v", args.GroupBy)
+		}
 		key := i[args.GroupBy]
 		count, _ := strconv.ParseInt(i["__generated_aliascount"].(string), 10, 64)
 		if len(key.(string)) == 0 {
