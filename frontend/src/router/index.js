@@ -50,14 +50,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // const publicPages = ['/login', '/test'];
-  if (to.name !== 'login') {
-  // if (!publicPages.includes(to.path)) {
-    if (store.state.username === '' || store.state.password === '') {
+  if (store.state.username === '' || store.state.password === '') {
+    if (to.name !== 'login') {
       router.push('/login');
     }
-  } else {
-    next();
   }
   next();
 });

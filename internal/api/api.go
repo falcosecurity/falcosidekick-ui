@@ -183,6 +183,9 @@ func GetVersionInfo(c echo.Context) error {
 func Authenticate(c echo.Context) error {
 	authHeader := c.Request().Header["Authorization"]
 	config := configuration.GetConfiguration()
+	if config.DisableAuth {
+		return c.JSON(http.StatusOK, "authorized")
+	}
 	if len(authHeader) == 0 {
 		utils.WriteLog("warning", "user '<n/a>' unknown or wrong password")
 		return c.JSON(http.StatusUnauthorized, "unauthorized")
@@ -205,6 +208,8 @@ func Authenticate(c echo.Context) error {
 		utils.WriteLog("info", fmt.Sprintf("user '%v' authenticated", v))
 		return c.JSON(http.StatusOK, "authorized")
 	}
-	utils.WriteLog("warning", fmt.Sprintf("user '%v' unknown or wrong password", v))
+	if v != "anonymous" {
+		utils.WriteLog("warning", fmt.Sprintf("user '%v' unknown or wrong password", v))
+	}
 	return c.JSON(http.StatusUnauthorized, "unauthorized")
 }
