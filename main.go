@@ -35,11 +35,14 @@ func init() {
 	dev := utils.GetBoolFlagOrEnvParam("x", "FALCOSIDEKICK_UI_DEV", false, "Allow CORS for development")
 	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "Log Level")
 	user := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USER", "admin:admin", "User in format <login>:<password>")
+	disableauth := utils.GetBoolFlagOrEnvParam("d", "FALCOSIDEKICK_UI_DISABLEAUTH", false, "Disable authentication")
 
 	flag.Usage = func() {
 		help := `Usage of Falcosidekick-UI:  
 -a string
       Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
+-d boolean
+      Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
 -l string   
 	  Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
@@ -80,6 +83,7 @@ func init() {
 	config.TTL = *ttl
 	config.LogLevel = *loglevel
 	config.Credentials = *user
+	config.DisableAuth = *disableauth
 
 	if utils.GetPriortiyInt(config.LogLevel) < 0 {
 		config.LogLevel = "info"
@@ -116,6 +120,10 @@ func main() {
 		utils.WriteLog("warning", "DEV mode enabled")
 		e.Use(middleware.CORS())
 	}
+	if c.DisableAuth {
+		utils.WriteLog("warning", "Auhentication disabled")
+		e.Use(middleware.CORS())
+	}
 	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", c.ListenAddress, c.ListenPort))
 	utils.WriteLog("info", fmt.Sprintf("log level is %v", c.LogLevel))
 
@@ -139,6 +147,9 @@ func main() {
 	apiRoute := e.Group("/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Skipper: func(c echo.Context) bool {
+			if configuration.GetConfiguration().DisableAuth {
+				return true
+			}
 			if c.Request().Method == "POST" {
 				return true
 			}
@@ -149,6 +160,9 @@ func main() {
 		},
 		Validator: func(username, password string, c echo.Context) (bool, error) {
 			config := configuration.GetConfiguration()
+			if username == "" || password == "" {
+				return true, nil
+			}
 			if subtle.ConstantTimeCompare([]byte(username+":"+password), []byte(config.Credentials)) == 1 {
 				return true, nil
 			}

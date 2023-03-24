@@ -19,6 +19,8 @@ Events are stored in a `Redis` server with [`Redisearch`](https://github.com/Red
 Usage of Falcosidekick-UI:  
 -a string
       Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
+-d boolean
+      Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
 -l string   
           Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
@@ -33,7 +35,7 @@ Usage of Falcosidekick-UI:
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 ```
 
-> If not user is set, the default one created is `admin:admin`
+> If not user is set and the authentication is not disabled, the default user is `admin:admin`
 
 ### Run with docker
 

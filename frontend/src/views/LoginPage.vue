@@ -81,6 +81,25 @@ export default {
           }
         });
     },
+    testlogin() {
+      requests.authenticate(
+        'anonymous',
+        'anonymous',
+      )
+        .then((response) => {
+          if (response.status === 200) {
+            const payload = {
+              username: 'anonymous',
+              password: 'anonymous',
+            };
+            this.setCredentials(payload);
+            router.push('/dashboard');
+          }
+        });
+    },
+  },
+  mounted() {
+    this.testlogin();
   },
 };
 </script>
