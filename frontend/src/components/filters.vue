@@ -204,6 +204,12 @@
           hide-details
           append-icon="search"
         ></v-text-field>
+        <v-card-actions style="padding-top: 20px; padding-bottom: 0px;">
+          <v-spacer></v-spacer>
+          <v-icon @click="next">
+            mdi-close-circle-outline
+          </v-icon>
+        </v-card-actions>
         <v-spacer></v-spacer>
         <Counters
           :filters="filters"
@@ -284,6 +290,9 @@ export default {
         }
         if (this.filters.tags !== []) {
           this.$router.push({ query: { ...this.$route.query, tags: this.filters.tags } });
+        }
+        if (this.filters.search !== []) {
+          this.$router.push({ query: { ...this.$route.query, filter: this.filters.search } });
         }
         this.$emit('send-filters', this.filters);
       },
@@ -407,6 +416,9 @@ export default {
         default:
           break;
       }
+    },
+    next() {
+      this.filters.search = '';
     },
   },
   created() {

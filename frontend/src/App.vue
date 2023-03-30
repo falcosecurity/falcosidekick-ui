@@ -35,7 +35,7 @@
       class="blue darken-2 text-no-wrap" dark
     >
       <span>
-        2022 - <a href="https://github.com/falcosecurity/falcosidekick-ui">Falco Authors</a>
+        2023 - <a href="https://github.com/falcosecurity/falcosidekick-ui">Falco Authors</a>
       </span>
       <v-spacer/>
       <span v-if="$store.state.username && $store.state.password">
