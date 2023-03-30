@@ -8,6 +8,7 @@ import (
 
 	"github.com/Issif/redisearch-go/redisearch"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
+	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
 )
 
 func CountKey(client *redisearch.Client, args *models.Arguments) (models.Results, error) {
@@ -49,7 +50,7 @@ func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Resul
 			continue
 		}
 		for _, j := range strings.Split(key.(string), ",") {
-			ag[j] += count
+			ag[utils.UnEscape(j)] += count
 			all += count
 		}
 	}

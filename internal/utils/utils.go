@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 )
@@ -141,4 +142,12 @@ func GetPriortiyInt(prio string) int {
 	default:
 		return -1
 	}
+}
+
+func Escape(s string) string {
+	return strings.ReplaceAll(s, "-", `\-`)
+}
+
+func UnEscape(s string) string {
+	return strings.ReplaceAll(s, `\-`, "-")
 }

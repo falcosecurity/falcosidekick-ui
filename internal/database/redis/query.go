@@ -12,7 +12,7 @@ import (
 func newQuery(args *models.Arguments) string {
 	var filter, priority, rule, source, hostname, tags, since string
 	if args.Filter != "" {
-		filter = args.Filter + "* "
+		filter = utils.Escape(args.Filter) + "* "
 	}
 	if args.Priority != "" {
 		p := strings.Split(args.Priority, ",")
@@ -36,14 +36,14 @@ func newQuery(args *models.Arguments) string {
 		source = fmt.Sprintf("(%v) ", strings.Join(r, " | "))
 	}
 	if args.Hostname != "" {
-		r := strings.Split(args.Hostname, ",")
+		r := strings.Split(utils.Escape(args.Hostname), ",")
 		for i, j := range r {
 			r[i] = fmt.Sprintf("@hostname:%v", j)
 		}
 		hostname = fmt.Sprintf("(%v) ", strings.Join(r, " | "))
 	}
 	if args.Tags != "" {
-		r := strings.Split(args.Tags, ",")
+		r := strings.Split(utils.Escape(args.Tags), ",")
 		for i, j := range r {
 			r[i] = fmt.Sprintf("@tags:%v", j)
 		}
