@@ -206,7 +206,7 @@
         ></v-text-field>
         <v-card-actions style="padding-top: 20px; padding-bottom: 0px;">
           <v-spacer></v-spacer>
-          <v-icon @click="next">
+          <v-icon @click="clearSearch" v-show="filters.search">
             mdi-close-circle-outline
           </v-icon>
         </v-card-actions>
@@ -417,7 +417,7 @@ export default {
           break;
       }
     },
-    next() {
+    clearSearch() {
       this.filters.search = '';
     },
   },
