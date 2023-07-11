@@ -29,6 +29,7 @@ type CustomValidator struct {
 func init() {
 	addr := utils.GetStringFlagOrEnvParam("a", "FALCOSIDEKICK_UI_ADDR", "0.0.0.0", "Listen Address")
 	redisserver := utils.GetStringFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
+	redispassword := utils.GetStringFlagOrEnvParam("w", "FALCOSIDEKICK_UI_REDIS_PASSWORD", "", "Redis server password")
 	port := utils.GetIntFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", 2802, "Listen Port")
 	ttl := utils.GetIntFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", 0, "TTL for keys")
 	version := flag.Bool("v", false, "Print version")
@@ -53,6 +54,8 @@ func init() {
       TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -u string  
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+-w string  
+      Redis password (default "", environment "FALCOSIDEKICK_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 `
@@ -79,6 +82,7 @@ func init() {
 	config.ListenAddress = *addr
 	config.ListenPort = *port
 	config.RedisServer = *redisserver
+	config.RedisPassword = *redispassword
 	config.DevMode = *dev
 	config.TTL = *ttl
 	config.LogLevel = *loglevel

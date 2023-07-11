@@ -158,6 +158,9 @@ func GetConfiguration(c echo.Context) error {
 	config := configuration.GetConfiguration()
 	obfuscatedConfig := *config
 	obfuscatedConfig.Credentials = strings.Split(config.Credentials, ":")[0] + ":*******"
+	if obfuscatedConfig.RedisPassword != "" {
+		obfuscatedConfig.RedisPassword = "*******"
+	}
 	return c.JSON(http.StatusOK, obfuscatedConfig)
 }
 

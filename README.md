@@ -34,6 +34,8 @@ Usage of Falcosidekick-UI:
       TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -u string  
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+-w string  
+      Redis password (default "", environment "FALCOSIDEKICK_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 ```
