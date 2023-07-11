@@ -8,6 +8,9 @@ import (
 func isIndexExit(client *redisearch.Client) bool {
 	_, err := client.Info()
 	if err != nil {
+		if err.Error() == "NOAUTH Authentication required." {
+			utils.WriteLog("fatal", "Authentication required")
+		}
 		utils.WriteLog("warning", "Index does not exist")
 		return false
 	}
