@@ -8,12 +8,16 @@ definitions:
         type: string
       dev-mode:
         type: boolean
+      disable-auth:
+        type: boolean
       listen-address:
         description: DisplayMode   string `json:"display-mode"`
         type: string
       listen-port:
         type: integer
       log-level:
+        type: string
+      redis-password:
         type: string
       redis-server:
         type: string

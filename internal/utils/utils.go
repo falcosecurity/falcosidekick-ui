@@ -79,8 +79,13 @@ func ConvertToSeconds(s string) int {
 		return n * 30 * 24 * 60 * 60
 	case "y", "year", "years":
 		return n * 365 * 24 * 60 * 60
+	default:
+		o, err := strconv.Atoi(s)
+		if err != nil {
+			WriteLog("fatal", "invalid TTL")
+		}
+		return o
 	}
-	return 0
 }
 
 func RemoveDuplicate(input []string) []string {

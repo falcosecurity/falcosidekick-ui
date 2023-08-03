@@ -31,7 +31,7 @@ func init() {
 	redisserver := utils.GetStringFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
 	redispassword := utils.GetStringFlagOrEnvParam("w", "FALCOSIDEKICK_UI_REDIS_PASSWORD", "", "Redis server password")
 	port := utils.GetIntFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", 2802, "Listen Port")
-	ttl := utils.GetIntFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", 0, "TTL for keys")
+	ttl := utils.GetStringFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", "0s", "TTL for keys, the format is X<unit>, with unit (s, m, h, d, W, M, y)")
 	version := flag.Bool("v", false, "Print version")
 	dev := utils.GetBoolFlagOrEnvParam("x", "FALCOSIDEKICK_UI_DEV", false, "Allow CORS for development")
 	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "Log Level")
@@ -50,8 +50,9 @@ func init() {
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
--t int
-      TTL for keys (default "0", environment "FALCOSIDEKICK_UI_TTL")
+-t string
+      TTL for keys, the format is X<unit>,
+      with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -u string  
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
 -w string  
@@ -84,7 +85,7 @@ func init() {
 	config.RedisServer = *redisserver
 	config.RedisPassword = *redispassword
 	config.DevMode = *dev
-	config.TTL = *ttl
+	config.TTL = utils.ConvertToSeconds(*ttl)
 	config.LogLevel = *loglevel
 	config.Credentials = *user
 	config.DisableAuth = *disableauth

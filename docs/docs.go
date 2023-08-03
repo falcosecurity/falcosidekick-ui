@@ -401,6 +401,9 @@ const docTemplate = `{
                 "dev-mode": {
                     "type": "boolean"
                 },
+                "disable-auth": {
+                    "type": "boolean"
+                },
                 "listen-address": {
                     "description": "DisplayMode   string ` + "`" + `json:\"display-mode\"` + "`" + `",
                     "type": "string"
@@ -409,6 +412,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "log-level": {
+                    "type": "string"
+                },
+                "redis-password": {
                     "type": "string"
                 },
                 "redis-server": {
