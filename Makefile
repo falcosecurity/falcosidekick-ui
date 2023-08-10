@@ -21,7 +21,7 @@ TOOLS_BIN_DIR := $(abspath $(TOOLS_DIR)/bin)
 GO_INSTALL = tools/go_install.sh
 
 # Binaries.
-GOLANGCI_LINT_VER := v1.44.2
+GOLANGCI_LINT_VER := v1.52.2
 GOLANGCI_LINT_BIN := golangci-lint
 GOLANGCI_LINT := $(TOOLS_BIN_DIR)/$(GOLANGCI_LINT_BIN)-$(GOLANGCI_LINT_VER)
 
@@ -73,11 +73,23 @@ frontend:
 
 .PHONY: falcosidekick-ui
 falcosidekick-ui: frontend
+	$(GO) mod download
 	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
+
+.PHONY: falcosidekick-ui-linux-amd64
+falcosidekick-ui-linux-amd64: frontend
+	$(GO) mod download
+	GOOS=linux GOARCH=amd64 $(GO) build -gcflags all=-trimpath=/src -asmflags all=-trimpath=/src -a -installsuffix cgo -o falcosidekick-ui .
 
 .PHONY: falcosidekick-ui-backend-only
 falcosidekick-ui-backend-only:
+	$(GO) mod download
 	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
+
+.PHONY: falcosidekick-ui-linux-amd64-backend-only
+falcosidekick-ui-linux-amd64:
+	$(GO) mod download
+	GOOS=linux GOARCH=amd64 $(GO) build -gcflags all=-trimpath=/src -asmflags all=-trimpath=/src -a -installsuffix cgo -o falcosidekick-ui .
 
 .PHONY: build-image
 build-image:
@@ -113,11 +125,11 @@ lint-full: $(GOLANGCI_LINT) ## Run slower linters to detect possible issues
 
 .PHONY: goreleaser
 goreleaser: ## Release using goreleaser
-	LDFLAGS="$(LDFLAGS)" goreleaser release --rm-dist
+	LDFLAGS="$(LDFLAGS)" goreleaser release --clean
 
 .PHONY: goreleaser-snapshot
 goreleaser-snapshot: ## Release snapshot using goreleaser
-	LDFLAGS="$(LDFLAGS)" goreleaser --snapshot --skip-sign --rm-dist
+	LDFLAGS="$(LDFLAGS)" goreleaser --snapshot --skip-sign --clean
 
 ## --------------------------------------
 ## Tooling Binaries
@@ -133,3 +145,4 @@ $(GOLANGCI_LINT): ## Build golangci-lint from tools folder.
 .PHONY: clean
 clean:
 	rm -rf hack/tools/bin
+	rm -rf dist
