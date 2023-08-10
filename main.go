@@ -55,6 +55,8 @@ func init() {
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -u string  
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+-v boolean
+      Display version
 -w string  
       Redis password (default "", environment "FALCOSIDEKICK_REDIS_PASSWORD")
 -x boolean

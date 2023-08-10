@@ -33,7 +33,7 @@ jobs:
         run: |
           make goreleaser-snapshot
           docker images
-          docker run falcosecurity/falcosidekick-ui:latest-amd64 --version
-          docker run public.ecr.aws/falcosecurity/falcosidekick-ui:latest-amd64 --version
+          docker run falcosecurity/falcosidekick-ui:latest-amd64 -v
+          docker run public.ecr.aws/falcosecurity/falcosidekick-ui:latest-amd64 -v
         env:
           GOPATH: /home/runner/go
