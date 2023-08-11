@@ -1,3 +1,16 @@
+# v2.2.0
+
+* Replace CircleCI by Github Actions
+* Add new dialog box to show the details of an alert
+* Add an export feature
+* Allow to specify the TTL for the keys with an unit (second, minute, day, week)
+* Allow to set a password for Redis
+* Allow to disable the basic auth
+* Add a button to clear the search input
+* Fix missing filter/search in query parameters
+* Fix search for hostnames and tags with dashes
+* Fix error with empty result from `count_by`
+
 # v2.1.0
 
 * Add Basic Auth
@@ -25,7 +38,7 @@
 
 * Full rewrite (frontend + backend)
   * The backend has been rewritten with Echo framework and exposes an API (in RO) to count, search, etc the events.
-  * For the storage, and allow full text search, a Redis datababse with module [Redisearch](redis.io/docs/stack/search is used
+  * For the storage, and allow full text search, a Redis datababse with module [Redisearch](redis.io/docs/stack/search is used)
   * The frontend is created with Vuejs 2 + Vuetify
 
 # v1.1.0
