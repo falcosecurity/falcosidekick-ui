@@ -38,7 +38,7 @@
 
 * Full rewrite (frontend + backend)
   * The backend has been rewritten with Echo framework and exposes an API (in RO) to count, search, etc the events.
-  * For the storage, and allow full text search, a Redis datababse with module [Redisearch](redis.io/docs/stack/search is used
+  * For the storage, and allow full text search, a Redis datababse with module [Redisearch](redis.io/docs/stack/search is used)
   * The frontend is created with Vuejs 2 + Vuetify
 
 # v1.1.0
