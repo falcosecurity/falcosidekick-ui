@@ -11,6 +11,7 @@ type Configuration struct {
 	LogLevel      string `json:"log-level"`
 	TTL           int    `json:"ttl"`
 	Credentials   string `json:"credentials"`
+	Subpath       string `json:"subpath"`
 }
 
 var config *Configuration
