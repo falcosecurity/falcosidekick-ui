@@ -37,6 +37,7 @@ func init() {
 	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "Log Level")
 	user := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USER", "admin:admin", "User in format <login>:<password>")
 	disableauth := utils.GetBoolFlagOrEnvParam("d", "FALCOSIDEKICK_UI_DISABLEAUTH", false, "Disable authentication")
+	subpath := utils.GetStringFlagOrEnvParam("s", "FALCOSIDEKICK_UI_SUBPATH", "", "Serve the UI and the API under this subpath")
 
 	flag.Usage = func() {
 		help := `Usage of Falcosidekick-UI:  
@@ -45,11 +46,13 @@ func init() {
 -d boolean
       Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
 -l string   
-	  Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
+      Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
+-s string
+      Serve the UI and the API under this subpath (default "", environment "FALCOSIDEKICK_UI_SUBPATH")
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
@@ -58,7 +61,7 @@ func init() {
 -v boolean
       Display version
 -w string  
-      Redis password (default "", environment "FALCOSIDEKICK_REDIS_PASSWORD")
+      Redis password (default "", environment "FALCOSIDEKICK_UI_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 `
@@ -91,6 +94,11 @@ func init() {
 	config.LogLevel = *loglevel
 	config.Credentials = *user
 	config.DisableAuth = *disableauth
+	if !strings.HasPrefix(*subpath, "/") {
+		utils.WriteLog("warning", "Wrong subpath, it must start with /")
+	} else {
+		config.Subpath = strings.TrimSuffix(*subpath, "/")
+	}
 
 	if utils.GetPriortiyInt(config.LogLevel) < 0 {
 		config.LogLevel = "info"
@@ -117,41 +125,51 @@ func init() {
 func main() {
 	e := echo.New()
 	v := &CustomValidator{validator: validator.New()}
-	c := configuration.GetConfiguration()
+	config := configuration.GetConfiguration()
 
 	e.Validator = v
 	e.HideBanner = true
 	e.HidePort = true
 
-	if c.DevMode {
+	if config.DevMode {
 		utils.WriteLog("warning", "DEV mode enabled")
 		e.Use(middleware.CORS())
 	}
-	if c.DisableAuth {
+	if config.DisableAuth {
 		utils.WriteLog("warning", "Auhentication disabled")
 		e.Use(middleware.CORS())
 	}
-	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", c.ListenAddress, c.ListenPort))
-	utils.WriteLog("info", fmt.Sprintf("log level is %v", c.LogLevel))
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set("Subpath", config.Subpath)
+			if err := next(c); err != nil {
+				c.Error(err)
+			}
+			return nil
+		}
+	})
 
-	e.GET("/docs/*", echoSwagger.WrapHandler)
-	e.GET("/docs", func(c echo.Context) error {
+	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", config.ListenAddress, config.ListenPort))
+	utils.WriteLog("info", fmt.Sprintf("Log level is %v", config.LogLevel))
+
+	e.GET(config.Subpath+"/docs/*", echoSwagger.WrapHandler)
+	e.GET(config.Subpath+"/docs", func(c echo.Context) error {
 		if err := c.Redirect(http.StatusPermanentRedirect, "docs/"); err != nil {
 			return err
 		}
 		return nil
 	})
-	e.Static("/*", "frontend/dist").Name = "webui-home"
-	e.Static("/dashboard", "frontend/dist").Name = "webui-dashboard"
-	e.Static("/events", "frontend/dist").Name = "webui-events"
-	e.Static("/info", "frontend/dist").Name = "webui-info"
-	e.Static("/login", "frontend/dist").Name = "webui-login"
-	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
+	e.Static(config.Subpath+"/*", "frontend/dist").Name = "webui-home"
+	e.Static(config.Subpath+"/dashboard", "frontend/dist").Name = "webui-dashboard"
+	e.Static(config.Subpath+"/events", "frontend/dist").Name = "webui-events"
+	e.Static(config.Subpath+"/info", "frontend/dist").Name = "webui-info"
+	e.Static(config.Subpath+"/login", "frontend/dist").Name = "webui-login"
+	e.POST(config.Subpath+"/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
 	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
 	// }))
 
-	apiRoute := e.Group("/api/v1")
+	apiRoute := e.Group(config.Subpath + "/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Skipper: func(c echo.Context) bool {
 			if configuration.GetConfiguration().DisableAuth {
@@ -192,7 +210,7 @@ func main() {
 	eventsRoute.GET("/count/:groupby", api.CountByEvent).Name = "count-events-by"
 	eventsRoute.GET("/search", api.Search).Name = "search-keys"
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf("%v:%v", c.ListenAddress, c.ListenPort)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf("%v:%v", config.ListenAddress, config.ListenPort)))
 }
 
 func (cv *CustomValidator) Validate(i interface{}) error {

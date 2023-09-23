@@ -25,11 +25,13 @@ Usage of Falcosidekick-UI:
 -d boolean
       Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
 -l string   
-          Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
+      Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
+-s string
+      Serve the UI and the API under this subpath (default "", environment "FALCOSIDEKICK_UI_SUBPATH")
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
@@ -38,7 +40,7 @@ Usage of Falcosidekick-UI:
 -v boolean
       Display version
 -w string  
-      Redis password (default "", environment "FALCOSIDEKICK_REDIS_PASSWORD")
+      Redis password (default "", environment "FALCOSIDEKICK_UI_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
 ```
