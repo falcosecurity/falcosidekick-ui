@@ -37,7 +37,6 @@ func init() {
 	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "Log Level")
 	user := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USER", "admin:admin", "User in format <login>:<password>")
 	disableauth := utils.GetBoolFlagOrEnvParam("d", "FALCOSIDEKICK_UI_DISABLEAUTH", false, "Disable authentication")
-	subpath := utils.GetStringFlagOrEnvParam("s", "FALCOSIDEKICK_UI_SUBPATH", "", "Serve the UI and the API under this subpath")
 
 	flag.Usage = func() {
 		help := `Usage of Falcosidekick-UI:
@@ -51,8 +50,6 @@ func init() {
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
--s string
-      Serve the UI and the API under this subpath (default "", environment "FALCOSIDEKICK_UI_SUBPATH")
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
@@ -94,11 +91,6 @@ func init() {
 	config.LogLevel = *loglevel
 	config.Credentials = *user
 	config.DisableAuth = *disableauth
-	if !strings.HasPrefix(*subpath, "/") {
-		utils.WriteLog("warning", "Wrong subpath, it must start with /")
-	} else {
-		config.Subpath = strings.TrimSuffix(*subpath, "/")
-	}
 
 	if utils.GetPriortiyInt(config.LogLevel) < 0 {
 		config.LogLevel = "info"
@@ -143,24 +135,15 @@ func main() {
 	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", config.ListenAddress, config.ListenPort))
 	utils.WriteLog("info", fmt.Sprintf("Log level is %v", config.LogLevel))
 
-	if config.Subpath != "" {
-		e.GET("/", func(c echo.Context) error {
-			return c.Redirect(http.StatusPermanentRedirect, config.Subpath+"/")
-		})
-	}
-	e.GET(strings.TrimSuffix(config.Subpath, "/"), func(c echo.Context) error {
-		return c.Redirect(http.StatusPermanentRedirect, config.Subpath+"/")
-	})
-
-	e.GET(config.Subpath+"/docs/*", echoSwagger.WrapHandler)
-	e.GET(config.Subpath+"/docs", func(c echo.Context) error {
+	e.GET("/docs/*", echoSwagger.WrapHandler)
+	e.GET("/docs", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, "docs/")
 	})
-	e.Static(config.Subpath+"/*", "frontend/dist").Name = "webui-home"
-	e.POST("/", api.AddEvent).Name = "add-event"                // for compatibility with old Falcosidekicks
-	e.POST(config.Subpath+"/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
+	e.Static("/*", "frontend/dist").Name = "webui-home"
+	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
+	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
-	apiRoute := e.Group(config.Subpath + "/api/v1")
+	apiRoute := e.Group("/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
 		Skipper: func(c echo.Context) bool {
 			if configuration.GetConfiguration().DisableAuth {

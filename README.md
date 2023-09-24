@@ -30,8 +30,6 @@ Usage of Falcosidekick-UI:
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
--s string
-      Serve the UI and the API under this subpath (default "", environment "FALCOSIDEKICK_UI_SUBPATH")
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
