@@ -154,20 +154,10 @@ func main() {
 
 	e.GET(config.Subpath+"/docs/*", echoSwagger.WrapHandler)
 	e.GET(config.Subpath+"/docs", func(c echo.Context) error {
-		if err := c.Redirect(http.StatusPermanentRedirect, "docs/"); err != nil {
-			return err
-		}
-		return nil
+		return c.Redirect(http.StatusPermanentRedirect, "docs/")
 	})
 	e.Static(config.Subpath+"/*", "frontend/dist").Name = "webui-home"
-	e.Static(config.Subpath+"/dashboard", "frontend/dist").Name = "webui-dashboard"
-	e.Static(config.Subpath+"/events", "frontend/dist").Name = "webui-events"
-	e.Static(config.Subpath+"/info", "frontend/dist").Name = "webui-info"
-	e.Static(config.Subpath+"/login", "frontend/dist").Name = "webui-login"
 	e.POST(config.Subpath+"/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
-
-	// e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-	// }))
 
 	apiRoute := e.Group(config.Subpath + "/api/v1")
 	apiRoute.Use(middleware.BasicAuthWithConfig(middleware.BasicAuthConfig{
