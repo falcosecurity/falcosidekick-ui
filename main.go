@@ -152,11 +152,21 @@ func main() {
 	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", config.ListenAddress, config.ListenPort))
 	utils.WriteLog("info", fmt.Sprintf("Log level is %v", config.LogLevel))
 
+	if config.Subpath != "" {
+		e.GET("/", func(c echo.Context) error {
+			return c.Redirect(http.StatusPermanentRedirect, config.Subpath+"/")
+		})
+	}
+	e.GET(strings.TrimSuffix(config.Subpath, "/"), func(c echo.Context) error {
+		return c.Redirect(http.StatusPermanentRedirect, config.Subpath+"/")
+	})
+
 	e.GET(config.Subpath+"/docs/*", echoSwagger.WrapHandler)
 	e.GET(config.Subpath+"/docs", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, "docs/")
 	})
 	e.Static(config.Subpath+"/*", "frontend/dist").Name = "webui-home"
+	e.POST("/", api.AddEvent).Name = "add-event"                // for compatibility with old Falcosidekicks
 	e.POST(config.Subpath+"/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
 	apiRoute := e.Group(config.Subpath + "/api/v1")
