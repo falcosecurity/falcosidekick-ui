@@ -40,12 +40,12 @@ func init() {
 	subpath := utils.GetStringFlagOrEnvParam("s", "FALCOSIDEKICK_UI_SUBPATH", "", "Serve the UI and the API under this subpath")
 
 	flag.Usage = func() {
-		help := `Usage of Falcosidekick-UI:  
+		help := `Usage of Falcosidekick-UI:
 -a string
       Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
 -d boolean
       Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
--l string   
+-l string
       Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
@@ -56,11 +56,11 @@ func init() {
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
--u string  
+-u string
       User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
 -v boolean
       Display version
--w string  
+-w string
       Redis password (default "", environment "FALCOSIDEKICK_UI_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
