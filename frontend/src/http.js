@@ -4,7 +4,7 @@ import store from './store';
 const production = process.env.NODE_ENV === 'production';
 
 const api = axios.create({
-  baseURL: `${production ? `//${window.location.host}` : process.env.VUE_APP_API}/api/v1`,
+  baseURL: `${production ? `//${window.location.host}${window.location.pathname}` : process.env.VUE_APP_API}api/v1`,
   headers: {
     'Content-type': 'application/json',
     'Access-Control-Allow-Origin': '*',
