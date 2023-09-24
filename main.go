@@ -139,15 +139,6 @@ func main() {
 		utils.WriteLog("warning", "Auhentication disabled")
 		e.Use(middleware.CORS())
 	}
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.Response().Header().Set("Subpath", config.Subpath)
-			if err := next(c); err != nil {
-				c.Error(err)
-			}
-			return nil
-		}
-	})
 
 	utils.WriteLog("info", fmt.Sprintf("Falcosidekick UI is listening on %v:%v", config.ListenAddress, config.ListenPort))
 	utils.WriteLog("info", fmt.Sprintf("Log level is %v", config.LogLevel))
