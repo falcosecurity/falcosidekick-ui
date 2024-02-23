@@ -44,6 +44,7 @@ func CreateIndex(client *redisearch.Client) {
 		AddField(redisearch.NewTextField("hostname")).
 		AddField(redisearch.NewTextField("source")).
 		AddField(redisearch.NewTextField("tags")).
+		AddField(redisearch.NewTextField("outputfields")).
 		AddField(redisearch.NewNumericField("timestamp")).
 		AddField(redisearch.NewTextField("json"))
 

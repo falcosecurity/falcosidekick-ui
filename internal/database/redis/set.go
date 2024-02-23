@@ -30,6 +30,12 @@ func SetKey(client *redisearch.Client, event *models.Event) error {
 
 	jsonString, _ := json.Marshal(event)
 
+	of := make([]string, 0, len(event.OutputFields))
+
+	for _, i := range event.OutputFields {
+		of = append(of, fmt.Sprintf("%v", i))
+	}
+
 	doc := redisearch.NewDocument(fmt.Sprintf("event:%v", event.UUID), 1.0).
 		Set("rule", event.Rule).
 		Set("priority", event.Priority).
@@ -38,6 +44,7 @@ func SetKey(client *redisearch.Client, event *models.Event) error {
 		Set("timestamp", event.Time.UnixNano()/1e3).
 		Set("tags", utils.Escape(strings.Join(event.Tags, ","))).
 		Set("json", string(jsonString)).
+		Set("outputfields", utils.Escape(strings.Join(of, ","))).
 		Set("uuid", event.UUID).
 		SetTTL(c.TTL)
 	if event.Hostname != "" {

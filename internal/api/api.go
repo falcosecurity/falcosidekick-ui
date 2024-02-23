@@ -62,6 +62,8 @@ func AddEvent(c echo.Context) error {
 
 	models.GetOutputs().Update(payload.Outputs)
 
+	payload.Event.Output = utils.TrimPrefix(payload.Event.Output)
+
 	if err := events.Add(&payload.Event); err != nil {
 		return err
 	}

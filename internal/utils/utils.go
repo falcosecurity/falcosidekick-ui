@@ -29,6 +29,7 @@ import (
 const (
 	extractNumber = "^[0-9]+"
 	extractUnity  = "[a-z-A-Z]+$"
+	trimPrefix    = "(?i)^\\d{2}:\\d{2}:\\d{2}\\.\\d{9}\\:\\ (Debug|Info|Informational|Notice|Warning|Error|Critical|Alert|Emergency)"
 )
 
 const (
@@ -39,11 +40,12 @@ const (
 	fatalLog
 )
 
-var regExtractNumber, regExtractUnity *regexp.Regexp
+var regExtractNumber, regExtractUnity, regTrimPrefix *regexp.Regexp
 
 func init() {
 	regExtractNumber, _ = regexp.Compile(extractNumber)
 	regExtractUnity, _ = regexp.Compile(extractUnity)
+	regTrimPrefix, _ = regexp.Compile(trimPrefix)
 }
 
 func CheckErr(e error) {
@@ -164,9 +166,17 @@ func GetPriortiyInt(prio string) int {
 }
 
 func Escape(s string) string {
-	return strings.ReplaceAll(s, "-", `\-`)
+	s = strings.ReplaceAll(s, "-", `\-`)
+	s = strings.ReplaceAll(s, "/", "\\/")
+	return s
 }
 
 func UnEscape(s string) string {
-	return strings.ReplaceAll(s, `\-`, "-")
+	s = strings.ReplaceAll(s, `\-`, "-")
+	s = strings.ReplaceAll(s, `\\/`, "/")
+	return s
+}
+
+func TrimPrefix(s string) string {
+	return regTrimPrefix.ReplaceAllString(s, "")
 }
