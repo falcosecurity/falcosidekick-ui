@@ -26,7 +26,7 @@ import (
 func newQuery(args *models.Arguments) string {
 	var filter, priority, rule, source, hostname, tags, since string
 	if args.Filter != "" {
-		filter = utils.Escape(args.Filter) + "* "
+		filter = "*" + utils.Escape(args.Filter) + "* "
 	}
 	if args.Priority != "" {
 		p := strings.Split(args.Priority, ",")

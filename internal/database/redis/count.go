@@ -60,6 +60,11 @@ func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Resul
 		}
 		key := i[args.GroupBy]
 		count, _ := strconv.ParseInt(i["__generated_aliascount"].(string), 10, 64)
+		switch key.(type) {
+		case string:
+		default:
+			continue
+		}
 		if len(key.(string)) == 0 {
 			continue
 		}
