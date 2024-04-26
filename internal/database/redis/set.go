@@ -39,7 +39,7 @@ func SetKey(client *redisearch.Client, event *models.Event) error {
 	doc := redisearch.NewDocument(fmt.Sprintf("event:%v", event.UUID), 1.0).
 		Set("rule", event.Rule).
 		Set("priority", event.Priority).
-		Set("output", utils.Escape(event.Output)).
+		Set("output", strings.ReplaceAll(utils.Escape(event.Output), ",", "")).
 		Set("source", event.Source).
 		Set("timestamp", event.Time.UnixNano()/1e3).
 		Set("tags", utils.Escape(strings.Join(event.Tags, ","))).
