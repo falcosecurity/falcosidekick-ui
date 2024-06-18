@@ -42,7 +42,7 @@
     "vuex": "3",
     "vuex-persistedstate": "^4.1.0",
     "webpack": "^4.28.4",
-    "ws": "^8.8.1"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "style-loader": "^0.23.1",
