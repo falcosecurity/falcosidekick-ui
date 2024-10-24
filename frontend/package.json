@@ -31,7 +31,7 @@
     "sass-loader": "^10",
     "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1",
-    "vue": "^2.5.21",
+    "vue": "^3.0.0",
     "vue-chartjs": "^4.0.5",
     "vue-cli-plugin-vuetify": "^2.4.8",
     "vue-json-pretty": "^1.9.4",
