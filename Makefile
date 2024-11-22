@@ -143,7 +143,7 @@ goreleaser: ## Release using goreleaser
 
 .PHONY: goreleaser-snapshot
 goreleaser-snapshot: ## Release snapshot using goreleaser
-	LDFLAGS="$(LDFLAGS)" goreleaser --snapshot --skip-sign --clean
+	LDFLAGS="$(LDFLAGS)" goreleaser --snapshot --skip=sign --clean
 
 ## --------------------------------------
 ## Tooling Binaries
