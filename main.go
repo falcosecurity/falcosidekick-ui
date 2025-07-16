@@ -16,6 +16,7 @@ package main
 
 import (
 	"crypto/subtle"
+	"embed"
 	"flag"
 	"fmt"
 	"net"
@@ -35,6 +36,9 @@ import (
 
 	_ "github.com/falcosecurity/falcosidekick-ui/docs"
 )
+
+//go:embed all:frontend/dist
+var staticFiles embed.FS
 
 type CustomValidator struct {
 	validator *validator.Validate
@@ -157,7 +161,8 @@ func main() {
 	e.GET("/docs", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, "docs/")
 	})
-	e.Static("/*", "frontend/dist").Name = "webui-home"
+	// Serve embedded static files found at ./frontend/build
+	e.StaticFS("/*", echo.MustSubFS(staticFiles, "frontend/dist")).Name = "webui-home"
 	e.POST("/", api.AddEvent).Name = "add-event" // for compatibility with old Falcosidekicks
 
 	apiRoute := e.Group("/api/v1")
