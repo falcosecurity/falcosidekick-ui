@@ -43,6 +43,7 @@ type CustomValidator struct {
 func init() {
 	addr := utils.GetStringFlagOrEnvParam("a", "FALCOSIDEKICK_UI_ADDR", "0.0.0.0", "Listen Address")
 	redisserver := utils.GetStringFlagOrEnvParam("r", "FALCOSIDEKICK_UI_REDIS_URL", "localhost:6379", "Redis server address")
+	redisusername := utils.GetStringFlagOrEnvParam("y", "FALCOSIDEKICK_UI_REDIS_USERNAME", "", "Redis server username")
 	redispassword := utils.GetStringFlagOrEnvParam("w", "FALCOSIDEKICK_UI_REDIS_PASSWORD", "", "Redis server password")
 	port := utils.GetIntFlagOrEnvParam("p", "FALCOSIDEKICK_UI_PORT", 2802, "Listen Port")
 	ttl := utils.GetStringFlagOrEnvParam("t", "FALCOSIDEKICK_UI_TTL", "0s", "TTL for keys, the format is X<unit>, with unit (s, m, h, d, W, M, y)")
@@ -75,6 +76,8 @@ func init() {
       Redis password (default "", environment "FALCOSIDEKICK_UI_REDIS_PASSWORD")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
+-y string
+      Redis username (default "", environment "FALCOSIDEKICK_UI_REDIS_USERNAME")
 `
 		fmt.Println(help)
 	}
@@ -99,6 +102,7 @@ func init() {
 	config.ListenAddress = *addr
 	config.ListenPort = *port
 	config.RedisServer = *redisserver
+	config.RedisUsername = *redisusername
 	config.RedisPassword = *redispassword
 	config.DevMode = *dev
 	config.TTL = utils.ConvertToSeconds(*ttl)
@@ -110,8 +114,8 @@ func init() {
 		config.LogLevel = "info"
 	}
 
-	redis.CreateClient()
-	redis.CreateIndex(redis.GetClient())
+	client := redis.CreateClient()
+	redis.CreateIndex(client)
 	models.CreateOutputs()
 }
 

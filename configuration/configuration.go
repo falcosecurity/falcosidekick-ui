@@ -19,6 +19,7 @@ type Configuration struct {
 	ListenAddress string `json:"listen-address"`
 	ListenPort    int    `json:"listen-port"`
 	RedisServer   string `json:"redis-server"`
+	RedisUsername string `json:"redis-username"`
 	RedisPassword string `json:"redis-password"`
 	DevMode       bool   `json:"dev-mode"`
 	DisableAuth   bool   `json:"disable-auth"`
