@@ -48,5 +48,6 @@
     "style-loader": "^0.23.1",
     "stylus": "^0.57.0",
     "stylus-loader": "^3.0.2"
-  }
+  },
+  "postinstall": "touch dist/gitkeep"
 }
