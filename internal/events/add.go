@@ -25,7 +25,11 @@ import (
 )
 
 func Add(e *models.Event) error {
-	client := redis.GetClient()
+	client, err := redis.GetClient()
+	if err != nil {
+		utils.WriteLog("error", err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
 	if err := redis.SetKey(client, e); err != nil {
 		utils.WriteLog("error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

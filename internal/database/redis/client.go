@@ -15,6 +15,9 @@ limitations under the License.
 package redis
 
 import (
+	"fmt"
+	"net"
+
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 
 	"github.com/Issif/redisearch-go/redisearch"
@@ -23,19 +26,46 @@ import (
 
 var client *redisearch.Client
 
+// CreateClient creates a new redisearch.Client in the redis package scope.
 func CreateClient() *redisearch.Client {
 	config := configuration.GetConfiguration()
-	if config.RedisPassword != "" {
-		pool := &redis.Pool{Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", config.RedisServer, redis.DialPassword(config.RedisPassword))
-		}}
-		client = redisearch.NewClientFromPool(pool, "search-client-1")
-	} else {
-		client = redisearch.NewClient(config.RedisServer, "eventIndex")
+	var dialOpts []redis.DialOption
+
+	if config.RedisUsername != "" {
+		dialOpts = append(dialOpts, redis.DialUsername(config.RedisUsername))
 	}
+
+	if config.RedisPassword != "" {
+		dialOpts = append(dialOpts, redis.DialPassword(config.RedisPassword))
+	}
+
+	// Validate the host:port address
+	host, port, err := net.SplitHostPort(config.RedisServer)
+	if err != nil {
+		port = "6379"
+	}
+	if host == "" {
+		host = "localhost"
+	}
+	serverAddress := net.JoinHostPort(host, port)
+
+	pool := &redis.Pool{Dial: func() (redis.Conn, error) {
+		c, err := redis.Dial("tcp", serverAddress, dialOpts...)
+		if err != nil {
+			return nil, err
+		}
+		return c, nil
+	}}
+
+	client = redisearch.NewClientFromPool(pool, "search-client-1")
 	return client
 }
 
-func GetClient() *redisearch.Client {
-	return client
+// GetClient returns an existing redisearch.Client or an error if the client
+// hasn't yet been created.
+func GetClient() (*redisearch.Client, error) {
+	if client == nil {
+		return nil, fmt.Errorf("could not retrieve redisearch.Client")
+	}
+	return client, nil
 }

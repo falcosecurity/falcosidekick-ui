@@ -15,13 +15,20 @@ limitations under the License.
 package events
 
 import (
+	"net/http"
+
 	"github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
+	echo "github.com/labstack/echo/v4"
 )
 
 func Search(a *models.Arguments) (models.Results, error) {
-	client := redis.GetClient()
+	client, err := redis.GetClient()
+	if err != nil {
+		utils.WriteLog("error", err.Error())
+		return models.Results{}, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
 	results, err := redis.SearchKey(client, a)
 	if err != nil {
 		utils.WriteLog("error", err.Error())
