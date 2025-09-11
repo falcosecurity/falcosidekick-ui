@@ -1,6 +1,6 @@
 module github.com/falcosecurity/falcosidekick-ui
 
-go 1.20
+go 1.25
 
 require (
 	github.com/Issif/redisearch-go v1.1.2-0.20220629142418-f66689e2ff5c

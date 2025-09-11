@@ -1,0 +1,35 @@
+version: "2"
+linters:
+  default: none
+  enable:
+    - goconst
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - prealloc
+    - unconvert
+    - unused
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - zz_generated.*\.go$
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - zz_generated.*\.go$
+      - third_party$
+      - builtin$
+      - examples$
