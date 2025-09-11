@@ -391,7 +391,34 @@
         "configuration.Configuration": {
             "type": "object",
             "properties": {
+                "connection-host": {
+                    "type": "string"
+                },
+                "connection-port": {
+                    "type": "integer"
+                },
                 "credentials": {
+                    "type": "string"
+                },
+                "database-backend": {
+                    "type": "string"
+                },
+                "db-host": {
+                    "type": "string"
+                },
+                "db-name": {
+                    "type": "string"
+                },
+                "db-password": {
+                    "type": "string"
+                },
+                "db-port": {
+                    "type": "integer"
+                },
+                "db-ttl": {
+                    "type": "integer"
+                },
+                "db-username": {
                     "type": "string"
                 },
                 "dev-mode": {
@@ -409,15 +436,6 @@
                 },
                 "log-level": {
                     "type": "string"
-                },
-                "redis-password": {
-                    "type": "string"
-                },
-                "redis-server": {
-                    "type": "string"
-                },
-                "ttl": {
-                    "type": "integer"
                 }
             }
         },
@@ -521,7 +539,8 @@
                 "results": {
                     "type": "object",
                     "additionalProperties": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 },
                 "statistics": {

@@ -16,6 +16,7 @@ package redis
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/Issif/redisearch-go/redisearch"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
@@ -24,7 +25,19 @@ import (
 func SearchKey(client *redisearch.Client, args *models.Arguments) (models.Results, error) {
 	results, count, err := client.Search(redisearch.NewQuery(newQuery(args)).SetSortBy("timestamp", false).Limit(args.Page*args.Limit, args.Limit))
 	if err != nil {
-		return models.Results{}, err
+		// Check if error is due to missing index and try to recreate it
+		if strings.Contains(err.Error(), "no such index") || strings.Contains(err.Error(), "Unknown index name") {
+			if recreateErr := EnsureIndexExists(client); recreateErr != nil {
+				return models.Results{}, recreateErr
+			}
+			// Retry the search after recreating the index
+			results, count, err = client.Search(redisearch.NewQuery(newQuery(args)).SetSortBy("timestamp", false).Limit(args.Page*args.Limit, args.Limit))
+			if err != nil {
+				return models.Results{}, err
+			}
+		} else {
+			return models.Results{}, err
+		}
 	}
 
 	r := models.Results{}

@@ -16,16 +16,21 @@ package configuration
 
 type Configuration struct {
 	// DisplayMode   string `json:"display-mode"`
-	ListenAddress string `json:"listen-address"`
-	ListenPort    int    `json:"listen-port"`
-	RedisServer   string `json:"redis-server"`
-	RedisUsername string `json:"redis-username"`
-	RedisPassword string `json:"redis-password"`
-	DevMode       bool   `json:"dev-mode"`
-	DisableAuth   bool   `json:"disable-auth"`
-	LogLevel      string `json:"log-level"`
-	TTL           int    `json:"ttl"`
-	Credentials   string `json:"credentials"`
+	ListenAddress   string `json:"listen-address"`
+	ListenPort      int    `json:"listen-port"`
+	ConnectionHost  string `json:"connection-host"`
+	ConnectionPort  int    `json:"connection-port"`
+	DevMode         bool   `json:"dev-mode"`
+	DisableAuth     bool   `json:"disable-auth"`
+	LogLevel        string `json:"log-level"`
+	Credentials     string `json:"credentials"`
+	DatabaseBackend string `json:"database-backend"`
+	DbHost          string `json:"db-host"`
+	DbPort          int    `json:"db-port"`
+	DbName          string `json:"db-name"`
+	DbUsername      string `json:"db-username"`
+	DbPassword      string `json:"db-password"`
+	DbTTL           int    `json:"db-ttl"`
 }
 
 var config *Configuration

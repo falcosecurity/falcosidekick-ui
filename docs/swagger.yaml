@@ -4,7 +4,25 @@ consumes:
 definitions:
   configuration.Configuration:
     properties:
+      connection-host:
+        type: string
+      connection-port:
+        type: integer
       credentials:
+        type: string
+      database-backend:
+        type: string
+      db-host:
+        type: string
+      db-name:
+        type: string
+      db-password:
+        type: string
+      db-port:
+        type: integer
+      db-ttl:
+        type: integer
+      db-username:
         type: string
       dev-mode:
         type: boolean
@@ -17,12 +35,6 @@ definitions:
         type: integer
       log-level:
         type: string
-      redis-password:
-        type: string
-      redis-server:
-        type: string
-      ttl:
-        type: integer
     type: object
   configuration.VersionInfo:
     properties:
@@ -91,6 +103,7 @@ definitions:
     properties:
       results:
         additionalProperties:
+          format: int64
           type: integer
         type: object
       statistics:

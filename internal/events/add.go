@@ -18,19 +18,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
 	echo "github.com/labstack/echo/v4"
 )
 
 func Add(e *models.Event) error {
-	client, err := redis.GetClient()
-	if err != nil {
-		utils.WriteLog("error", err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	db := models.GetEventDatabase()
+	if db == nil {
+		utils.WriteLog("error", "database not initialized")
+		return echo.NewHTTPError(http.StatusInternalServerError, "database not initialized")
 	}
-	if err := redis.SetKey(client, e); err != nil {
+
+	if err := db.InsertEvent(e); err != nil {
 		utils.WriteLog("error", err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

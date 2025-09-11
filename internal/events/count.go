@@ -17,19 +17,19 @@ package events
 import (
 	"net/http"
 
-	redis "github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
-	models "github.com/falcosecurity/falcosidekick-ui/internal/models"
+	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
 	echo "github.com/labstack/echo/v4"
 )
 
 func Count(a *models.Arguments) (models.Results, error) {
-	c, err := redis.GetClient()
-	if err != nil {
-		utils.WriteLog("error", err.Error())
-		return models.Results{}, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	db := models.GetEventDatabase()
+	if db == nil {
+		utils.WriteLog("error", "database not initialized")
+		return models.Results{}, echo.NewHTTPError(http.StatusInternalServerError, "database not initialized")
 	}
-	r, err := redis.CountKey(c, a)
+
+	r, err := db.CountEvents(a)
 	if err != nil {
 		utils.WriteLog("error", err.Error())
 		return models.Results{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -38,12 +38,13 @@ func Count(a *models.Arguments) (models.Results, error) {
 }
 
 func CountBy(a *models.Arguments) (models.Results, error) {
-	c, err := redis.GetClient()
-	if err != nil {
-		utils.WriteLog("error", err.Error())
-		return models.Results{}, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	db := models.GetEventDatabase()
+	if db == nil {
+		utils.WriteLog("error", "database not initialized")
+		return models.Results{}, echo.NewHTTPError(http.StatusInternalServerError, "database not initialized")
 	}
-	r, err := redis.CountKeyBy(c, a)
+
+	r, err := db.CountEventsBy(a)
 	if err != nil {
 		utils.WriteLog("error", err.Error())
 		return models.Results{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())

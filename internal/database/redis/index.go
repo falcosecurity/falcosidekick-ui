@@ -31,6 +31,16 @@ func isIndexExit(client *redisearch.Client) bool {
 	return true
 }
 
+// EnsureIndexExists checks if the index exists and creates it if it doesn't
+func EnsureIndexExists(client *redisearch.Client) error {
+	if !isIndexExit(client) {
+		utils.WriteLog("info", "RediSearch index missing, recreating...")
+		CreateIndex(client)
+		return nil
+	}
+	return nil
+}
+
 func CreateIndex(client *redisearch.Client) {
 	if isIndexExit(client) {
 		return
