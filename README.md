@@ -11,7 +11,10 @@ A simple WebUI for displaying latest events from [Falco](https://falco.org). It 
 
 ## Requirements
 
-Events are stored in a `Redis` server with [`Redisearch`](https://github.com/RediSearch/RediSearch) module (> v2).
+Events are stored in a database backend. Supported backends:
+- **Redis** with [`Redisearch`](https://github.com/RediSearch/RediSearch) module (> v2)
+- **PostgreSQL** (>= 12)
+- **MySQL** (>= 8.0)
 
 ## Usage
 
@@ -20,29 +23,35 @@ Events are stored in a `Redis` server with [`Redisearch`](https://github.com/Red
 
 ```shell
 Usage of Falcosidekick-UI:
--a string
-      Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
--d boolean
-      Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
--l string
-      Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
--p int
-      Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
--r string
-      Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
--t string
-      TTL for keys, the format is X<unit>,
-      with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
--u string
-      User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
 -v boolean
       Display version
--w string
-      Redis password (default "", environment "FALCOSIDEKICK_UI_REDIS_PASSWORD")
+-a string
+      Listen Address (default "0.0.0.0", environment "FALCOSIDEKICK_UI_ADDR")
+-p int
+      Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
+-l string
+      Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
+-u string
+      User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+-d boolean
+      Disable authentication (environment "FALCOSIDEKICK_UI_DISABLEAUTH")
 -x boolean
       Allow CORS for development (environment "FALCOSIDEKICK_UI_DEV")
--y string
-      Redis username (default "", environment "FALCOSIDEKICK_UI_REDIS_USERNAME")
+-b string
+      Database backend: "redis" or "postgres" or "mysql" (default "redis", environment "FALCOSIDEKICK_UI_DATABASE_BACKEND")
+-dh string
+	  Database Host for either Redis/MySQL/PostgreSQL (default "localhost", environment "FALCOSIDEKICK_UI_DB_HOST")
+-dn string
+	  Database Name for MySQL/PostgreSQL (default "falco", environment "FALCOSIDEKICK_UI_DB_NAME")
+-dp string
+	  Database Port for Redis/MySQL/PostgreSQL (default "6379", environment "FALCOSIDEKICK_UI_DB_PORT")
+-dw string
+      Database Password for Redis/MySQL/PostgreSQL (default "", environment "FALCOSIDEKICK_UI_DB_PASSWORD")
+-dy string
+      Database Username for Redis/MySQL/PostgreSQL (default "", environment "FALCOSIDEKICK_UI_DB_USERNAME")
+-dt string
+      Database TTL for Redis keys, the format is X<unit>,
+      with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_DB_TTL")
 ```
 
 > If not user is set and the authentication is not disabled, the default user is `admin:admin`
@@ -109,16 +118,27 @@ Query parameters list:
 
 ## Development
 
-### Start local redis server
+### Start local database server
 
+For Redis (default):
 ```shell
 docker run -d -p 6379:6379 redislabs/redisearch:2.2.4
+```
+
+For PostgreSQL:
+```shell
+docker run -d -p 5432:5432 -e POSTGRES_DB=falco -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:13
+```
+
+For MySQL:
+```shell
+docker run -d -p 3306:3306 -e MYSQL_DATABASE=falco -e MYSQL_USER=mysql -e MYSQL_PASSWORD=mysql -e MYSQL_ROOT_PASSWORD=root mysql:8.0
 ```
 
 ### Build
 
 Requirements:
-* `go` >= 1.18
+* `go` >= 1.24
 * `nodejs` >= v14
 * `yarn` >= 1.22
 

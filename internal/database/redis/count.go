@@ -29,7 +29,19 @@ func CountKey(client *redisearch.Client, args *models.Arguments) (models.Results
 	query := redisearch.NewQuery(newQuery(args))
 	count, _, err := client.AggregateQuery(redisearch.NewAggregateQuery().SetQuery(query))
 	if err != nil {
-		return models.Results{}, err
+		// Check if error is due to missing index and try to recreate it
+		if strings.Contains(err.Error(), "no such index") || strings.Contains(err.Error(), "Unknown index name") {
+			if recreateErr := EnsureIndexExists(client); recreateErr != nil {
+				return models.Results{}, recreateErr
+			}
+			// Retry the count after recreating the index
+			count, _, err = client.AggregateQuery(redisearch.NewAggregateQuery().SetQuery(query))
+			if err != nil {
+				return models.Results{}, err
+			}
+		} else {
+			return models.Results{}, err
+		}
 	}
 
 	return models.Results{
@@ -49,7 +61,19 @@ func CountKeyBy(client *redisearch.Client, args *models.Arguments) (models.Resul
 
 	_, results, err := client.AggregateQuery(redisearch.NewAggregateQuery().SetQuery(query).GroupBy(*groupBy))
 	if err != nil {
-		return models.Results{}, err
+		// Check if error is due to missing index and try to recreate it
+		if strings.Contains(err.Error(), "no such index") || strings.Contains(err.Error(), "Unknown index name") {
+			if recreateErr := EnsureIndexExists(client); recreateErr != nil {
+				return models.Results{}, recreateErr
+			}
+			// Retry the count after recreating the index
+			_, results, err = client.AggregateQuery(redisearch.NewAggregateQuery().SetQuery(query).GroupBy(*groupBy))
+			if err != nil {
+				return models.Results{}, err
+			}
+		} else {
+			return models.Results{}, err
+		}
 	}
 
 	ag := make(models.Aggregation)

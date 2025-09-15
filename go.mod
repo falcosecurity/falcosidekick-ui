@@ -5,13 +5,16 @@ go 1.25
 require (
 	github.com/Issif/redisearch-go v1.1.2-0.20220629142418-f66689e2ff5c
 	github.com/go-playground/validator/v10 v10.15.0
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/gomodule/redigo v1.9.2
 	github.com/labstack/echo/v4 v4.13.4
+	github.com/lib/pq v1.10.9
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.6
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect

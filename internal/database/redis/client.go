@@ -17,6 +17,7 @@ package redis
 import (
 	"fmt"
 	"net"
+	"strconv"
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 
@@ -31,18 +32,18 @@ func CreateClient() *redisearch.Client {
 	config := configuration.GetConfiguration()
 	var dialOpts []redis.DialOption
 
-	if config.RedisUsername != "" {
-		dialOpts = append(dialOpts, redis.DialUsername(config.RedisUsername))
+	if config.DbUsername != "" {
+		dialOpts = append(dialOpts, redis.DialUsername(config.DbUsername))
 	}
 
-	if config.RedisPassword != "" {
-		dialOpts = append(dialOpts, redis.DialPassword(config.RedisPassword))
+	if config.DbPassword != "" {
+		dialOpts = append(dialOpts, redis.DialPassword(config.DbPassword))
 	}
 
 	// Validate the host:port address
-	host, port, err := net.SplitHostPort(config.RedisServer)
+	host, port, err := net.SplitHostPort(config.DbHost)
 	if err != nil {
-		port = "6379"
+		port = strconv.Itoa(config.DbPort)
 	}
 	if host == "" {
 		host = "localhost"

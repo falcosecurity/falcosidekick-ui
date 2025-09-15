@@ -40,14 +40,15 @@ func returnResult(c echo.Context, r models.Results, err error) error {
 }
 
 // Add Event
-// @Summary      Add Event
-// @Description  Add Event
-// @Accept       json
-// @Produce      json
-// @param        payload  body      models.Payload                  true  "Payload"
-// @Success      200      {string}  string                          ""
-// @Failure      500      {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /api/v1/ [post]
+//
+//	@Summary		Add Event
+//	@Description	Add Event
+//	@Accept			json
+//	@Produce		json
+//	@param			payload	body		models.Payload					true	"Payload"
+//	@Success		200		{string}	string							""
+//	@Failure		500		{string}	http.StatusInternalServerError	"Internal Server Error"
+//	@Router			/api/v1/ [post]
 func AddEvent(c echo.Context) error {
 	payload := new(models.Payload)
 	if err := c.Bind(payload); err != nil {
@@ -71,19 +72,20 @@ func AddEvent(c echo.Context) error {
 }
 
 // Count Events
-// @Summary      Count Events
-// @Description  Count Events
-// @Param        pretty    query  bool    false  "pretty"
-// @Param        priority  query  string  false  "priority"
-// @Param        source    query  string  false  "source"
-// @Param        filter    query  string  false  "filter"
-// @Param        rule      query  string  false  "rule"
-// @Param        tags      query  string  false  "tags"
-// @Param        since     query  int     false  "since"
-// @Produce      json
-// @Success      200  {object}  models.ResultsCount    "Count Events Result"
-// @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /api/v1/events/count [get]
+//
+//	@Summary		Count Events
+//	@Description	Count Events
+//	@Param			pretty		query	bool	false	"pretty"
+//	@Param			priority	query	string	false	"priority"
+//	@Param			source		query	string	false	"source"
+//	@Param			filter		query	string	false	"filter"
+//	@Param			rule		query	string	false	"rule"
+//	@Param			tags		query	string	false	"tags"
+//	@Param			since		query	int		false	"since"
+//	@Produce		json
+//	@Success		200	{object}	models.ResultsCount		"Count Events Result"
+//	@Failure		400	{string}	http.StatusBadRequest	"Bad Request"
+//	@Router			/api/v1/events/count [get]
 func CountEvent(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("debug", fmt.Sprintf("GET count (source='%v', priority='%v', rule='%v', since='%v', hostname= '%v', filter='%v', tags='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags))
@@ -93,20 +95,21 @@ func CountEvent(c echo.Context) error {
 }
 
 // Count Events By
-// @Summary      Count Events By
-// @Description  Count Events By
-// @Param        groupby   path   string  true   "group By"
-// @Param        pretty    query  bool    false  "pretty"
-// @Param        priority  query  string  false  "priority"
-// @Param        source    query  string  false  "source"
-// @Param        filter    query  string  false  "filter"
-// @Param        rule      query  string  false  "rule"
-// @Param        tags      query  string  false  "tags"
-// @Param        since     query  int     false  "since"
-// @Produce      json
-// @Success      200  {object}  models.ResultsCountBy  "Count Events By Result"
-// @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /api/v1/events/count/:groupby [get]
+//
+//	@Summary		Count Events By
+//	@Description	Count Events By
+//	@Param			groupby		path	string	true	"group By"
+//	@Param			pretty		query	bool	false	"pretty"
+//	@Param			priority	query	string	false	"priority"
+//	@Param			source		query	string	false	"source"
+//	@Param			filter		query	string	false	"filter"
+//	@Param			rule		query	string	false	"rule"
+//	@Param			tags		query	string	false	"tags"
+//	@Param			since		query	int		false	"since"
+//	@Produce		json
+//	@Success		200	{object}	models.ResultsCountBy	"Count Events By Result"
+//	@Failure		400	{string}	http.StatusBadRequest	"Bad Request"
+//	@Router			/api/v1/events/count/:groupby [get]
 func CountByEvent(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("debug", fmt.Sprintf("GET count by %v (source='%v', priority='%v', rule='%v', since='%v', hostname='%v', filter='%v', tags='%v')", a.GroupBy, a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags))
@@ -116,19 +119,20 @@ func CountByEvent(c echo.Context) error {
 }
 
 // Search Events
-// @Summary      Search Events
-// @Description  Search Events
-// @Param        pretty    query  bool    false  "pretty"
-// @Param        priority  query  string  false  "priority"
-// @Param        source    query  string  false  "source"
-// @Param        filter    query  string  false  "filter"
-// @Param        rule      query  string  false  "rule"
-// @Param        tags      query  string  false  "tags"
-// @Param        since     query  int     false  "since"
-// @Produce      json
-// @Success      200  {object}  models.ResultsSearch   "Search Events Result"
-// @Failure      400  {string}  http.StatusBadRequest  "Bad Request"
-// @Router       /api/v1/events/search [get]
+//
+//	@Summary		Search Events
+//	@Description	Search Events
+//	@Param			pretty		query	bool	false	"pretty"
+//	@Param			priority	query	string	false	"priority"
+//	@Param			source		query	string	false	"source"
+//	@Param			filter		query	string	false	"filter"
+//	@Param			rule		query	string	false	"rule"
+//	@Param			tags		query	string	false	"tags"
+//	@Param			since		query	int		false	"since"
+//	@Produce		json
+//	@Success		200	{object}	models.ResultsSearch	"Search Events Result"
+//	@Failure		400	{string}	http.StatusBadRequest	"Bad Request"
+//	@Router			/api/v1/events/search [get]
 func Search(c echo.Context) error {
 	a := models.GetArguments(c)
 	utils.WriteLog("debug", fmt.Sprintf("GET search (source='%v', priority='%v', rule='%v', since='%v', hostname='%v', filter='%v', tags='%v', page='%v', limit='%v')", a.Source, a.Priority, a.Rule, a.Since, a.Hostname, a.Filter, a.Tags, a.Page, a.Limit))
@@ -138,12 +142,13 @@ func Search(c echo.Context) error {
 }
 
 // Healthcheck
-// @Summary      Healthcheck
-// @Description  Healthcheck
-// @Produce      json
-// @Success      200  {string}  json  "{\"ok\"}"
-// @Router       /api/v1/healthz [get]
-// @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
+//
+//	@Summary		Healthcheck
+//	@Description	Healthcheck
+//	@Produce		json
+//	@Success		200	{string}	json	"{\"ok\"}"
+//	@Router			/api/v1/healthz [get]
+//	@Failure		500	{string}	http.StatusInternalServerError	"Internal Server Error"
 func Healthz(c echo.Context) error {
 	msg := make(map[string]string)
 	msg["status"] = "ok"
@@ -151,54 +156,58 @@ func Healthz(c echo.Context) error {
 }
 
 // List Outputs
-// @Summary      List Outputs
-// @Description  Healthcheck
-// @Produce      json
-// @Success      200  {object}  models.Outputs                  "Outputs"
-// @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /api/v1/outputs [get]
+//
+//	@Summary		List Outputs
+//	@Description	Healthcheck
+//	@Produce		json
+//	@Success		200	{object}	models.Outputs					"Outputs"
+//	@Failure		500	{string}	http.StatusInternalServerError	"Internal Server Error"
+//	@Router			/api/v1/outputs [get]
 func GetOutputs(c echo.Context) error {
 	utils.WriteLog("debug", "GET outputs")
 	return c.JSON(http.StatusOK, models.GetOutputs())
 }
 
 // Configuration
-// @Summary      Configuration
-// @Description  Configuration
-// @Produce      json
-// @Success      200  {object}  configuration.Configuration     "Configuration"
-// @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /api/v1/configuration [get]
+//
+//	@Summary		Configuration
+//	@Description	Configuration
+//	@Produce		json
+//	@Success		200	{object}	configuration.Configuration		"Configuration"
+//	@Failure		500	{string}	http.StatusInternalServerError	"Internal Server Error"
+//	@Router			/api/v1/configuration [get]
 func GetConfiguration(c echo.Context) error {
 	utils.WriteLog("debug", "GET config")
 	config := configuration.GetConfiguration()
 	obfuscatedConfig := *config
 	obfuscatedConfig.Credentials = strings.Split(config.Credentials, ":")[0] + ":*******"
-	if obfuscatedConfig.RedisPassword != "" {
-		obfuscatedConfig.RedisPassword = "*******"
+	if obfuscatedConfig.DbPassword != "" {
+		obfuscatedConfig.DbPassword = "*******"
 	}
 	return c.JSON(http.StatusOK, obfuscatedConfig)
 }
 
 // Version
-// @Summary      Version
-// @Description  Version
-// @Produce      json
-// @Success      200  {object}  configuration.VersionInfo       "Version"
-// @Failure      500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router       /api/v1/version [get]
+//
+//	@Summary		Version
+//	@Description	Version
+//	@Produce		json
+//	@Success		200	{object}	configuration.VersionInfo		"Version"
+//	@Failure		500	{string}	http.StatusInternalServerError	"Internal Server Error"
+//	@Router			/api/v1/version [get]
 func GetVersionInfo(c echo.Context) error {
 	utils.WriteLog("debug", "GET version")
 	return c.JSON(http.StatusOK, configuration.GetVersionInfo())
 }
 
 // Authenticate
-// @Summary                    Authenticate
-// @Description                Authenticate
-// @Success                    200  {string}  string                          "authenticated"
-// @Failure                    500  {string}  http.StatusInternalServerError  "Internal Server Error"
-// @Router                     /api/v1/authenticate [post]
-// @securityDefinitions.basic  BasicAuth
+//
+//	@Summary					Authenticate
+//	@Description				Authenticate
+//	@Success					200	{string}	string							"authenticated"
+//	@Failure					500	{string}	http.StatusInternalServerError	"Internal Server Error"
+//	@Router						/api/v1/authenticate [post]
+//	@securityDefinitions.basic	BasicAuth
 func Authenticate(c echo.Context) error {
 	authHeader := c.Request().Header["Authorization"]
 	config := configuration.GetConfiguration()

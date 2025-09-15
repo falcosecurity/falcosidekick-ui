@@ -22,6 +22,27 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
+// EventDatabase interface is forward declared to avoid circular imports
+type EventDatabase interface {
+	InsertEvent(event *Event) error
+	SearchEvents(args *Arguments) (Results, error)
+	CountEvents(args *Arguments) (Results, error)
+	CountEventsBy(args *Arguments) (Results, error)
+	Close() error
+}
+
+var eventDB EventDatabase
+
+// SetEventDatabase sets the global event database instance
+func SetEventDatabase(db EventDatabase) {
+	eventDB = db
+}
+
+// GetEventDatabase returns the global event database instance
+func GetEventDatabase() EventDatabase {
+	return eventDB
+}
+
 type Events []Event
 
 type Event struct {

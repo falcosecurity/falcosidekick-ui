@@ -28,6 +28,11 @@ import (
 func SetKey(client *redisearch.Client, event *models.Event) error {
 	c := configuration.GetConfiguration()
 
+	// Ensure index exists before trying to index a document
+	if err := EnsureIndexExists(client); err != nil {
+		return err
+	}
+
 	jsonString, _ := json.Marshal(event)
 
 	of := make([]string, 0, len(event.OutputFields))
@@ -46,11 +51,21 @@ func SetKey(client *redisearch.Client, event *models.Event) error {
 		Set("json", string(jsonString)).
 		Set("outputfields", utils.Escape(strings.Join(of, ","))).
 		Set("uuid", event.UUID).
-		SetTTL(c.TTL)
+		SetTTL(c.DbTTL)
 	if event.Hostname != "" {
 		doc.Set("hostname", utils.Escape(event.Hostname))
 	}
 
 	err := client.Index([]redisearch.Document{doc}...)
+	if err != nil {
+		// If indexing fails due to missing index, try to recreate it and retry
+		if strings.Contains(err.Error(), "no such index") || strings.Contains(err.Error(), "Unknown index name") {
+			if recreateErr := EnsureIndexExists(client); recreateErr != nil {
+				return recreateErr
+			}
+			// Retry indexing after recreating the index
+			err = client.Index([]redisearch.Document{doc}...)
+		}
+	}
 	return err
 }
