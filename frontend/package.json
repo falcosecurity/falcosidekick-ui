@@ -37,7 +37,7 @@
     "vue-json-pretty": "^1.9.4",
     "vue-router": "^3.0.2",
     "vue-template-compiler": "^2.5.21",
-    "vuetify": "^2.6.10",
+    "vuetify": "^3.0.0",
     "vuetify-loader": "^1.7.3",
     "vuex": "3",
     "vuex-persistedstate": "^4.1.0",
