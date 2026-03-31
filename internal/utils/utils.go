@@ -98,7 +98,7 @@ func ConvertToSeconds(s string) int {
 	default:
 		o, err := strconv.Atoi(s)
 		if err != nil {
-			WriteLog("fatal", "invalid TTL")
+			return 0
 		}
 		return o
 	}
