@@ -15,7 +15,6 @@ limitations under the License.
 package main
 
 import (
-	"crypto/subtle"
 	"flag"
 	"fmt"
 	"net"
@@ -25,6 +24,7 @@ import (
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 	"github.com/falcosecurity/falcosidekick-ui/internal/api"
+	"github.com/falcosecurity/falcosidekick-ui/internal/auth"
 	"github.com/falcosecurity/falcosidekick-ui/internal/database/redis"
 	"github.com/falcosecurity/falcosidekick-ui/internal/models"
 	"github.com/falcosecurity/falcosidekick-ui/internal/utils"
@@ -176,17 +176,7 @@ func main() {
 			}
 			return false
 		},
-		Validator: func(username, password string, c echo.Context) (bool, error) {
-			config := configuration.GetConfiguration()
-			if username == "" || password == "" {
-				return true, nil
-			}
-			if subtle.ConstantTimeCompare([]byte(username+":"+password), []byte(config.Credentials)) == 1 {
-				return true, nil
-			}
-			utils.WriteLog("error", "wrong credentials")
-			return false, nil
-		},
+		Validator: auth.ValidateCredentials,
 	}))
 	apiRoute.POST("/", api.AddEvent).Name = AddEvent
 	apiRoute.POST("/auth", api.Authenticate).Name = "authenticate"
