@@ -98,9 +98,6 @@ export default {
         });
     },
   },
-  mounted() {
-    this.testlogin();
-  },
 };
 </script>
 
