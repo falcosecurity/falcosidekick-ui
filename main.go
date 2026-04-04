@@ -20,7 +20,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/falcosecurity/falcosidekick-ui/configuration"
 	"github.com/falcosecurity/falcosidekick-ui/internal/api"
@@ -52,7 +51,8 @@ func init() {
 	version := flag.Bool("v", false, "Print version")
 	dev := utils.GetBoolFlagOrEnvParam("x", "FALCOSIDEKICK_UI_DEV", false, "Allow CORS for development")
 	loglevel := utils.GetStringFlagOrEnvParam("l", "FALCOSIDEKICK_UI_LOGLEVEL", "info", "Log Level")
-	user := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USER", "admin:admin", "User in format <login>:<password>")
+	username := utils.GetStringFlagOrEnvParam("u", "FALCOSIDEKICK_UI_USERNAME", "admin", "UI username")
+	password := utils.GetStringFlagOrEnvParam("P", "FALCOSIDEKICK_UI_PASSWORD", "admin", "UI password")
 	disableauth := utils.GetBoolFlagOrEnvParam("d", "FALCOSIDEKICK_UI_DISABLEAUTH", false, "Disable authentication")
 
 	flag.Usage = func() {
@@ -65,13 +65,15 @@ func init() {
       Log level: "debug", "info", "warning", "error" (default "info",  environment "FALCOSIDEKICK_UI_LOGLEVEL")
 -p int
       Listen Port (default "2802", environment "FALCOSIDEKICK_UI_PORT")
+-P string
+      UI password (default "admin", environment "FALCOSIDEKICK_UI_PASSWORD")
 -r string
       Redis server address (default "localhost:6379", environment "FALCOSIDEKICK_UI_REDIS_URL")
 -t string
       TTL for keys, the format is X<unit>,
       with unit (s, m, h, d, W, M, y)" (default "0", environment "FALCOSIDEKICK_UI_TTL")
 -u string
-      User in format <login>:<password> (default "admin:admin", environment "FALCOSIDEKICK_UI_USER")
+      UI username (default "admin", environment "FALCOSIDEKICK_UI_USERNAME")
 -v boolean
       Display version
 -w string
@@ -98,8 +100,11 @@ func init() {
 	if ip := net.ParseIP(*addr); ip == nil {
 		utils.WriteLog("fatal", "Failed to parse Listen Address")
 	}
-	if len(strings.Split(*user, ":")) != 2 {
-		*user = "admin:admin"
+	if *username == "" {
+		*username = "admin"
+	}
+	if *password == "" {
+		*password = "admin"
 	}
 	config.ListenAddress = *addr
 	config.ListenPort = *port
@@ -109,7 +114,7 @@ func init() {
 	config.DevMode = *dev
 	config.TTL = utils.ConvertToSeconds(*ttl)
 	config.LogLevel = *loglevel
-	config.Credentials = *user
+	config.Credentials = *username + ":" + *password
 	config.DisableAuth = *disableauth
 
 	if utils.GetPriortiyInt(config.LogLevel) < 0 {
@@ -148,7 +153,7 @@ func main() {
 		e.Use(middleware.CORS())
 	}
 	if config.DisableAuth {
-		utils.WriteLog("warning", "Auhentication disabled")
+		utils.WriteLog("warning", "Authentication disabled")
 		e.Use(middleware.CORS())
 	}
 
