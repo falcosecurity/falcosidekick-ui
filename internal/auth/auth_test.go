@@ -23,6 +23,8 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
+const admin = "admin"
+
 func setupConfig(credentials string) {
 	configuration.CreateConfiguration()
 	config := configuration.GetConfiguration()
@@ -30,7 +32,7 @@ func setupConfig(credentials string) {
 }
 
 func TestValidateCredentials(t *testing.T) {
-	setupConfig("admin:admin")
+	setupConfig(admin + ":" + admin)
 
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -45,20 +47,20 @@ func TestValidateCredentials(t *testing.T) {
 	}{
 		{
 			name:     "valid credentials",
-			username: "admin",
-			password: "admin",
+			username: admin,
+			password: admin,
 			want:     true,
 		},
 		{
 			name:     "wrong password",
-			username: "admin",
+			username: admin,
 			password: "wrong",
 			want:     false,
 		},
 		{
 			name:     "wrong username",
 			username: "wrong",
-			password: "admin",
+			password: admin,
 			want:     false,
 		},
 		{
