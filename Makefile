@@ -35,7 +35,7 @@ TOOLS_BIN_DIR := $(abspath $(TOOLS_DIR)/bin)
 GO_INSTALL = tools/go_install.sh
 
 # Binaries.
-GOLANGCI_LINT_VER := v1.52.2
+GOLANGCI_LINT_VER := v2.12.2
 GOLANGCI_LINT_BIN := golangci-lint
 GOLANGCI_LINT := $(TOOLS_BIN_DIR)/$(GOLANGCI_LINT_BIN)-$(GOLANGCI_LINT_VER)
 
@@ -101,7 +101,7 @@ falcosidekick-ui-backend-only:
 	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o falcosidekick-ui .
 
 .PHONY: falcosidekick-ui-linux-amd64-backend-only
-falcosidekick-ui-linux-amd64:
+falcosidekick-ui-linux-amd64-backend-only:
 	$(GO) mod download
 	GOOS=linux GOARCH=amd64 $(GO) build -gcflags all=-trimpath=/src -asmflags all=-trimpath=/src -a -installsuffix cgo -o falcosidekick-ui .
 

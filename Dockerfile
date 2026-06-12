@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=alpine:3.22
+ARG BASE_IMAGE=alpine:3.24
 
 # Final Docker image
 FROM ${BASE_IMAGE} AS final-stage
@@ -10,9 +10,11 @@ RUN addgroup -S falcosidekickui && adduser -u 1234 -S falcosidekickui -G falcosi
 # https://kubernetes.io/docs/concepts/policy/pod-security-policy/#users-and-groups
 USER 1234
 WORKDIR /app
+ARG TARGETOS
+ARG TARGETARCH
 COPY frontend/dist frontend/dist
 COPY LICENSE .
-COPY falcosidekick-ui .
+COPY ${TARGETOS}/${TARGETARCH}/falcosidekick-ui .
 
 EXPOSE 2802
 ENTRYPOINT ["./falcosidekick-ui"]
