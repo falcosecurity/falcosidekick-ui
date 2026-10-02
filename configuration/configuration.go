@@ -26,6 +26,32 @@ type Configuration struct {
 	LogLevel      string `json:"log-level"`
 	TTL           int    `json:"ttl"`
 	Credentials   string `json:"credentials"`
+	// OIDC fields
+	AuthMode               string `json:"auth-mode"`
+	OIDCIssuer             string `json:"-"`
+	OIDCClientID           string `json:"-"`
+	OIDCClientSecret       string `json:"-"`
+	OIDCClientSecretFile   string `json:"-"`
+	OIDCRedirectURL        string `json:"-"`
+	OIDCScopes             string `json:"-"`
+	OIDCUsernameClaim      string `json:"-"`
+	OIDCGroupsClaim        string `json:"-"`
+	OIDCAllowedGroups      string `json:"-"`
+	OIDCCAFile             string `json:"-"`
+	OIDCInsecureAllowHTTP  bool   `json:"-"`
+	OIDCPostLogoutRedirect string `json:"-"`
+	SessionTTL             int    `json:"-"`
+	SessionIdleTimeout     int    `json:"-"`
+	// Ingestion auth fields
+	IngestAuth                  string `json:"-"`
+	IngestOIDCIssuer            string `json:"-"`
+	IngestOIDCAudience          string `json:"-"`
+	IngestOIDCAllowedSubjects   string `json:"-"`
+	IngestOIDCAllowedClients    string `json:"-"`
+	IngestOIDCRequiredScope     string `json:"-"`
+	IngestOIDCCAFile            string `json:"-"`
+	IngestOIDCJWKSBearerFile    string `json:"-"`
+	IngestOIDCInsecureAllowHTTP bool   `json:"-"`
 }
 
 var config *Configuration

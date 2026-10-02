@@ -24,20 +24,49 @@ const api = axios.create({
     'Content-type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': '*',
+    'X-Requested-With': 'XMLHttpRequest',
   },
   params: new URLSearchParams(),
 });
 
+// Response interceptor for handling 401 in OIDC mode
+api.interceptors.response.use(
+  response => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      if (store.state.authMode === 'oidc') {
+        store.commit('clearSSO');
+        window.location.href = `${window.location.pathname}#/login`;
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
+const getAuthConfig = () => {
+  if (store.state.authMode === 'oidc' || store.state.authMode === 'none') {
+    return undefined;
+  }
+  return {
+    username: store.state.username,
+    password: store.state.password,
+  };
+};
+
 export const requests = {
+  authMe() {
+    return api.request({
+      url: '/auth/me',
+      method: 'get',
+      params: {},
+    });
+  },
   listOutputs() {
     return api.request({
       url: '/outputs',
       method: 'get',
       params: {},
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   getConfiguration() {
@@ -45,10 +74,7 @@ export const requests = {
       url: '/configuration',
       method: 'get',
       params: {},
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   getVersion() {
@@ -56,10 +82,7 @@ export const requests = {
       url: '/version',
       method: 'get',
       params: {},
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   countEvents(source, hostname, priority, rule, filter, tags, since) {
@@ -75,10 +98,7 @@ export const requests = {
         tags: `${tags}`,
         since: `${since}`,
       },
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   countByEvents(group, source, hostname, priority, rule, filter, tags, since) {
@@ -94,10 +114,7 @@ export const requests = {
         tags: `${tags}`,
         since: `${since}`,
       },
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   searchEvents(source, hostname, priority, rule, filter, tags, since, page, limit) {
@@ -115,10 +132,7 @@ export const requests = {
         page: `${page}`,
         limit: `${limit}`,
       },
-      auth: {
-        username: store.state.username,
-        password: store.state.password,
-      },
+      auth: getAuthConfig(),
     });
   },
   authenticate(username, password) {
@@ -128,6 +142,15 @@ export const requests = {
       auth: {
         username: `${username}`,
         password: `${password}`,
+      },
+    });
+  },
+  logout() {
+    return api.request({
+      url: '/auth/logout',
+      method: 'post',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
       },
     });
   },
