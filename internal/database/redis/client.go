@@ -26,6 +26,25 @@ import (
 
 var client *redisearch.Client
 
+// resolveRedisAddr normalizes a Redis address string to host:port format.
+// Examples:
+// - "redis-master" → "redis-master:6379"
+// - ":6380" → "localhost:6380"
+// - "h:1" → "h:1"
+// - "" → "localhost:6379"
+func resolveRedisAddr(s string) string {
+	host, port, err := net.SplitHostPort(s)
+	if err != nil {
+		// If SplitHostPort fails, the input has no port; use the input as host
+		host = s
+		port = "6379"
+	}
+	if host == "" {
+		host = "localhost"
+	}
+	return net.JoinHostPort(host, port)
+}
+
 // CreateClient creates a new redisearch.Client in the redis package scope.
 func CreateClient() *redisearch.Client {
 	config := configuration.GetConfiguration()
@@ -39,15 +58,8 @@ func CreateClient() *redisearch.Client {
 		dialOpts = append(dialOpts, redis.DialPassword(config.RedisPassword))
 	}
 
-	// Validate the host:port address
-	host, port, err := net.SplitHostPort(config.RedisServer)
-	if err != nil {
-		port = "6379"
-	}
-	if host == "" {
-		host = "localhost"
-	}
-	serverAddress := net.JoinHostPort(host, port)
+	// Resolve the Redis address using the helper
+	serverAddress := resolveRedisAddr(config.RedisServer)
 
 	pool := &redis.Pool{Dial: func() (redis.Conn, error) {
 		c, err := redis.Dial("tcp", serverAddress, dialOpts...)

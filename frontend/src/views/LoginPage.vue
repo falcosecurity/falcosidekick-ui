@@ -1,39 +1,66 @@
 <template>
   <v-container fluid fill-height>
-          <v-layout flex align-center justify-center>
-            <v-flex sm4>
-              <v-card>
-                <v-card-text>
-                  <div>
-                      <v-form ref="form">
-                        <v-text-field
-                          label="Login"
-                          v-model="username"
-                          required
-                        ></v-text-field>
-                        <v-text-field
-                          label="Password"
-                          v-model="password"
-                          required
-                          type="password"
-                        ></v-text-field>
-                      </v-form>
-                      <v-layout justify-space-between>
-                        <v-btn @click="authenticate" class="blue darken-2 white--text">Login</v-btn>
-                      </v-layout>
-                      <v-alert v-if="failedAuth === true"
-                        class="mt-5 mb-1"
-                        outlined
-                        dense
-                        dark
-                        type="error"
-                      >{{failMsg}}</v-alert>
-                  </div>
-                </v-card-text>
-              </v-card>
-            </v-flex>
-          </v-layout>
-       </v-container>
+    <v-layout flex align-center justify-center>
+      <v-flex sm4>
+        <v-card>
+          <v-card-text>
+            <div>
+              <!-- OIDC SSO Mode -->
+              <div v-if="authMode === 'oidc'">
+                <v-btn @click="ssoLogin" class="blue darken-2 white--text" block>
+                  Sign in with SSO
+                </v-btn>
+                <v-alert v-if="ssoError === 'sso_failed'"
+                  class="mt-5 mb-1"
+                  outlined
+                  dense
+                  dark
+                  type="error"
+                >
+                  SSO login failed. Please try again.
+                </v-alert>
+                <v-alert v-if="ssoError === 'forbidden'"
+                  class="mt-5 mb-1"
+                  outlined
+                  dense
+                  dark
+                  type="error"
+                >
+                  Access denied. You do not have permission to access this application.
+                </v-alert>
+              </div>
+              <!-- Basic Auth Mode -->
+              <div v-else>
+                <v-form ref="form">
+                  <v-text-field
+                    label="Login"
+                    v-model="username"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    label="Password"
+                    v-model="password"
+                    required
+                    type="password"
+                  ></v-text-field>
+                </v-form>
+                <v-layout justify-space-between>
+                  <v-btn @click="authenticate" class="blue darken-2 white--text">Login</v-btn>
+                </v-layout>
+                <v-alert v-if="failedAuth === true"
+                  class="mt-5 mb-1"
+                  outlined
+                  dense
+                  dark
+                  type="error"
+                >{{failMsg}}</v-alert>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -48,11 +75,15 @@ export default {
       password: '',
       failedAuth: false,
       failMsg: '',
+      authMode: '',
+      ssoError: '',
     };
   },
   methods: {
     ...mapActions([
       'setCredentials',
+      'setAuthMode',
+      'setSSO',
     ]),
     authenticate() {
       this.failedAuth = false;
@@ -81,7 +112,14 @@ export default {
           }
         });
     },
+    ssoLogin() {
+      const apiBase = window.location.pathname.replace(/\/$/, '');
+      window.location.href = `${apiBase}/api/v1/auth/oidc/login`;
+    },
     testlogin() {
+      if (this.authMode !== 'basic') {
+        return;
+      }
       requests.authenticate(
         'anonymous',
         'anonymous',
@@ -97,9 +135,43 @@ export default {
           }
         });
     },
+    checkAuthMode() {
+      requests.authMe()
+        .then((response) => {
+          this.authMode = response.data.mode;
+          this.setAuthMode(this.authMode);
+          if (response.data.authenticated) {
+            this.setSSO(response.data.username);
+            router.push('/dashboard');
+          } else if (this.authMode === 'none') {
+            // Auto-login with anonymous credentials in none mode
+            const payload = {
+              username: 'anonymous',
+              password: 'anonymous',
+            };
+            this.setCredentials(payload);
+            router.push('/dashboard');
+          } else if (this.authMode === 'basic') {
+            // Test anonymous login in basic mode
+            this.testlogin();
+          }
+        })
+        .catch(() => {
+          this.authMode = 'basic';
+          this.testlogin();
+        });
+    },
+    checkSSoError() {
+      // Use hash router query parameters
+      const { error } = this.$route.query;
+      if (error) {
+        this.ssoError = error;
+      }
+    },
   },
   mounted() {
-    this.testlogin();
+    this.checkAuthMode();
+    this.checkSSoError();
   },
 };
 </script>

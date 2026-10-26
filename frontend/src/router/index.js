@@ -20,6 +20,7 @@ import EventsPage from '../views/EventsPage.vue';
 import InfoPage from '../views/InfoPage.vue';
 import LoginPage from '../views/LoginPage.vue';
 import store from '../store';
+import { requests } from '../http';
 
 Vue.use(VueRouter);
 
@@ -64,12 +65,33 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (store.state.username === '' || store.state.password === '') {
+  // In OIDC mode, check session via auth/me endpoint
+  if (store.state.authMode === 'oidc') {
+    if (to.name !== 'login') {
+      requests.authMe()
+        .then((response) => {
+          if (response.data.authenticated) {
+            store.commit('setSSO', response.data.username);
+            next();
+          } else {
+            router.push('/login');
+          }
+        })
+        .catch(() => {
+          router.push('/login');
+        });
+    } else {
+      next();
+    }
+  } else if (store.state.username === '' || store.state.password === '') {
+    // Basic/none mode
     if (to.name !== 'login') {
       router.push('/login');
     }
+    next();
+  } else {
+    next();
   }
-  next();
 });
 
 export default router;

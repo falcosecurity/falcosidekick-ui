@@ -1,3 +1,24 @@
+# Unreleased
+
+* Add OIDC/SSO authentication support (backend-for-frontend pattern)
+  * Support for any standard OIDC provider (Keycloak, Dex, Authentik, Okta, Entra ID, Google, etc.)
+  * Session-based authentication with Redis
+  * Support for custom CA certificates
+  * Group-based access control
+* Add OIDC-specific endpoints: `/auth/oidc/login`, `/auth/oidc/callback`, `/auth/logout`, `/auth/me`
+* Add new configuration flags for OIDC setup
+* Frontend: Support for OIDC login flow with SSO button
+* Tokens never reach the browser (BFF pattern)
+* Cookie-based sessions with HttpOnly, Secure, SameSite flags
+* Add optional OIDC bearer token authentication for event ingestion endpoints
+  * RFC 6750 Authorization header Bearer token validation
+  * Separate ingestion OIDC provider with custom CA certificate support
+  * Optional JWKS bearer token for discovery access
+  * Subject, client (azp/client_id), and scope allowlist enforcement
+  * Proper WWW-Authenticate header error responses
+  * JOSE header typ validation (JWT/at+jwt) with defense-in-depth Keycloak ID token rejection
+  * Comprehensive test suite with in-process OIDC issuer
+
 # v2.2.0
 
 * Replace CircleCI by Github Actions

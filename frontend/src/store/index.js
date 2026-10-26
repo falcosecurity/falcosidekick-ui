@@ -29,6 +29,8 @@ export default new Vuex.Store({
     refreshIntervals: ['off', '10s', '20s', '30s', '1min', '2min'],
     username: '',
     password: '',
+    authMode: 'basic',
+    ssoUser: '',
   },
   mutations: {
     increment(state) {
@@ -66,6 +68,15 @@ export default new Vuex.Store({
       state.username = '';
       state.password = '';
     },
+    setAuthMode(state, mode) {
+      state.authMode = mode;
+    },
+    setSSO(state, payload) {
+      state.ssoUser = payload;
+    },
+    clearSSO(state) {
+      state.ssoUser = '';
+    },
   },
   actions: {
     increment(context) {
@@ -79,6 +90,15 @@ export default new Vuex.Store({
     },
     emptyCredentials(context) {
       context.commit('emptyCredentials');
+    },
+    setAuthMode(context, payload) {
+      context.commit('setAuthMode', payload);
+    },
+    setSSO(context, payload) {
+      context.commit('setSSO', payload);
+    },
+    clearSSO(context) {
+      context.commit('clearSSO');
     },
   },
 });
