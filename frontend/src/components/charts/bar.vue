@@ -1,61 +1,55 @@
 <template>
-  <div>
-    <Bar
-      :chart-options="chartOptions"
-      :chart-data="chartData"
-      :chart-id="chartId"
-      :dataset-id-key="datasetIdKey"
-      :width="width"
-      :height="height"
-      v-if="loaded"
-    />
+  <div class="ranked">
+    <ul>
+      <li
+        v-for="(item, i) in visible" :key="item.name"
+        :class="{ active: filters.rule === item.name }"
+        @click="$emit('picked-item', list, item.name)">
+        <span class="rank">{{ i + 1 }}</span>
+        <span class="name" :title="item.name">{{ item.name }}</span>
+        <span class="track">
+          <span class="fill" :style="{ width: `${(item.count / max) * 100}%` }"></span>
+        </span>
+        <span class="count">{{ formatNumber(item.count) }}</span>
+      </li>
+      <li v-if="loaded && !items.length" class="empty">No events</li>
+    </ul>
+    <button
+      v-if="items.length > limit"
+      class="more"
+      @click="expanded = !expanded">
+      {{ expanded ? 'Show top ' + limit : `Show all ${items.length} rules` }}
+    </button>
   </div>
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs/legacy';
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-} from 'chart.js';
+import numeral from 'numeral';
 import { requests } from '../../http';
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 export default {
   name: 'BarChart',
-  components: {
-    Bar,
-  },
   props: {
     list: { type: String },
-    chartId: { type: String, default: 'pie-chart' },
-    datasetIdKey: { type: String, default: 'label' },
-    width: { type: Number, default: 400 },
-    height: { type: Number, default: 400 },
-    filters: {
-      type: Object,
-      default() {
-        return {
-          priorities: [],
-          rule: [],
-          tags: [],
-          sources: [],
-          hostnames: [],
-          search: '',
-          since: '',
-        };
-      },
-    },
+    limit: { type: Number, default: 10 },
+    filters: { type: Object, required: true },
+  },
+  data() {
+    return {
+      loaded: false,
+      items: [],
+      expanded: false,
+    };
   },
   computed: {
     ticer() {
       return this.$store.state.ticer;
+    },
+    visible() {
+      return this.expanded ? this.items : this.items.slice(0, this.limit);
+    },
+    max() {
+      return this.items.length ? this.items[0].count : 1;
     },
   },
   watch: {
@@ -72,30 +66,12 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      loaded: false,
-      values: {},
-      bgColor: '#1976d2',
-      chartData: {
-        labels: [],
-        datasets: [],
-      },
-      chartOptions: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: this.pickItem,
-      },
-    };
-  },
   methods: {
-    pickItem(event, array) {
-      this.$emit('picked-item', this.list, this.chartData.labels[array[0].index]);
+    formatNumber(n) {
+      return numeral(n).format('0,0');
     },
     async updateChart() {
-      this.loaded = false;
-      await requests.countByEvents(
+      const response = await requests.countByEvents(
         this.list,
         this.filters.sources,
         this.filters.hostnames,
@@ -104,52 +80,92 @@ export default {
         this.filters.search,
         this.filters.tags,
         this.filters.since,
-      )
-        .then((response) => {
-          this.values = Object.entries(response.data.results)
-            .sort(([, v1], [, v2]) => v2 - v1)
-            .reduce((obj, [k, v]) => ({ ...obj, [k]: v }), {});
-        });
-      let lb = []; // eslint-disable-line
-      let dt = []; // eslint-disable-line
-      Object.entries(this.values).forEach(([key, value]) => {
-        lb.push(key);
-        dt.push(value);
-      });
-      this.chartData.labels = lb;
-      this.chartData.datasets = [{
-        label: this.list,
-        backgroundColor: this.bgColor,
-        data: dt,
-      }];
+      );
+      this.items = Object.entries(response.data.results || {})
+        .sort(([, v1], [, v2]) => v2 - v1)
+        .map(([name, count]) => ({ name, count }));
       this.loaded = true;
     },
   },
-  created() {
-    if (typeof this.$route.query.source !== 'undefined') {
-      this.filters.sources = this.$route.query.source;
-    }
-    if (typeof this.$route.query.hostname !== 'undefined') {
-      this.filters.hostnames = this.$route.query.hostname;
-    }
-    if (typeof this.$route.query.priority !== 'undefined') {
-      this.filters.priorities = this.$route.query.priority;
-    }
-    if (typeof this.$route.query.rule !== 'undefined') {
-      this.filters.rule = this.$route.query.rule;
-    }
-    if (typeof this.$route.query.tags !== 'undefined') {
-      this.filters.tags = this.$route.query.tags;
-    }
-    if (typeof this.$route.query.filter !== 'undefined') {
-      this.filters.search = this.$route.query.filter;
-    }
-    if (typeof this.$route.query.since !== 'undefined') {
-      this.filters.since = this.$route.query.since;
-    }
-  },
-  mounted() {
-    this.updateChart();
-  },
 };
 </script>
+
+<style scoped>
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: grid;
+  grid-template-columns: 22px minmax(180px, 2fr) 3fr 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+li:hover {
+  background: var(--row-hover);
+}
+
+li.active .name {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.rank {
+  color: var(--text-faint);
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+li.empty {
+  display: block;
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.more {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.more:hover {
+  color: var(--accent);
+}
+</style>

@@ -1,7 +1,86 @@
-.intro {
-  display: flex;
-  justify-content: center;
-  margin: 4rem 0;
+/*
+ * Falcosidekick UI theme tokens.
+ * Three palettes, selected with <html data-theme="...">:
+ *   falco    – deep teal sidebar with the Falco brand accent (default)
+ *   flood    – dark navy sidebar, clean white content (Flood-inspired)
+ *   midnight – fully dark
+ */
+html[data-theme="flood"] {
+  --sidebar-bg: #1f2a38;
+  --sidebar-bg-2: #263345;
+  --sidebar-border: #2c3a4d;
+  --sidebar-text: #8d9bad;
+  --sidebar-text-strong: #e4ebf3;
+  --sidebar-heading: #56677c;
+  --sidebar-badge: #2f3d51;
+
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --border: #e7ebf0;
+  --text: #2b3846;
+  --text-muted: #8a97a8;
+  --text-faint: #b3bdc9;
+  --accent: #3a9bf0;
+  --accent-soft: rgba(58, 155, 240, 0.12);
+  --row-hover: #f4f8fd;
+  --grid: rgba(43, 56, 70, 0.07);
+  --shadow: 0 1px 2px rgba(31, 42, 56, 0.04);
+}
+
+html[data-theme="midnight"] {
+  --sidebar-bg: #141b24;
+  --sidebar-bg-2: #1b2430;
+  --sidebar-border: #232e3c;
+  --sidebar-text: #7f8da0;
+  --sidebar-text-strong: #e4ebf3;
+  --sidebar-heading: #4d5c70;
+  --sidebar-badge: #243040;
+
+  --bg: #1a222d;
+  --surface: #202a37;
+  --surface-2: #1d2632;
+  --border: #2b3747;
+  --text: #d3dce7;
+  --text-muted: #7f8da0;
+  --text-faint: #56657a;
+  --accent: #4ca3f5;
+  --accent-soft: rgba(76, 163, 245, 0.16);
+  --row-hover: #243042;
+  --grid: rgba(211, 220, 231, 0.06);
+  --shadow: none;
+}
+
+:root,
+html[data-theme="falco"] {
+  --sidebar-bg: #08303c;
+  --sidebar-bg-2: #0c3a48;
+  --sidebar-border: #12495a;
+  --sidebar-text: #8fb3bd;
+  --sidebar-text-strong: #ecf7f9;
+  --sidebar-heading: #4f7f8c;
+  --sidebar-badge: #124656;
+
+  --bg: #f3f6f7;
+  --surface: #ffffff;
+  --surface-2: #f3f6f7;
+  --border: #e1e8eb;
+  --text: #1f3640;
+  --text-muted: #7b9099;
+  --text-faint: #aebdc3;
+  --accent: #00a3bb;
+  --accent-soft: rgba(0, 163, 187, 0.12);
+  --row-hover: #eef7f9;
+  --grid: rgba(31, 54, 64, 0.07);
+  --shadow: 0 1px 3px rgba(8, 48, 60, 0.06);
+}
+
+html,
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-y: auto !important;
 }
 
 a {
@@ -10,4 +89,86 @@ a {
 
 .text-center {
   text-align: center;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-feature-settings: 'zero' 0;
+}
+
+/* ---------- Vuetify overrides ---------- */
+.v-application {
+  font-family: inherit !important;
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.v-application .v-card,
+.v-application .theme--light.v-sheet,
+.v-application .theme--dark.v-sheet {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+.v-menu__content {
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(15, 23, 32, 0.18) !important;
+  border-radius: 6px !important;
+}
+
+.v-menu__content .v-list {
+  background: var(--surface) !important;
+  padding: 4px 0;
+}
+
+.v-menu__content .v-list-item {
+  min-height: 32px;
+  font-size: 13px;
+}
+
+.v-menu__content .v-list-item__title {
+  font-size: 13px;
+}
+
+.v-application .v-list-item--active {
+  color: var(--accent) !important;
+}
+
+/* compact outlined inputs in the toolbar */
+.toolbar .v-input {
+  font-size: 13px;
+}
+
+.toolbar .v-text-field--outlined > .v-input__control > .v-input__slot {
+  min-height: 32px !important;
+  background: var(--surface) !important;
+}
+
+.toolbar .v-text-field--outlined fieldset {
+  border-color: var(--border) !important;
+}
+
+.toolbar .v-text-field--outlined.v-input--is-focused fieldset {
+  border-color: var(--accent) !important;
+  border-width: 1px !important;
+}
+
+.toolbar .v-select__selections,
+.toolbar input {
+  color: var(--text) !important;
+}
+
+.toolbar .v-input__append-inner {
+  margin-top: 4px !important;
+}
+
+.toolbar .v-input__icon .v-icon {
+  font-size: 18px;
+  color: var(--text-muted) !important;
+}
+
+/* scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }

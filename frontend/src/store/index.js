@@ -19,9 +19,39 @@ import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
+export const emptyFilters = () => ({
+  priorities: [],
+  sources: [],
+  hostnames: [],
+  tags: [],
+  rule: '',
+  search: '',
+  since: '24h',
+});
+
+const LISTS = {
+  priority: 'priorities',
+  priorities: 'priorities',
+  source: 'sources',
+  sources: 'sources',
+  hostname: 'hostnames',
+  hostnames: 'hostnames',
+  tag: 'tags',
+  tags: 'tags',
+};
+
+function loadTheme() {
+  try {
+    return window.localStorage.getItem('fsui-theme') || 'falco';
+  } catch (e) {
+    return 'falco';
+  }
+}
+
 export default new Vuex.Store({
   plugins: [createPersistedState({
     storage: window.sessionStorage,
+    paths: ['refreshInterval', 'username', 'password'],
   })],
   state: {
     ticer: 0,
@@ -29,6 +59,8 @@ export default new Vuex.Store({
     refreshIntervals: ['off', '10s', '20s', '30s', '1min', '2min'],
     username: '',
     password: '',
+    filters: emptyFilters(),
+    theme: loadTheme(),
   },
   mutations: {
     increment(state) {
@@ -66,6 +98,49 @@ export default new Vuex.Store({
       state.username = '';
       state.password = '';
     },
+    setFilters(state, payload) {
+      state.filters = { ...state.filters, ...payload };
+    },
+    toggleFilter(state, { list, item }) {
+      if (list === 'rule') {
+        state.filters.rule = state.filters.rule === item ? '' : item;
+        return;
+      }
+      if (list === 'search' || list === 'filter') {
+        state.filters.search = item;
+        return;
+      }
+      const key = LISTS[list];
+      if (!key) return;
+      const current = state.filters[key];
+      state.filters[key] = current.includes(item)
+        ? current.filter(v => v !== item)
+        : [...current, item];
+    },
+    addFilter(state, { list, item }) {
+      if (list === 'rule') {
+        state.filters.rule = item;
+        return;
+      }
+      if (list === 'search' || list === 'filter') {
+        state.filters.search = String(item);
+        return;
+      }
+      const key = LISTS[list];
+      if (!key || state.filters[key].includes(item)) return;
+      state.filters[key] = [...state.filters[key], item];
+    },
+    clearFilters(state) {
+      state.filters = { ...emptyFilters(), since: state.filters.since };
+    },
+    setTheme(state, theme) {
+      state.theme = theme;
+      try {
+        window.localStorage.setItem('fsui-theme', theme);
+      } catch (e) {
+        // storage unavailable, keep in memory only
+      }
+    },
   },
   actions: {
     increment(context) {
@@ -79,6 +154,21 @@ export default new Vuex.Store({
     },
     emptyCredentials(context) {
       context.commit('emptyCredentials');
+    },
+    setFilters(context, payload) {
+      context.commit('setFilters', payload);
+    },
+    toggleFilter(context, payload) {
+      context.commit('toggleFilter', payload);
+    },
+    addFilter(context, payload) {
+      context.commit('addFilter', payload);
+    },
+    clearFilters(context) {
+      context.commit('clearFilters');
+    },
+    setTheme(context, theme) {
+      context.commit('setTheme', theme);
     },
   },
 });
