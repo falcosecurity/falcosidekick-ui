@@ -17,6 +17,7 @@ import Vuetify from 'vuetify';
 import moment from 'moment';
 import 'vuetify/dist/vuetify.min.css';
 import '@mdi/font/css/materialdesignicons.css';
+import './css/main.css';
 import App from './App.vue';
 import router from './router';
 import store from './store';

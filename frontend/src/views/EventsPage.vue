@@ -1,249 +1,190 @@
 <template>
-  <v-card class="elevation-0">
-    <v-row>
-      <v-col
-      cols="12"
-      sm="12">
-        <Filters
-        @send-filters="setFilters(...arguments)"
-        :addItem="newItem">
-        </Filters>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-      align="right"
-      cols="12"
-      sm="12"
-      class="pr-7"
-      >
-        <v-btn
-        color="info"
-        small
-        @click="saveFile()"
+  <div>
+    <PageToolbar title="Events">
+      <template v-slot:actions>
+        <div class="segmented" role="group" aria-label="Row density">
+          <button :class="{ active: !dense }" title="Comfortable" @click="setDense(false)">
+            <v-icon small>mdi-view-agenda-outline</v-icon>
+          </button>
+          <button :class="{ active: dense }" title="Compact" @click="setDense(true)">
+            <v-icon small>mdi-view-headline</v-icon>
+          </button>
+        </div>
+        <button class="btn" @click="saveFile()">
+          <v-icon small>mdi-download-outline</v-icon> Export
+        </button>
+      </template>
+    </PageToolbar>
+    <div class="page">
+      <section class="panel panel--flush">
+        <v-data-table
+          :class="['events-table', { 'events-table--dense': dense }]"
+          :page='page'
+          :headers='headers'
+          :items='events'
+          item-key="uuid"
+          :options.sync='options'
+          :server-items-length='totalEvents'
+          :items-per-page="itemsPerPage"
+          :loading='loading'
+          loader-height="2"
+          :footer-props="{
+            'items-per-page-options': itemsPerPageInterval,
+          }"
         >
-          Export
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-data-table
-        class="mt-10 ml-5 mr-5"
-        :search="search"
-        :page='page'
-        :headers='headers'
-        :items='events'
-        item-key="time"
-        :options.sync='options'
-        :server-items-length='totalEvents'
-        :items-per-page="itemsPerPage"
-        :loading='loading'
-        :footer-props="{
-          'items-per-page-options': itemsPerPageInterval,
-          firstIcon: 'mdi-minus',
-          lastIcon: 'mdi-plus',
-          prevIcon: 'mdi-chevron-left',
-          nextIcon: 'mdi-chevron-right'
-        }"
-      >
-        <template v-slot:item="{item}">
-          <tr>
-            <td>{{ item.time | formatDate }}</td>
-            <td>
-              <v-chip dark
-              @click="addToFilters('sources', item.source)"
-              :color="stringToColor(item.source)">
-              {{ item.source }}
-              </v-chip>
-            </td>
-            <td>
-              <v-chip dark v-if="item.hostname"
-              @click="addToFilters('hostnames', item.hostname)"
-              :color="stringToColor(item.hostname)">
-              {{ item.hostname }}
-              </v-chip>
-            </td>
-            <td>
-              <v-chip
-              @click="addToFilters('priorities', item.priority)"
-              :color="priorityToColor(item.priority)"
-              dark>
-                {{ item.priority }}
-              </v-chip>
-            </td>
-            <td>{{ item.rule }}</td>
-            <td>
-              <div>{{ item.output }}</div>
-              <div>
-                <span
-                v-for="(value,key) in item.output_fields" :key="key">
-                <v-chip small label
-                @click="addToFilters('search', key)"
-                class="rounded-0 mb-1"
-                color="blue lighten-3">
-                  {{key}}
-                </v-chip>
-                <v-chip small label
-                @click="addToFilters('search', value)"
-                class="rounded-0 mb-1"
-                style="margin-left: -4px; margin-right: 5px;">
-                  {{value}}
-                </v-chip>
+          <template v-slot:item="{item}">
+            <tr @click="showDialog(item)">
+              <td class="col-time mono">
+                <div>{{ item.time | formatTime }}</div>
+                <div class="sub">{{ item.time | formatDay }}</div>
+              </td>
+              <td class="col-priority">
+                <span class="prio" @click.stop="addToFilters('priorities', item.priority)">
+                  <span class="dot" :style="{ background: priorityToColor(item.priority) }"></span>
+                  {{ item.priority }}
                 </span>
-              </div>
-            </td>
-            <td>
-              <v-chip
-              class="mb-1 mr-1 mt-1"
-              @click="addToFilters('tags', tag)"
-              v-for="(tag, index) in item.tags" :key="index"
-              dark small
-              :color="stringToColor(tag)">
-              {{tag}}
-              </v-chip>
-            </td>
-            <td>
-              <v-btn
-                x-small
-                :icon="true"
-                @click="showDialog(item);"
-              >
-                <v-icon>mdi-code-json</v-icon>
-              </v-btn>
-            </td>
-          </tr>
-        </template>
-      </v-data-table>
-    </v-row>
-    <v-dialog
-      v-model="dialog"
-      width="auto"
-      >
-      <v-tabs
-      text
-      >
-        <v-tab href="#details" @click="dialogDetails = true; dialogJson = false;">
-          Details
-        </v-tab>
-        <v-tab href="#json" @click="dialogDetails = false; dialogJson = true;">
-          Json
-        </v-tab>
-      </v-tabs>
-      <v-card>
-        <v-card-text v-show="dialogDetails">
-          <v-list-item style="padding-top: 10px;">
-            <v-list-item-content>
-              <v-list-item-title>Time</v-list-item-title>
-                <v-list-item-subtitle>{{json.time}}</v-list-item-subtitle>
-              <v-list-item-title>Source</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip dark
-                  @click="addToFilters('sources', json.source)"
-                  :color="stringToColor(String(json.source))">{{ json.source }}</v-chip>
-                </v-list-item-subtitle>
-              <v-list-item-title>Hostname</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip dark
-                  @click="addToFilters('hostnames', json.hostname)"
-                  :color="stringToColor(String(json.hostname))">{{ json.hostname }}</v-chip>
-                </v-list-item-subtitle>
-              <v-list-item-title>Priority</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip dark
-                  @click="addToFilters('priorities', json.priority)"
-                  :color="priorityToColor(String(json.priority))">{{ json.priority }}</v-chip>
-                </v-list-item-subtitle>
-              <v-list-item-title>Rule</v-list-item-title>
-              <v-list-item-subtitle>{{json.rule}}</v-list-item-subtitle>
-              <v-list-item-title>Output</v-list-item-title>
-              <v-list-item-subtitle>
-                <pre style="white-space: pre-wrap;">{{json.output}}</pre>
-              </v-list-item-subtitle>
-              <v-list-item-title>Fields</v-list-item-title>
-              <v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  <span style="white-space: pre-wrap;"
-                  v-for="(value,key) in json.output_fields" :key="key" :value="value">
-                  <v-chip label
-                  @click="addToFilters('search', key)"
-                  class="rounded-0 mb-1"
-                  color="blue lighten-3">
-                    {{key}}
-                  </v-chip>
-                  <v-chip label
-                  @click="addToFilters('search', value)"
-                  class="rounded-0 mb-1"
-                  style="margin-left: -4px; margin-right: 5px;">
-                    {{value}}
-                  </v-chip>
+              </td>
+              <td class="col-rule">
+                <div class="rule" @click.stop="addToFilters('rule', item.rule)">
+                  {{ item.rule }}</div>
+                <div class="output">{{ item.output }}</div>
+                <div class="fields">
+                  <span
+                    v-for="(value, key) in item.output_fields" :key="key"
+                    class="field"
+                    @click.stop="addToFilters('search', value)">
+                    <span class="field-key">{{ key }}</span>
+                    <span class="field-value">{{ value }}</span>
                   </span>
-                </v-list-item-subtitle>
-              </v-list-item-subtitle>
-              <v-list-item-title>Tags</v-list-item-title>
-              <v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  <v-chip
-                  v-for="(tag, index) in json.tags" :key="index"
-                  dark
-                  @click="addToFilters('tags', tag)"
-                  class="mb-1 mr-1 mt-1"
-                  :color="stringToColor(String(tag))">{{ tag }}</v-chip>
-                </v-list-item-subtitle>
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-card-text>
-        <v-card-text v-show="dialogJson">
-          <pre style="white-space: pre-wrap;">
-            <vue-json-pretty
-              :data="json"
-              :collapsedOnClickBrackets="false"
-            />
-          </pre>
-        </v-card-text>
-        <v-card-actions class="justify-center">
-          <v-btn
-            style="margin-right: 5px;"
-            color="primary" large @click="dialog = false"
-          >
-            Close
-          </v-btn>
-          <v-tooltip
-          v-model="copied"
-          top
-          >
-            <template v-slot:activator="{ attrs }">
-              <v-btn
-                color="normal"
-                large
-                @click="copied = true; copyToClipBoard()"
-                v-bind="attrs"
-              >
-              COPY JSON
-              </v-btn>
-            </template>
-            <span>Copied</span>
-          </v-tooltip>
-        </v-card-actions>
-      </v-card>
+                </div>
+              </td>
+              <td class="col-origin">
+                <div class="link-ish" @click.stop="addToFilters('sources', item.source)">
+                  {{ item.source }}</div>
+                <div class="sub link-ish" v-if="item.hostname"
+                  @click.stop="addToFilters('hostnames', item.hostname)">
+                  {{ item.hostname }}</div>
+              </td>
+              <td class="col-tags">
+                <span
+                  v-for="(tag, index) in item.tags" :key="index"
+                  class="tag"
+                  @click.stop="addToFilters('tags', tag)">
+                  <span class="tag-dot" :style="{ background: stringToColor(tag) }"></span>{{ tag }}
+                </span>
+              </td>
+              <td class="col-action">
+                <v-icon small>mdi-chevron-right</v-icon>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </section>
+    </div>
+
+    <v-dialog v-model="dialog" max-width="880" content-class="event-dialog">
+      <div class="modal" v-if="json">
+        <header class="modal-header">
+          <div class="modal-title">{{ json.rule }}</div>
+          <div class="modal-meta">
+            <span class="prio">
+              <span class="dot"
+                :style="{ background: priorityToColor(String(json.priority)) }"></span>
+              {{ json.priority }}
+            </span>
+            <span><v-icon x-small>mdi-clock-outline</v-icon> {{ json.time | formatDate }}</span>
+            <span><v-icon x-small>mdi-server</v-icon> {{ json.hostname || '—' }}</span>
+            <span><v-icon x-small>mdi-source-branch</v-icon> {{ json.source }}</span>
+          </div>
+          <v-icon class="modal-close" @click="dialog = false">mdi-close</v-icon>
+        </header>
+        <div class="modal-body">
+          <nav class="modal-nav">
+            <a :class="{ active: tab === 'details' }" @click="tab = 'details'">Details</a>
+            <a :class="{ active: tab === 'fields' }" @click="tab = 'fields'">Fields</a>
+            <a :class="{ active: tab === 'json' }" @click="tab = 'json'">JSON</a>
+          </nav>
+          <div class="modal-content">
+            <div v-show="tab === 'details'">
+              <h5>Output</h5>
+              <pre class="output-block mono">{{ json.output }}</pre>
+              <h5>Event</h5>
+              <dl>
+                <dt>Time</dt><dd class="mono">{{ json.time }}</dd>
+                <dt>Source</dt>
+                <dd><a @click="addToFilters('sources', json.source)">{{ json.source }}</a></dd>
+                <dt>Hostname</dt>
+                <dd>
+                  <a @click="addToFilters('hostnames', json.hostname)">
+                    {{ json.hostname || '—' }}</a>
+                </dd>
+                <dt>Priority</dt>
+                <dd>
+                  <a @click="addToFilters('priorities', json.priority)">{{ json.priority }}</a>
+                </dd>
+                <dt>Rule</dt>
+                <dd><a @click="addToFilters('rule', json.rule)">{{ json.rule }}</a></dd>
+                <dt>Tags</dt>
+                <dd>
+                  <span
+                    v-for="(tag, index) in json.tags" :key="index"
+                    class="tag" @click="addToFilters('tags', tag)">
+                    <span class="tag-dot"
+                      :style="{ background: stringToColor(String(tag)) }"></span>{{ tag }}
+                  </span>
+                </dd>
+              </dl>
+            </div>
+            <div v-show="tab === 'fields'">
+              <h5>Output fields</h5>
+              <dl>
+                <template v-for="(value, key) in json.output_fields">
+                  <dt :key="`k-${key}`" class="mono">{{ key }}</dt>
+                  <dd :key="`v-${key}`" class="mono">
+                    <a @click="addToFilters('search', value)">{{ value }}</a>
+                  </dd>
+                </template>
+              </dl>
+            </div>
+            <div v-show="tab === 'json'" class="json-view">
+              <vue-json-pretty :data="json" :collapsedOnClickBrackets="false" />
+            </div>
+          </div>
+        </div>
+        <footer class="modal-footer">
+          <button class="btn" @click="copyToClipBoard()">
+            <v-icon small>{{ copied ? 'mdi-check' : 'mdi-content-copy' }}</v-icon>
+            {{ copied ? 'Copied' : 'Copy JSON' }}
+          </button>
+          <button class="btn btn--primary" @click="dialog = false">Close</button>
+        </footer>
+      </div>
     </v-dialog>
-  </v-card>
+  </div>
 </template>
 
 <script>
 import 'vue-json-pretty/lib/styles.css';
 import VueJsonPretty from 'vue-json-pretty';
+import moment from 'moment';
+import { mapActions, mapState } from 'vuex';
 import { requests } from '../http';
 import { utils } from '../utils';
-import Counters from '../components/counters.vue';
-import Filters from '../components/filters.vue';
+import PageToolbar from '../components/PageToolbar.vue';
 
 export default {
   name: 'DatatableComponent',
   components: {
-    Counters,
-    Filters,
+    PageToolbar,
     VueJsonPretty,
+  },
+  filters: {
+    formatTime(v) {
+      return v ? moment(String(v)).format('HH:mm:ss.SSS') : '';
+    },
+    formatDay(v) {
+      return v ? moment(String(v)).format('YYYY-MM-DD') : '';
+    },
   },
   data() {
     return {
@@ -258,46 +199,31 @@ export default {
       sources: [],
       hostnames: [],
       tags: [],
-      filters: {
-        sources: [],
-        hostnames: [],
-        priorities: [],
-        rule: '',
-        tags: [],
-        since: '24h',
-        search: '',
-      },
-      newItem: {
-        list: '',
-        item: '',
-      },
       loading: true,
       options: {
         page: 1,
         itemsPerPage: 10,
       },
       headers: [
-        { text: 'Timestamp', value: 'time' },
-        { text: 'Source', value: 'source' },
-        { text: 'Hostname', value: 'hostname' },
-        { text: 'Priority', value: 'priority' },
-        { text: 'Rule', value: 'rule' },
-        { text: 'Output', value: 'output' },
-        { text: 'Tags', value: 'tags' },
-        { text: '', value: 'json' },
+        { text: 'Time', value: 'time', sortable: false },
+        { text: 'Priority', value: 'priority', sortable: false },
+        { text: 'Rule / output', value: 'rule', sortable: false },
+        { text: 'Source / host', value: 'source', sortable: false },
+        { text: 'Tags', value: 'tags', sortable: false },
+        { text: '', value: 'json', sortable: false },
       ],
       debounce: null,
       dialog: false,
-      dialogDetails: true,
-      dialogJson: false,
+      tab: 'details',
+      dense: (() => {
+        try { return window.localStorage.getItem('fsui-dense') === '1'; } catch (e) { return false; }
+      })(),
       json: '',
       copied: false,
     };
   },
   computed: {
-    ticer() {
-      return this.$store.state.ticer;
-    },
+    ...mapState(['filters', 'ticer']),
   },
   watch: {
     options: {
@@ -371,21 +297,24 @@ export default {
     stringToColor(str) {
       return utils.stringToColor(str);
     },
-    setFilters(f) {
-      this.filters = f;
+    ...mapActions(['addFilter']),
+    addToFilters(list, item) {
+      this.addFilter({ list, item });
     },
-    addToFilters(l, i) {
-      this.newItem = {
-        list: l,
-        item: i,
-      };
+    setDense(v) {
+      this.dense = v;
+      try { window.localStorage.setItem('fsui-dense', v ? '1' : '0'); } catch (e) { /* ignore */ }
     },
     showDialog(i) {
-      this.dialog = true;
       this.json = i;
+      this.tab = 'details';
+      this.copied = false;
+      this.dialog = true;
     },
     copyToClipBoard() {
-      navigator.clipboard.writeText(JSON.stringify(this.json));
+      navigator.clipboard.writeText(JSON.stringify(this.json, null, 2));
+      this.copied = true;
+      setTimeout(() => { this.copied = false; }, 1500);
     },
     saveFile() {
       let text;
@@ -423,17 +352,454 @@ export default {
 </script>
 
 <style>
-.vjs-key {
-  color: rgb(43, 51, 42);
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: border-color 0.15s, color 0.15s;
 }
-.vjs-value-string {
-  color: rgb(73, 105, 247);
+
+.btn .v-icon {
+  color: inherit !important;
 }
-.v-list-item__subtitle {
-  padding-bottom: 15px;
-  font-size: 125%;
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
-.v-list-item__title {
-  padding-bottom: 2px;
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+.panel--flush {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* ---------- events table ---------- */
+.events-table.v-data-table {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+.events-table th {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted) !important;
+  background: var(--surface-2) !important;
+  border-bottom: 1px solid var(--border) !important;
+  height: 36px !important;
+  white-space: nowrap;
+}
+
+.events-table tbody tr {
+  cursor: pointer;
+}
+
+.events-table tbody tr:hover {
+  background: var(--row-hover) !important;
+}
+
+.events-table td {
+  vertical-align: top;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  height: auto !important;
+  font-size: 13px !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.events-table .sub {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.events-table .col-time {
+  width: 120px;
+  white-space: nowrap;
+  font-size: 12px !important;
+}
+
+.events-table .col-priority {
+  width: 130px;
+  white-space: nowrap;
+}
+
+.prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+}
+
+.prio .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.events-table .rule {
+  font-weight: 600;
+  color: var(--text);
+  display: inline-block;
+}
+
+.events-table .rule:hover,
+.events-table .link-ish:hover {
+  color: var(--accent);
+}
+
+.events-table .output {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.field {
+  display: inline-flex;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.field:hover {
+  border-color: var(--accent);
+}
+
+.field-key {
+  padding: 1px 6px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border-right: 1px solid var(--border);
+}
+
+.field-value {
+  padding: 1px 6px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.events-table .col-origin {
+  width: 160px;
+  white-space: nowrap;
+}
+
+.events-table .col-tags {
+  width: 220px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 1px 7px;
+  margin: 0 4px 4px 0;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  border-color: var(--accent);
+}
+
+.tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.events-table .col-action {
+  width: 32px;
+  vertical-align: middle !important;
+}
+
+.events-table .col-action .v-icon {
+  color: var(--text-faint) !important;
+}
+
+.events-table .v-data-footer {
+  border-top: none !important;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.segmented {
+  display: inline-flex;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.segmented button {
+  width: 34px;
+  color: var(--text-muted);
+}
+
+.segmented button + button {
+  border-left: 1px solid var(--border);
+}
+
+.segmented button .v-icon {
+  color: inherit !important;
+}
+
+.segmented button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.events-table--dense td {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  vertical-align: middle;
+}
+
+.events-table--dense .col-time .sub,
+.events-table--dense .col-origin .sub,
+.events-table--dense .fields {
+  display: none;
+}
+
+.events-table--dense .col-rule {
+  max-width: 0;
+}
+
+.events-table--dense .rule {
+  display: inline;
+  margin-right: 10px;
+}
+
+.events-table--dense .output {
+  display: inline;
+  white-space: nowrap;
+}
+
+.events-table--dense .col-rule {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.events-table--dense .col-tags {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.events-table--dense .tag {
+  margin-bottom: 0;
+}
+
+/* ---------- event modal (Flood-style) ---------- */
+.event-dialog {
+  border-radius: 8px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35) !important;
+}
+
+.modal {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text-strong);
+  font-size: 13px;
+}
+
+.modal-header {
+  position: relative;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 500;
+  padding-right: 32px;
+}
+
+.modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--sidebar-text);
+}
+
+.modal-meta .v-icon {
+  color: var(--sidebar-heading) !important;
+}
+
+.modal-close {
+  position: absolute !important;
+  top: 18px;
+  right: 18px;
+  color: var(--sidebar-text) !important;
+}
+
+.modal-body {
+  display: flex;
+  min-height: 360px;
+  max-height: 62vh;
+}
+
+.modal-nav {
+  flex: none;
+  width: 140px;
+  padding: 16px 0;
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-nav a {
+  padding: 6px 20px;
+  color: var(--sidebar-text);
+  border-right: 2px solid transparent;
+  margin-right: -1px;
+}
+
+.modal-nav a:hover {
+  color: var(--sidebar-text-strong);
+}
+
+.modal-nav a.active {
+  color: var(--accent);
+  border-right-color: var(--accent);
+}
+
+.modal-content {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 24px 20px;
+  overflow-y: auto;
+}
+
+.modal-content h5 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sidebar-text-strong);
+  margin: 6px 0 8px;
+}
+
+.modal-content h5 + * {
+  margin-bottom: 14px;
+}
+
+.output-block {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+  background: var(--sidebar-bg-2);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--sidebar-text-strong);
+}
+
+.modal-content dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 28px;
+  row-gap: 6px;
+}
+
+.modal-content dt {
+  color: var(--sidebar-text);
+}
+
+.modal-content dd {
+  color: var(--sidebar-text-strong);
+  word-break: break-word;
+}
+
+.modal-content dd a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.modal-content .tag {
+  background: var(--sidebar-bg-2);
+  border-color: var(--sidebar-border);
+  color: var(--sidebar-text-strong);
+}
+
+.json-view {
+  font-size: 12px;
+}
+
+.json-view .vjs-tree {
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: var(--sidebar-text);
+}
+
+.json-view .vjs-key {
+  color: #9cc8f5;
+}
+
+.json-view .vjs-value-string {
+  color: #a5d6a7;
+}
+
+.json-view .vjs-value-number,
+.json-view .vjs-value-boolean {
+  color: #f5c38b;
+}
+
+.json-view .vjs-tree-node:hover {
+  background: var(--sidebar-bg-2);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.modal-footer .btn:not(.btn--primary) {
+  background: transparent;
+  border-color: var(--sidebar-border);
+  color: var(--sidebar-text-strong);
 }
 </style>
