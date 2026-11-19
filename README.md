@@ -153,6 +153,8 @@ make docs
 ![falcosidekick-ui](imgs/webui_02.png)
 ![falcosidekick-ui](imgs/webui_03.png)
 ![falcosidekick-ui](imgs/webui_04.png)
+![falcosidekick-ui](imgs/webui_06.png)
+![falcosidekick-ui](imgs/webui_07.png)
 ![falcosidekick-ui](imgs/webui_05.png)
 
 ## Authors

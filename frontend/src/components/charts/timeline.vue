@@ -2,8 +2,7 @@
   <div>
     <canvas
       :id="id"
-      height="80"
-      class="ml-10 pr-15"
+      height="52"
     ></canvas>
   </div>
 </template>
@@ -13,7 +12,7 @@ import { Chart as ChartJS, registerables } from 'chart.js';
 import dayjs from 'dayjs';
 import 'chartjs-adapter-moment';
 import { requests } from '../../http';
-import { utils } from '../../utils';
+import { utils, PRIORITY_ORDER } from '../../utils';
 
 ChartJS.register(...registerables);
 
@@ -67,8 +66,7 @@ export default {
         data: {
           datasets: [{
             label: 'test',
-            barThickness: 25,
-            backgroundColor: '#1976d2',
+            backgroundColor: '#3a9bf0',
             data: [],
           }],
         },
@@ -76,17 +74,31 @@ export default {
           responsive: true,
           animation: false,
           onClick: this.pickItem,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: { padding: 14 },
+            },
+          },
           scales: {
             x: {
               type: 'time',
               display: true,
               stacked: true,
+              grid: { display: false },
+              ticks: { maxRotation: 0, autoSkipPadding: 24 },
             },
             y: {
               display: true,
               stacked: true,
+              border: { display: false },
+              grid: { drawBorder: false },
               ticks: {
                 beginAtZero: true,
+                maxTicksLimit: 5,
+                precision: 0,
               },
             },
           },
@@ -237,12 +249,13 @@ export default {
                 bgc = utils.stringToColor(key);
                 break;
               default:
-                bgc = '#1976d2';
+                bgc = utils.cssVar('--accent');
                 break;
             }
             this.chartData.data.datasets[i] = {
               label: key,
-              barThickness: 25,
+              barThickness: this.barWidth(oldest / delta),
+              borderRadius: 1,
               backgroundColor: bgc,
               data: this.stats[key].data,
             };
@@ -252,7 +265,16 @@ export default {
           this.chart.update();
         });
     },
+    barWidth(buckets) {
+      const width = (this.chart && this.chart.chartArea)
+        ? this.chart.chartArea.right - this.chart.chartArea.left
+        : 1000;
+      return Math.max(2, Math.min(18, Math.floor((width / buckets) * 0.72)));
+    },
     compareDatasets(data1, data2) {
+      if (this.groupby === 'priority') {
+        return PRIORITY_ORDER.indexOf(data1.label) - PRIORITY_ORDER.indexOf(data2.label);
+      }
       const obj1 = data1.label.toUpperCase();
       const obj2 = data2.label.toUpperCase();
       if (obj1 < obj2) { return -1; }
@@ -264,29 +286,6 @@ export default {
       this.stats = {};
       this.searchEvents(0);
     },
-  },
-  created() {
-    if (typeof this.$route.query.source !== 'undefined') {
-      this.filters.sources = this.$route.query.source;
-    }
-    if (typeof this.$route.query.hostname !== 'undefined') {
-      this.filters.hostnames = this.$route.query.hostname;
-    }
-    if (typeof this.$route.query.priority !== 'undefined') {
-      this.filters.priorities = this.$route.query.priority;
-    }
-    if (typeof this.$route.query.rule !== 'undefined') {
-      this.filters.rule = this.$route.query.rule;
-    }
-    if (typeof this.$route.query.tags !== 'undefined') {
-      this.filters.tags = this.$route.query.tags;
-    }
-    if (typeof this.$route.query.filter !== 'undefined') {
-      this.filters.search = this.$route.query.filter;
-    }
-    if (typeof this.$route.query.since !== 'undefined') {
-      this.filters.since = this.$route.query.since;
-    }
   },
   mounted() {
     const ctx = document.getElementById(this.id);
