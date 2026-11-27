@@ -133,10 +133,10 @@ export default {
               unit = 'second'; delta = 5; oldest = 300; break;
             case '15min':
               this.chartData.options.scales.x.time.unit = 'second';
-              unit = 'second'; delta = 25; oldest = 1500; break;
+              unit = 'second'; delta = 15; oldest = 900; break;
             case '30min':
               this.chartData.options.scales.x.time.unit = 'minute';
-              unit = 'second'; delta = 48; oldest = 3000; break;
+              unit = 'second'; delta = 30; oldest = 1800; break;
             case '1h':
               this.chartData.options.scales.x.time.unit = 'minute';
               unit = 'minute'; delta = 1; oldest = 60; break;
@@ -163,7 +163,7 @@ export default {
               unit = 'hour'; delta = 6; oldest = 336; break;
             case '1M':
               this.chartData.options.scales.x.time.unit = 'day';
-              unit = 'hour'; delta = 12; oldest = 724; break;
+              unit = 'hour'; delta = 12; oldest = 720; break;
             case '3M':
               this.chartData.options.scales.x.time.unit = 'day';
               unit = 'hour'; delta = 36; oldest = 2160; break;
