@@ -12,33 +12,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const crypto = require('crypto');
+const PALETTE = [
+  '#4C8DF6', '#2BB3A3', '#F2A33A', '#9B7BEA', '#E8618C', '#5BC0EB',
+  '#8BC34A', '#FF8A65', '#7986CB', '#4DB6AC', '#BA68C8', '#90A4AE',
+];
+
+const PRIORITY_COLORS = {
+  Emergency: '#B4232A',
+  Alert: '#D6333B',
+  Critical: '#EF4444',
+  Error: '#F97316',
+  Warning: '#F5B53F',
+  Notice: '#4C8DF6',
+  Informational: '#38BDF8',
+  Debug: '#94A3B8',
+};
+
+export const PRIORITY_ORDER = Object.keys(PRIORITY_COLORS);
+
+function hash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    h = (((h << 5) - h) + str.charCodeAt(i)) | 0; // eslint-disable-line no-bitwise
+  }
+  return Math.abs(h);
+}
 
 export const utils = {
   priorityToColor(priority) {
-    switch (priority) {
-      case 'Emergency':
-        return '#C62828';
-      case 'Alert':
-        return '#D32F2F';
-      case 'Critical':
-        return '#E53935';
-      case 'Error':
-        return '#FF5252';
-      case 'Warning':
-        return '#FB8C00';
-      case 'Notice':
-        return '#1976D2';
-      case 'Informational':
-        return '#03A9F4';
-      case 'Debug':
-        return '#29B6F6';
-      default:
-        return '#555';
-    }
+    return PRIORITY_COLORS[priority] || '#7A8699';
   },
   stringToColor(str) {
-    return `#${crypto.createHash('md5').update(str).digest('hex').substring(0, 6)}`;
+    return PALETTE[hash(String(str)) % PALETTE.length];
+  },
+  sortPriorities(list) {
+    return [...list].sort((a, b) => {
+      const ia = PRIORITY_ORDER.indexOf(a);
+      const ib = PRIORITY_ORDER.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+  },
+  cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   },
 };
 
