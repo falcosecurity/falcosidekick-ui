@@ -10,11 +10,10 @@ RUN addgroup -S falcosidekickui && adduser -u 1234 -S falcosidekickui -G falcosi
 # https://kubernetes.io/docs/concepts/policy/pod-security-policy/#users-and-groups
 USER 1234
 WORKDIR /app
-ARG TARGETOS
-ARG TARGETARCH
+ARG TARGETPLATFORM
 COPY frontend/dist frontend/dist
 COPY LICENSE .
-COPY ${TARGETOS}/${TARGETARCH}/falcosidekick-ui .
+COPY ${TARGETPLATFORM}/falcosidekick-ui .
 
 EXPOSE 2802
 ENTRYPOINT ["./falcosidekick-ui"]
